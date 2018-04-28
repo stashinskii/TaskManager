@@ -1,0 +1,90 @@
+[
+  {
+    "login": "herman",
+    "current": true,
+    "surname": "Stashynski",
+    "uid": "ee77f7b8-44b0-11e8-b4eb-ec0ec42aa9f1",
+    "tasks": [],
+    "name": "Herman"
+  },
+  {
+    "login": "herman1",
+    "current": false,
+    "surname": "jfdk",
+    "uid": "8ad38250-4a36-11e8-99bb-ec0ec42aa9f1",
+    "tasks": [],
+    "name": "stashynski"
+  },
+  {
+    "login": "hello",
+    "current": false,
+    "surname": "sd",
+    "uid": "a0d90792-4a3f-11e8-99bb-ec0ec42aa9f1",
+    "tasks": [],
+    "name": "sd"
+  },
+  {
+    "login": "sd",
+    "current": false,
+    "surname": "ds",
+    "uid": "40d5af92-4a41-11e8-9f0c-ec0ec42aa9f1",
+    "tasks": [],
+    "name": "sd"
+  },
+  {
+    "login": "ds",
+    "current": false,
+    "surname": "ds",
+    "uid": "b39fab5e-4a41-11e8-9f0c-ec0ec42aa9f1",
+    "tasks": [],
+    "name": "ds"
+  },
+  {
+    "login": "ds",
+    "current": false,
+    "surname": "fw",
+    "uid": "ba71d2ea-4a41-11e8-9f0c-ec0ec42aa9f1",
+    "tasks": [],
+    "name": "sd"
+  },
+  {
+    "login": "he",
+    "current": false,
+    "surname": "ds",
+    "uid": "bfb6e240-4a41-11e8-9f0c-ec0ec42aa9f1",
+    "tasks": [],
+    "name": "sd"
+  },
+  {
+    "login": "ds",
+    "current": false,
+    "surname": "ds",
+    "uid": "c36ccd00-4a41-11e8-9f0c-ec0ec42aa9f1",
+    "tasks": [],
+    "name": "ds"
+  },
+  {
+    "login": "herman5",
+    "current": false,
+    "surname": "ksdl",
+    "uid": "0e7d4c88-4a43-11e8-9f0c-ec0ec42aa9f1",
+    "tasks": [],
+    "name": "sd;"
+  },
+  {
+    "login": "12",
+    "current": false,
+    "surname": "12",
+    "uid": "1e3c5b46-4a48-11e8-9f0c-ec0ec42aa9f1",
+    "tasks": [],
+    "name": "12"
+  },
+  {
+    "login": "keleda",
+    "current": false,
+    "surname": "Kaleda",
+    "uid": "0be4a446-4aa5-11e8-aa37-6bc25ffe6b4b",
+    "tasks": [],
+    "name": "Vika"
+  }
+]
