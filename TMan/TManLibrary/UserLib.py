@@ -1,8 +1,7 @@
-import json
+from .DataLib import *
 import uuid
-import TaskLib
 import logging
-import DataLib
+import json
 
 data_dir = '/home/herman/Рабочий стол/TaskTracker/taskmanager/TMan/TaskData'
 
@@ -58,10 +57,34 @@ def validate_login(users, login):
     return True
 
 
-def add_user(users, name, surname, login):
+def add_user(users, name, surname, login, tasks):
+    from .TaskLib import User
+    from .DataLib import data_to_json
     uid = str(uuid.uuid1())
-    new_user = TaskLib.User(name, surname, uid, [], login, False)
-    users = DataLib.data_to_json(users, new_user)
-    users.append(TaskLib.User)
+    print(users)
+    new_user = User(name, surname, uid, tasks, login, False)
+    users = data_to_json(users, new_user)
+    print(users)
     logging.info('User added. UID: {}'.format(uid))
     return users
+
+
+def delete_user(users, user):
+    pass
+
+
+def add_user_task(users, user, tid):
+    print(users.index(user))
+    users.__delitem__(users.index(user))
+    user.tasks['simple'].append(tid)
+    users.append(user)
+
+    data = []
+    for user in users:
+        data.append(user.__dict__)
+
+    with open(data_dir+'/users.json', 'w') as userfile:
+        json.dump(data, userfile, indent=2, ensure_ascii=False)
+
+
+

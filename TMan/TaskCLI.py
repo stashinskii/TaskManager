@@ -20,11 +20,11 @@ current_user = None
 @click.option('--current', is_flag=True,
               help='Просмотеть текущего полльзователя')
 def cli(chuser, setuser, current):
-    global simple_tasks, tracked_tasks, calendar_events, current_user
+    global simple_tasks, tracked_tasks, calendar_events, current_user, users
     click.clear()
     try:
 
-        users = TManLibrary.data_from_json("User")
+        users = TManLibrary.data_from_json("User", None)
         if (chuser):
             users = TManLibrary.change_user(users, chuser)
         elif (setuser):
@@ -32,18 +32,20 @@ def cli(chuser, setuser, current):
             if (TManLibrary.validate_login(users, login)):
                 name = input("Name: ")
                 surname = input("Surname: ")
-                users = TManLibrary.add_user(users, name, surname, login)
+                TManLibrary.add_user(users, name, surname, login, [])
         elif (current):
             current_user = TManLibrary.set_current(users)
             print("login: {}\nUID: {}".format(current_user.login, current_user.uid))
         else:
-            simple_tasks = TManLibrary.data_from_json("TODO")
-            tracked_tasks = TManLibrary.data_from_json("Task")
             current_user = TManLibrary.set_current(users)
-    except Exception as e:
-        print(e)
-        logging.warning("Some troubles while open app")
-        raise click.Abort()
+            simple_tasks = TManLibrary.data_from_json("TODO", current_user)
+            tracked_tasks = TManLibrary.data_from_json("Task", current_user)
+    except ValueError:
+        pass
+    #except Exception as e:
+    #    print(e)
+    #    logging.warning("Some troubles while open app")
+    #    raise click.Abort()
 
 
 @cli.command()
@@ -57,7 +59,7 @@ def cli(chuser, setuser, current):
               help='Опция для добавления события в календарь')
 def add(task, subtask, todo, event):
     """Добавление задачи"""
-    global simple_tasks, tracked_tasks, calendar_events, current_user
+    global simple_tasks, tracked_tasks, calendar_events, current_user, users
 
     if task:
         try:
@@ -106,13 +108,15 @@ def add(task, subtask, todo, event):
             tid = TManLibrary.tid_gen()
             permission = None
             is_completed = False
-            simple_tasks = TManLibrary.add_simple_task(simple_tasks, title, date,
+            simple_tasks = TManLibrary.add_simple_task(users, current_user, simple_tasks, title, date,
                                                    description, priority, tid, permission, is_completed, tag)
-        except TypeError as e:
-            logging.warning("Trouble while input data at todo")
-            print("Trouble while input data at todo")
-        except Exception as e:
-            print(e)
+        except ValueError:
+            pass
+        #except TypeError as e:
+        #    logging.warning("Trouble while input data at todo")
+        #    print("Trouble while input data at todo")
+        #except Exception as e:
+        #    print(e)
     else:
         print("event")
 
@@ -176,7 +180,7 @@ def delete(task, todo, event):
         try:
             if (todo - 1) > len(simple_tasks):
                 raise IndexError
-            simple_tasks = TManLibrary.delete_simple_task(simple_tasks, todo-1)
+            simple_tasks = TManLibrary.delete_simple_task(simple_tasks, todo)
         except IndexError as e:
             logging.warning("Out of range while deleting. Index was: {}".format(todo))
             print(e)

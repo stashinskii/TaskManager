@@ -1,7 +1,7 @@
-import json
-import logging
 from .TaskLib import *
-from .UserLib import *
+import logging
+import json
+import uuid
 
 
 # TODO настроить автоматическое расположение файлов
@@ -23,7 +23,7 @@ def tid_gen():
     return str(uuid.uuid1())
 
 
-def add_simple_task(simple_tasks, title, date, description, priority, tid, permission, is_completed, tag):
+def add_simple_task(users, current, simple_tasks, title, date, description, priority, tid, permission, is_completed, tag):
     """
     Добавление задачи в список дел
     """
@@ -32,10 +32,11 @@ def add_simple_task(simple_tasks, title, date, description, priority, tid, permi
 
     data_to_json(simple_tasks, simple_tasks[-1])
     logging.info('TODO task added. TID: {}'.format(tid))
+    add_user_task(users, current, tid)
     return simple_tasks
 
 
-def data_from_json(type):
+def data_from_json(type, current):
     """
     Загрузка задач из файла
     """
@@ -49,25 +50,29 @@ def data_from_json(type):
                 simple_data = json.load(todo_task_file)
 
             for task_dict in simple_data:
-                title = task_dict['title']
-                tid = task_dict['tid']
-                permission = task_dict['permission']
-                date = task_dict['date']
-                description = task_dict['description']
-                priority = task_dict['priority']
-                tag = task_dict['tag']
-                is_completed = task_dict['is_completed']
-                new_task = SimpleListTask(
-                    title,
-                    date,
-                    description,
-                    priority,
-                    tid,
-                    permission,
-                    is_completed,
-                    tag
-                )
-                simple_tasks.append(new_task)
+                """
+                Загрузка задач, которые принадлежат пользователю
+                """
+                if task_dict['tid'] in current.tasks['simple']:
+                    title = task_dict['title']
+                    tid = task_dict['tid']
+                    permission = task_dict['permission']
+                    date = task_dict['date']
+                    description = task_dict['description']
+                    priority = task_dict['priority']
+                    tag = task_dict['tag']
+                    is_completed = task_dict['is_completed']
+                    new_task = SimpleListTask(
+                        title,
+                        date,
+                        description,
+                        priority,
+                        tid,
+                        permission,
+                        is_completed,
+                        tag
+                    )
+                    simple_tasks.append(new_task)
             return simple_tasks
 
         elif type=="Task":
@@ -75,39 +80,40 @@ def data_from_json(type):
                 task_data = json.load(task_file)
 
             for task_dict in task_data:
-                title = task_dict['title']
-                start = task_dict['start']
-                end = task_dict['end']
-                description = task_dict['description']
-                dash = task_dict['dash']
-                tag = task_dict['tag']
-                observers = task_dict['observers']
-                executor = task_dict['executor']
-                priority = task_dict['priority']
-                author = task_dict['author']
-                reminder = task_dict['reminder']
-                cancel_sync = task_dict['cancel_sync']
-                is_completed = task_dict['is_completed']
-                subtasks = task_dict['subtasks']
-                tid = task_dict['tid']
-                new_task = TrackedTask(
-                    tid,
-                    title,
-                    description,
-                    start,
-                    end,
-                    tag,
-                    dash,
-                    author,
-                    observers,
-                    executor,
-                    cancel_sync,
-                    is_completed,
-                    reminder,
-                    priority,
-                    subtasks
-                )
-                tracked_tasks.append(new_task)
+                if task_dict['tid'] in current.tasks['task']:
+                    title = task_dict['title']
+                    start = task_dict['start']
+                    end = task_dict['end']
+                    description = task_dict['description']
+                    dash = task_dict['dash']
+                    tag = task_dict['tag']
+                    observers = task_dict['observers']
+                    executor = task_dict['executor']
+                    priority = task_dict['priority']
+                    author = task_dict['author']
+                    reminder = task_dict['reminder']
+                    cancel_sync = task_dict['cancel_sync']
+                    is_completed = task_dict['is_completed']
+                    subtasks = task_dict['subtasks']
+                    tid = task_dict['tid']
+                    new_task = TrackedTask(
+                        tid,
+                        title,
+                        description,
+                        start,
+                        end,
+                        tag,
+                        dash,
+                        author,
+                        observers,
+                        executor,
+                        cancel_sync,
+                        is_completed,
+                        reminder,
+                        priority,
+                        subtasks
+                    )
+                    tracked_tasks.append(new_task)
             return tracked_tasks
 
         # TODO пересмотреть опцию загрузки сех пользователей. Возможно при нахождении первого current == True стоит выйти и не загружать все.
@@ -164,7 +170,6 @@ def data_to_json(collection, object):
     except FileNotFoundError:
         collection = []
         logging.warning("Can't load json file")
-
     collection.append(object)
 
     with open(filename, 'w') as objfile:

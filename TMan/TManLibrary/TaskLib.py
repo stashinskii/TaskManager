@@ -113,5 +113,9 @@ class User:
         Сделать данного пользователя текущим
         """
         self.current = True
+    def add_simpletasks(self, tid):
+        self.tasks['simple'].append(tid)
 
+    def add_task(self, tid):
+        self.tasks['task'].append(tid)
 

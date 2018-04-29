@@ -1,98 +1,29 @@
 [
   {
-    "current": true,
-    "login": "herman",
-    "tasks": [],
-    "surname": "Stashynski",
-    "uid": "ee77f7b8-44b0-11e8-b4eb-ec0ec42aa9f1",
-    "name": "Herman"
-  },
-  {
+    "tasks": {
+      "task": [],
+      "simple": [
+        "c83bee66-4bc6-11e8-948e-ec0ec42aa9f1",
+        "295145d4-4bc7-11e8-948e-ec0ec42aa9f1"
+      ]
+    },
+    "uid": "7107e2a8-4bc6-11e8-948e-ec0ec42aa9f1",
     "current": false,
-    "login": "herman1",
-    "tasks": [],
-    "surname": "jfdk",
-    "uid": "8ad38250-4a36-11e8-99bb-ec0ec42aa9f1",
-    "name": "stashynski"
-  },
-  {
-    "current": false,
-    "login": "hello",
-    "tasks": [],
-    "surname": "sd",
-    "uid": "a0d90792-4a3f-11e8-99bb-ec0ec42aa9f1",
-    "name": "sd"
-  },
-  {
-    "current": false,
-    "login": "sd",
-    "tasks": [],
-    "surname": "ds",
-    "uid": "40d5af92-4a41-11e8-9f0c-ec0ec42aa9f1",
-    "name": "sd"
-  },
-  {
-    "current": false,
-    "login": "ds",
-    "tasks": [],
-    "surname": "ds",
-    "uid": "b39fab5e-4a41-11e8-9f0c-ec0ec42aa9f1",
-    "name": "ds"
-  },
-  {
-    "current": false,
-    "login": "ds",
-    "tasks": [],
-    "surname": "fw",
-    "uid": "ba71d2ea-4a41-11e8-9f0c-ec0ec42aa9f1",
-    "name": "sd"
-  },
-  {
-    "current": false,
-    "login": "he",
-    "tasks": [],
-    "surname": "ds",
-    "uid": "bfb6e240-4a41-11e8-9f0c-ec0ec42aa9f1",
-    "name": "sd"
-  },
-  {
-    "current": false,
-    "login": "ds",
-    "tasks": [],
-    "surname": "ds",
-    "uid": "c36ccd00-4a41-11e8-9f0c-ec0ec42aa9f1",
-    "name": "ds"
-  },
-  {
-    "current": false,
-    "login": "herman5",
-    "tasks": [],
-    "surname": "ksdl",
-    "uid": "0e7d4c88-4a43-11e8-9f0c-ec0ec42aa9f1",
-    "name": "sd;"
-  },
-  {
-    "current": false,
-    "login": "12",
-    "tasks": [],
     "surname": "12",
-    "uid": "1e3c5b46-4a48-11e8-9f0c-ec0ec42aa9f1",
-    "name": "12"
+    "name": "12",
+    "login": "herman"
   },
   {
-    "current": false,
-    "login": "keleda",
-    "tasks": [],
-    "surname": "Kaleda",
-    "uid": "0be4a446-4aa5-11e8-aa37-6bc25ffe6b4b",
-    "name": "Vika"
-  },
-  {
-    "current": false,
-    "login": "fd",
-    "name": "fd",
-    "surname": "fd",
-    "uid": "ed1f7142-4ae2-11e8-bb00-ec0ec42aa9f1",
-    "tasks": []
+    "tasks": {
+      "task": [],
+      "simple": [
+        "319134e8-4bc7-11e8-948e-ec0ec42aa9f1"
+      ]
+    },
+    "uid": "d27a5278-4bc6-11e8-948e-ec0ec42aa9f1",
+    "current": true,
+    "surname": "12",
+    "name": "12",
+    "login": "12"
   }
 ]
