@@ -4,7 +4,7 @@ import TaskLib
 import logging
 import DataLib
 
-data_dir = '/home/herman/Рабочий стол/TMan/TaskData'
+data_dir = '/home/herman/Рабочий стол/TaskTracker/taskmanager/TMan/TaskData'
 
 
 def set_current(users):

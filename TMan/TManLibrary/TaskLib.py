@@ -1,5 +1,4 @@
-import uuid
-import DataLib
+from .UserLib import *
 
 
 class Task:
@@ -53,7 +52,6 @@ class BaseTask:
         self.title = title
         self.tid = tid
         self.description = description
-        self.tid = uuid.uuid1()
         self.priority = priority
         self.start = start
         self.end = end
@@ -69,9 +67,9 @@ class BaseTask:
 
 class SubTask(BaseTask):
     """Сущность подзадачи"""
-    def __init__(self, parent_id, title, description, start, end, tag, dash, author, observers, executor,
+    def __init__(self, tid, parent_id, title, description, start, end, tag, dash, author, observers, executor,
                           cancel_sync, is_completed, reminder, priority):
-        BaseTask.__init__(self, str(uuid.uuid1()), title, description, start, end, tag, dash, author, observers, executor,
+        BaseTask.__init__(self, tid, title, description, start, end, tag, dash, author, observers, executor,
                           cancel_sync, is_completed, reminder, priority)
         self.parent_id = parent_id
 
@@ -86,9 +84,9 @@ class TrackedTask(BaseTask):
                           cancel_sync, is_completed, reminder, priority)
         self.subtasks = subtasks
 
-    def add_subtask(self, title, description, start, end, tag, dash, author, observers, executor,
+    def add_subtask(self, tid, title, description, start, end, tag, dash, author, observers, executor,
                           cancel_sync, is_completed, reminder, priority):
-        self.subtasks.append(SubTask(self.tid, title, description, start, end, tag, dash, author, observers, executor,
+        self.subtasks.append(SubTask(tid, self.tid, title, description, start, end, tag, dash, author, observers, executor,
                           cancel_sync, is_completed, reminder, priority).__dict__)
 
 

@@ -1,9 +1,6 @@
 import click
 import logging
-import DataLib
-import UserLib
-import TaskLib
-
+import TManLibrary
 
 # Коллекции, хранящие задачи
 simple_tasks = []
@@ -26,23 +23,23 @@ def cli(chuser, setuser, current):
     global simple_tasks, tracked_tasks, calendar_events, current_user
     click.clear()
     try:
-        users = DataLib.data_from_json("User")
+
+        users = TManLibrary.data_from_json("User")
         if (chuser):
-            users = UserLib.change_user(users, chuser)
+            users = TManLibrary.change_user(users, chuser)
         elif (setuser):
             login = input("Login: ")
-            if (UserLib.validate_login(users, login)):
+            if (TManLibrary.validate_login(users, login)):
                 name = input("Name: ")
                 surname = input("Surname: ")
-                users = UserLib.add_user(users, name, surname, login)
+                users = TManLibrary.add_user(users, name, surname, login)
         elif (current):
-            current_user = UserLib.set_current(users)
+            current_user = TManLibrary.set_current(users)
             print("login: {}\nUID: {}".format(current_user.login, current_user.uid))
         else:
-            simple_tasks = DataLib.data_from_json("TODO")
-            tracked_tasks = DataLib.data_from_json("Task")
-            current_user = UserLib.set_current(users)
-
+            simple_tasks = TManLibrary.data_from_json("TODO")
+            tracked_tasks = TManLibrary.data_from_json("Task")
+            current_user = TManLibrary.set_current(users)
     except Exception as e:
         print(e)
         logging.warning("Some troubles while open app")
@@ -77,9 +74,8 @@ def add(task, subtask, todo, event):
             priority = input("Choose priority: ")
             author = current_user.uid
             reminder = input("Reminder: ")
-            tid = DataLib.tid_gen()
-
-            tracked_tasks = DataLib.add_tracked_task(
+            tid = TManLibrary.tid_gen()
+            tracked_tasks = TManLibrary.add_tracked_task(
                 tracked_tasks, tid, title, description, start,
                 end, tag, dash, author, observers, executor, True, False, reminder, priority, [])
         except ValueError:
@@ -96,7 +92,7 @@ def add(task, subtask, todo, event):
         priority = input("Choose priority: ")
         author = current_user.uid
         reminder = input("Reminder: ")
-        tracked_tasks = DataLib.add_subtask(tracked_tasks, subtask, title, description, start,
+        tracked_tasks = TManLibrary.add_subtask(tracked_tasks, subtask, title, description, start,
                 end, tag, dash, author, observers, executor, True, False, reminder, priority)
     elif todo:
         try:
@@ -107,10 +103,10 @@ def add(task, subtask, todo, event):
             description = input("Add some info about task: ")
             priority = input("Choose priority: ")
             tag = input("Add #tag to this task: ")
-            tid = DataLib.tid_gen()
+            tid = TManLibrary.tid_gen()
             permission = None
             is_completed = False
-            simple_tasks = DataLib.add_simple_task(simple_tasks, title, date,
+            simple_tasks = TManLibrary.add_simple_task(simple_tasks, title, date,
                                                    description, priority, tid, permission, is_completed, tag)
         except TypeError as e:
             logging.warning("Trouble while input data at todo")
@@ -132,11 +128,12 @@ def list(task, todo, event):
     """Просмотр всех задач"""
     global simple_tasks, tracked_tasks, calendar_events
     if task:
-        task_gen = DataLib.show_tracked_task(tracked_tasks)
+        task_gen = TManLibrary.show_tracked_task(tracked_tasks)
         for task in task_gen:
-            print(task)
+            click.echo("["+task[0]+"] - "+task[1]+" - " + click.style(
+                "Subtasks: "+task[2], bold=True, fg='yellow')+" - "+click.style(task[3], bold=True, bg='green'))
     elif todo:
-        task_gen = DataLib.show_simple_task(simple_tasks)
+        task_gen = TManLibrary.show_simple_task(simple_tasks)
         for task in task_gen:
             print(task)
     elif event:
@@ -157,7 +154,7 @@ def done(task, todo):
         try:
             if (todo - 1) > len(simple_tasks):
                 raise IndexError("Выход за границы списка")
-            simple_tasks = DataLib.complete_simple_task(simple_tasks, todo)
+            simple_tasks = TManLibrary.complete_simple_task(simple_tasks, todo)
         except IndexError as e:
             logging.warning("Out of range")
             print(e)
@@ -177,15 +174,15 @@ def delete(task, todo, event):
         pass
     elif todo:
         try:
-            if (delete - 1) > len(simple_tasks):
+            if (todo - 1) > len(simple_tasks):
                 raise IndexError
-            simple_tasks = DataLib.delete_simple_task(simple_tasks, delete)
+            simple_tasks = TManLibrary.delete_simple_task(simple_tasks, todo-1)
         except IndexError as e:
-            logging.warning("Out of range while deleting. Index was: {}".format(delete))
+            logging.warning("Out of range while deleting. Index was: {}".format(todo))
             print(e)
         except Exception as e:
             print(e)
-            logging.warning("Something done wrong while deleting. Index was: {}".format(delete))
+            logging.warning("Something done wrong while deleting. Index was: {}".format(todo))
 
 
 @cli.command()
@@ -204,7 +201,7 @@ def info(task, todo, event):
         try:
             if (todo - 1) > len(simple_tasks):
                 raise IndexError("Такой задачи не существует. Выход за границы списка")
-            selected_task = DataLib.show_simple_info(simple_tasks, todo)
+            selected_task = TManLibrary.show_simple_info(simple_tasks, todo)
             click.echo(click.style("TODO Task description: \t\t\t", bold=True, blink=True, bg='green'))
             click.echo("Title: "+click.style(str('\t\t' + selected_task.title), fg='white', bold=True))
             click.echo("Description: " + click.style(str('\t' + selected_task.description), fg='yellow'))

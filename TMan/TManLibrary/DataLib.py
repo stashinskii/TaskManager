@@ -1,11 +1,11 @@
 import json
-import uuid
 import logging
-import TaskLib
+from .TaskLib import *
+from .UserLib import *
 
 
 # TODO настроить автоматическое расположение файлов
-data_dir = '/home/herman/Рабочий стол/TMan/TaskData'
+data_dir = '/home/herman/Рабочий стол/TaskTracker/taskmanager/TMan/TaskData'
 
 
 # задаем конфигурацию логгирования
@@ -27,7 +27,7 @@ def add_simple_task(simple_tasks, title, date, description, priority, tid, permi
     """
     Добавление задачи в список дел
     """
-    simple_tasks.append(TaskLib.SimpleListTask(
+    simple_tasks.append(SimpleListTask(
         title, date, description, priority, tid, permission, is_completed, tag))
 
     data_to_json(simple_tasks, simple_tasks[-1])
@@ -57,7 +57,7 @@ def data_from_json(type):
                 priority = task_dict['priority']
                 tag = task_dict['tag']
                 is_completed = task_dict['is_completed']
-                new_task = TaskLib.SimpleListTask(
+                new_task = SimpleListTask(
                     title,
                     date,
                     description,
@@ -90,7 +90,7 @@ def data_from_json(type):
                 is_completed = task_dict['is_completed']
                 subtasks = task_dict['subtasks']
                 tid = task_dict['tid']
-                new_task = TaskLib.TrackedTask(
+                new_task = TrackedTask(
                     tid,
                     title,
                     description,
@@ -122,7 +122,7 @@ def data_from_json(type):
                 uid = data_dict['uid']
                 tasks = data_dict['tasks']
                 current = data_dict['current']
-                user = TaskLib.User(name, surname, uid, tasks, login, current)
+                user = User(name, surname, uid, tasks, login, current)
                 users.append(user)
             return users
 
@@ -226,7 +226,7 @@ def delete_simple_task(simple_tasks, num):
 # Далее работа с Трекером дел
 def add_tracked_task(tracked_task, tid, title, description, start, end, tag, dash, author,
                    observers, executor, cancel_sync, is_completed, reminder, priority, subtasks):
-    tracked_task.append(TaskLib.TrackedTask(
+    tracked_task.append(TrackedTask(
         tid,
         title,
         description,
@@ -243,13 +243,12 @@ def add_tracked_task(tracked_task, tid, title, description, start, end, tag, das
         priority,
         subtasks
     ))
-
     data_to_json(tracked_task, tracked_task[-1])
 
 
-def add_subtask(tracked_task, num, title, description, start,
+def add_subtask(tid, tracked_task, num, title, description, start,
                 end, tag, dash, author, observers, executor, cancel_sync, is_completed, reminder, priority):
-    tracked_task[num-1].add_subtask(title, description, start, end, tag, dash, author, observers, executor,
+    tracked_task[num-1].add_subtask(tid, title, description, start, end, tag, dash, author, observers, executor,
                           cancel_sync, is_completed, reminder, priority)
 
     resave_tracked_json(tracked_task)
@@ -279,8 +278,7 @@ def show_tracked_task(tracked_tasks):
             else:
                 marker = " "
             # Возвращаем строку со списком задач и их состоянием
-            yield ("[" + marker + "]" + " - " + str(tracked_tasks.index(task)+1) + " - \033[1m\033[93mПодзадач:\033[0m"
-                   + str(len(task.subtasks))+ "\t" + " - \033[1m" + str(task.title)+"\033[0m")
+            yield (marker, str(tracked_tasks.index(task)+1),str(len(task.subtasks)), str(task.title))
     except TypeError as e:
         logging.warning('Unable to show tasks')
 
