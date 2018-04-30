@@ -1,7 +1,9 @@
 import click
 import logging
+import os
 import TManLibrary
 
+data_dir = '/home/herman/Рабочий стол/TaskTracker/taskmanager/TMan/TaskData'
 
 class Console:
     """Класс для организации работы с терминалом."""
@@ -120,10 +122,42 @@ class Console:
     def done_todo(todo, simple_tasks):
         try:
             if (todo - 1) > len(simple_tasks):
-                raise IndexError("Выход за границы списка")
+                raise IndexError("Out of range")
             simple_tasks = TManLibrary.complete_simple_task(simple_tasks, todo)
         except IndexError as e:
             logging.warning("Out of range")
+            print(e)
+
+
+    @staticmethod
+    def edit_task(task, tracked_tasks):
+        try:
+            if (task - 1) > len(tracked_tasks):
+                raise IndexError("Out of range")
+            edit = tracked_tasks[task - 1]
+            data = []
+            data.append(edit.title)
+            data.append(edit.start)
+            data.append(edit.end)
+            data.append(edit.description)
+            for x in data:
+                os.system("echo \"{}\" >> {}".format(x, "/tmp/tman_tempdata.tmp"))
+            os.system("nano {}".format("/tmp/tman_tempdata.tmp"))
+            data = []
+            file = open("/tmp/tman_tempdata.tmp")
+            for line in file:
+                data.append(line[0:-1])
+            os.system("rm /tmp/tman_tempdata.tmp")
+            if len(data) != 4:
+                raise Exception("Incorrect data")
+            else:
+                tracked_tasks[task - 1].title = data[0]
+                tracked_tasks[task - 1].start = data[1]
+                tracked_tasks[task - 1].end = data[2]
+                tracked_tasks[task - 1].description = data[3]
+            TManLibrary.resave_tracked_json(tracked_tasks)
+        except Exception as e:
+            logging.warning(e)
             print(e)
 
     @staticmethod

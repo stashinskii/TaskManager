@@ -23,8 +23,8 @@
       <file leaf-file-name="TaskCLI.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/TaskCLI.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="342">
-              <caret line="55" column="86" selection-start-line="55" selection-start-column="86" selection-end-line="55" selection-end-column="86" />
+            <state relative-caret-position="231">
+              <caret line="129" column="32" selection-start-line="129" selection-start-column="32" selection-end-line="129" selection-end-column="32" />
             </state>
           </provider>
         </entry>
@@ -32,11 +32,8 @@
       <file leaf-file-name="ConsoleLib.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/ConsoleLib.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="18">
-              <caret line="82" column="60" selection-start-line="82" selection-start-column="60" selection-end-line="82" selection-end-column="60" />
-              <folding>
-                <element signature="e#0#12#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="36">
+              <caret line="2" column="9" selection-start-line="2" selection-start-column="9" selection-end-line="2" selection-end-column="9" />
             </state>
           </provider>
         </entry>
@@ -53,8 +50,8 @@
       <file leaf-file-name="DataLib.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/TManLibrary/DataLib.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="36">
-              <caret line="272" column="97" lean-forward="true" selection-start-line="272" selection-start-column="97" selection-end-line="272" selection-end-column="111" />
+            <state relative-caret-position="483">
+              <caret line="344" selection-start-line="344" selection-end-line="344" />
               <folding>
                 <element signature="e#0#22#0" expanded="true" />
               </folding>
@@ -77,8 +74,8 @@
       <file leaf-file-name="TaskLib.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/TManLibrary/TaskLib.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="217">
-              <caret line="69" column="23" lean-forward="true" selection-start-line="69" selection-start-column="23" selection-end-line="70" selection-end-column="71" />
+            <state relative-caret-position="90">
+              <caret line="53" column="24" selection-start-line="53" selection-start-column="13" selection-end-line="53" selection-end-column="24" />
             </state>
           </provider>
         </entry>
@@ -115,8 +112,8 @@
         <option value="$PROJECT_DIR$/TaskLib.py" />
         <option value="$PROJECT_DIR$/TManLibrary/__init__.py" />
         <option value="$PROJECT_DIR$/TManLibrary/TaskLib.py" />
-        <option value="$PROJECT_DIR$/TaskCLI.py" />
         <option value="$PROJECT_DIR$/TManLibrary/UserLib.py" />
+        <option value="$PROJECT_DIR$/TaskCLI.py" />
         <option value="$PROJECT_DIR$/TManLibrary/DataLib.py" />
         <option value="$PROJECT_DIR$/ConsoleLib.py" />
       </list>
@@ -400,24 +397,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/TManLibrary/TaskLib.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="217">
-          <caret line="69" column="23" lean-forward="true" selection-start-line="69" selection-start-column="23" selection-end-line="70" selection-end-column="71" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/TManLibrary/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state>
           <caret column="22" selection-start-column="22" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/TaskCLI.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="342">
-          <caret line="55" column="86" selection-start-line="55" selection-start-column="86" selection-end-line="55" selection-end-column="86" />
         </state>
       </provider>
     </entry>
@@ -431,10 +414,24 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/TaskCLI.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="231">
+          <caret line="129" column="32" selection-start-line="129" selection-start-column="32" selection-end-line="129" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TManLibrary/TaskLib.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="53" column="24" selection-start-line="53" selection-start-column="13" selection-end-line="53" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/TManLibrary/DataLib.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="36">
-          <caret line="272" column="97" lean-forward="true" selection-start-line="272" selection-start-column="97" selection-end-line="272" selection-end-column="111" />
+        <state relative-caret-position="483">
+          <caret line="344" selection-start-line="344" selection-end-line="344" />
           <folding>
             <element signature="e#0#22#0" expanded="true" />
           </folding>
@@ -443,11 +440,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ConsoleLib.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="18">
-          <caret line="82" column="60" selection-start-line="82" selection-start-column="60" selection-end-line="82" selection-end-column="60" />
-          <folding>
-            <element signature="e#0#12#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="36">
+          <caret line="2" column="9" selection-start-line="2" selection-start-column="9" selection-end-line="2" selection-end-column="9" />
         </state>
       </provider>
     </entry>

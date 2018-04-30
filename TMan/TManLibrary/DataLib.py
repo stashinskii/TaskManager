@@ -2,6 +2,7 @@ from .TaskLib import *
 import logging
 import json
 import uuid
+import os
 
 
 # TODO настроить автоматическое расположение файлов

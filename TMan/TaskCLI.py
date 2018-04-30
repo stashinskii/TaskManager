@@ -126,6 +126,24 @@ def info(task, todo, event):
         pass
 
 
+@cli.command()
+@click.option('--task', type=int,
+              help='Опция для редактирования задач')
+@click.option('--todo', type=int,
+              help='Опция для редактирования todo')
+@click.option('--event', type=int,
+              help='Опция для редактирования события в календаре')
+def edit(task, todo, event):
+    """Просмотра подробной информации"""
+    global simple_tasks, tracked_tasks, calendar_events
+    if task:
+        Console.edit_task(task, tracked_tasks)
+    elif todo:
+        Console.info_todo(todo, simple_tasks)
+    elif event:
+        pass
+
+
 if __name__ == '__main__':
     cli()
 

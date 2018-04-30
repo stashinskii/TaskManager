@@ -1,89 +1,80 @@
 [
   {
+    "tasks": [],
+    "surname": "as",
     "uid": "5fbd4074-4bda-11e8-948e-ec0ec42aa9f1",
-    "name": "as",
-    "surname": "as",
-    "current": false,
     "login": "aloha",
-    "tasks": []
+    "current": false,
+    "name": "as"
   },
   {
-    "uid": "3e47b008-4c54-11e8-ae3f-ec0ec42aa9f1",
-    "name": "12",
+    "tasks": [],
     "surname": "12",
-    "current": false,
+    "uid": "3e47b008-4c54-11e8-ae3f-ec0ec42aa9f1",
     "login": "hel",
-    "tasks": []
+    "current": false,
+    "name": "12"
   },
   {
-    "uid": "04b614b4-4c55-11e8-ae3f-ec0ec42aa9f1",
-    "name": "as",
-    "surname": "as",
-    "current": false,
-    "login": "opa",
     "tasks": {
       "simple": [
         "654f8a1c-4c55-11e8-ae3f-ec0ec42aa9f1",
         "87c43912-4c55-11e8-ae3f-ec0ec42aa9f1"
       ],
-      "task": [],
-      "event": []
-    }
+      "event": [],
+      "task": []
+    },
+    "surname": "as",
+    "uid": "04b614b4-4c55-11e8-ae3f-ec0ec42aa9f1",
+    "login": "opa",
+    "current": false,
+    "name": "as"
   },
   {
-    "uid": "9ad8fbca-4c58-11e8-ae3f-ec0ec42aa9f1",
-    "name": "12",
-    "surname": "12",
-    "current": false,
-    "login": "hello11",
     "tasks": {
       "simple": [
         "a94cb23c-4c58-11e8-ae3f-ec0ec42aa9f1"
       ],
-      "task": [],
-      "event": []
-    }
+      "event": [],
+      "task": []
+    },
+    "surname": "12",
+    "uid": "9ad8fbca-4c58-11e8-ae3f-ec0ec42aa9f1",
+    "login": "hello11",
+    "current": false,
+    "name": "12"
   },
   {
-    "uid": "ccd1cd1e-4c5d-11e8-ae3f-ec0ec42aa9f1",
-    "name": "1",
-    "surname": "1",
-    "current": false,
-    "login": "1",
     "tasks": {
       "simple": [
         "dbdc590a-4c5d-11e8-ae3f-ec0ec42aa9f1"
       ],
-      "task": [],
-      "event": []
-    }
+      "event": [],
+      "task": []
+    },
+    "surname": "1",
+    "uid": "ccd1cd1e-4c5d-11e8-ae3f-ec0ec42aa9f1",
+    "login": "1",
+    "current": false,
+    "name": "1"
   },
   {
-    "uid": "d27a5278-4bc6-11e8-948e-ec0ec42aa9f1",
-    "name": "12",
-    "surname": "12",
-    "current": false,
-    "login": "12",
     "tasks": {
-      "task": [],
       "simple": [
         "319134e8-4bc7-11e8-948e-ec0ec42aa9f1",
         "24d03778-4bda-11e8-948e-ec0ec42aa9f1",
         "1635a056-4c5f-11e8-ae3f-ec0ec42aa9f1"
-      ]
-    }
+      ],
+      "task": []
+    },
+    "surname": "12",
+    "uid": "d27a5278-4bc6-11e8-948e-ec0ec42aa9f1",
+    "login": "12",
+    "current": false,
+    "name": "12"
   },
   {
-    "uid": "7107e2a8-4bc6-11e8-948e-ec0ec42aa9f1",
-    "name": "12",
-    "surname": "12",
-    "current": true,
-    "login": "herman",
     "tasks": {
-      "task": [
-        "05b37a0a-4b9c-11e8-bb00-ec0ec42aa9f1",
-        "d10d1954-4c6e-11e8-ae3f-ec0ec42aa9f1"
-      ],
       "simple": [
         "c83bee66-4bc6-11e8-948e-ec0ec42aa9f1",
         "295145d4-4bc7-11e8-948e-ec0ec42aa9f1",
@@ -92,7 +83,17 @@
         "91db0606-4c55-11e8-ae3f-ec0ec42aa9f1",
         "0405881a-4c5f-11e8-ae3f-ec0ec42aa9f1",
         "32248b3c-4c6a-11e8-ae3f-ec0ec42aa9f1"
+      ],
+      "task": [
+        "05b37a0a-4b9c-11e8-bb00-ec0ec42aa9f1",
+        "d10d1954-4c6e-11e8-ae3f-ec0ec42aa9f1",
+        "44e70896-4c77-11e8-ae3f-ec0ec42aa9f1"
       ]
-    }
+    },
+    "surname": "12",
+    "uid": "7107e2a8-4bc6-11e8-948e-ec0ec42aa9f1",
+    "login": "herman",
+    "current": true,
+    "name": "12"
   }
 ]
