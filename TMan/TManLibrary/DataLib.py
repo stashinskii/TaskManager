@@ -32,7 +32,7 @@ def add_simple_task(users, current, simple_tasks, title, date, description, prio
 
     data_to_json(simple_tasks, simple_tasks[-1])
     logging.info('TODO task added. TID: {}'.format(tid))
-    add_user_task(users, current, tid)
+    add_user_task(users, current, tid, "TODO")
     return simple_tasks
 
 
@@ -42,6 +42,7 @@ def data_from_json(type, current):
     """
     simple_tasks = []
     tracked_tasks = []
+    subtasks = []
     event_tasks = []
     users = []
     try:
@@ -130,6 +131,46 @@ def data_from_json(type, current):
                 user = User(name, surname, uid, tasks, login, current)
                 users.append(user)
             return users
+
+        elif type == "Subtask":
+            with open(data_dir+'/subtasks.json', 'r') as file:
+                data = json.load(file)
+
+                for task_dict in data:
+                    title = task_dict['title']
+                    parent_id = task_dict['parent_id']
+                    start = task_dict['start']
+                    end = task_dict['end']
+                    description = task_dict['description']
+                    dash = task_dict['dash']
+                    tag = task_dict['tag']
+                    observers = task_dict['observers']
+                    executor = task_dict['executor']
+                    priority = task_dict['priority']
+                    author = task_dict['author']
+                    reminder = task_dict['reminder']
+                    cancel_sync = task_dict['cancel_sync']
+                    is_completed = task_dict['is_completed']
+                    tid = task_dict['tid']
+                    new_task = SubTask(
+                        tid,
+                        parent_id,
+                        title,
+                        description,
+                        start,
+                        end,
+                        tag,
+                        dash,
+                        author,
+                        observers,
+                        executor,
+                        cancel_sync,
+                        is_completed,
+                        reminder,
+                        priority
+                    )
+                    subtasks.append(new_task)
+                return subtasks
 
         elif type == "Event":
             pass
@@ -229,7 +270,7 @@ def delete_simple_task(simple_tasks, num):
 
 # Далее работа с Трекером дел
 def add_tracked_task(tracked_task, tid, title, description, start, end, tag, dash, author,
-                   observers, executor, cancel_sync, is_completed, reminder, priority, subtasks):
+                   observers, executor, cancel_sync, is_completed, reminder, priority, subtasks, users, current):
     tracked_task.append(TrackedTask(
         tid,
         title,
@@ -249,14 +290,28 @@ def add_tracked_task(tracked_task, tid, title, description, start, end, tag, das
     ))
     data_to_json(tracked_task, tracked_task[-1])
 
+    add_user_task(users, current, tid, "Task")
 
-def add_subtask(tid, tracked_task, num, title, description, start,
-                end, tag, dash, author, observers, executor, cancel_sync, is_completed, reminder, priority):
-    tracked_task[num-1].add_subtask(tid, title, description, start, end, tag, dash, author, observers, executor,
-                          cancel_sync, is_completed, reminder, priority)
 
-    resave_tracked_json(tracked_task)
-    return tracked_task
+def add_subtask(subtasks, tid, parent_id, title, description, start, end, tag, dash, author, observers, executor,
+                          cancel_sync, is_completed, reminder, priority, tracked_tasks, subtask):
+
+    subtasks.append(SubTask(tid, parent_id, title, description, start, end, tag, dash, author, observers, executor,
+                          cancel_sync, is_completed, reminder, priority))
+    tracked_tasks[subtask-1].subtasks.append(tid)
+    resave_tracked_json(tracked_tasks)
+    resave_subtask_json(subtasks)
+    return subtasks
+
+
+def resave_subtask_json(subtasks):
+    """Пересохранение данных после изменения"""
+    data = []
+    for task in subtasks:
+        data.append(task.__dict__)
+
+    with open(data_dir+'/subtasks.json', 'w') as taskfile:
+        json.dump(data, taskfile, indent=2, ensure_ascii=False)
 
 
 def resave_tracked_json(tracked_tasks):

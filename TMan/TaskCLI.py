@@ -4,6 +4,7 @@ from ConsoleLib import *
 simple_tasks = []
 tracked_tasks = []
 calendar_events = []
+subtasks = []
 
 
 users = []
@@ -18,7 +19,7 @@ current_user = None
 @click.option('--current', is_flag=True,
               help='Просмотеть текущего полльзователя')
 def cli(chuser, setuser, current):
-    global simple_tasks, tracked_tasks, calendar_events, current_user, users
+    global simple_tasks, tracked_tasks, calendar_events, current_user, users, subtasks
     click.clear()
     try:
         users = Console.import_users()
@@ -29,7 +30,7 @@ def cli(chuser, setuser, current):
         elif (current):
             Console.show_current(users)
         else:
-            (current_user, simple_tasks, tracked_tasks) = Console.import_all_data(users)
+            (current_user, simple_tasks, tracked_tasks, subtasks) = Console.import_all_data(users)
     except Exception as e:
         print(e)
         logging.warning("Some troubles while open app")
@@ -47,12 +48,12 @@ def cli(chuser, setuser, current):
               help='Опция для добавления события в календарь')
 def add(task, subtask, todo, event):
     """Добавление задачи"""
-    global simple_tasks, tracked_tasks, calendar_events, current_user, users
+    global simple_tasks, tracked_tasks, calendar_events, current_user, users, subtasks
 
     if task:
-        tracked_tasks = Console.add_task(current_user,tracked_tasks)
+        tracked_tasks = Console.add_task(current_user,tracked_tasks, users)
     elif subtask:
-        tracked_tasks = Console.add_subtask(current_user,tracked_tasks,subtask)
+        subtasks = Console.add_subtask(current_user, subtasks, tracked_tasks, subtask)
     elif todo:
         simple_tasks = Console.add_simple_task(users, current_user, simple_tasks)
     else:

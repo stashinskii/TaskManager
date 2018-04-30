@@ -1,94 +1,98 @@
 [
   {
-    "surname": "as",
-    "login": "aloha",
-    "current": false,
     "uid": "5fbd4074-4bda-11e8-948e-ec0ec42aa9f1",
     "name": "as",
+    "surname": "as",
+    "current": false,
+    "login": "aloha",
     "tasks": []
   },
   {
-    "surname": "12",
-    "login": "hel",
-    "current": false,
     "uid": "3e47b008-4c54-11e8-ae3f-ec0ec42aa9f1",
     "name": "12",
+    "surname": "12",
+    "current": false,
+    "login": "hel",
     "tasks": []
   },
   {
-    "surname": "as",
-    "login": "opa",
-    "current": false,
     "uid": "04b614b4-4c55-11e8-ae3f-ec0ec42aa9f1",
     "name": "as",
+    "surname": "as",
+    "current": false,
+    "login": "opa",
     "tasks": {
       "simple": [
         "654f8a1c-4c55-11e8-ae3f-ec0ec42aa9f1",
         "87c43912-4c55-11e8-ae3f-ec0ec42aa9f1"
       ],
-      "event": [],
-      "task": []
+      "task": [],
+      "event": []
     }
   },
   {
-    "surname": "12",
-    "login": "hello11",
-    "current": false,
     "uid": "9ad8fbca-4c58-11e8-ae3f-ec0ec42aa9f1",
     "name": "12",
+    "surname": "12",
+    "current": false,
+    "login": "hello11",
     "tasks": {
       "simple": [
         "a94cb23c-4c58-11e8-ae3f-ec0ec42aa9f1"
       ],
-      "event": [],
-      "task": []
+      "task": [],
+      "event": []
     }
   },
   {
-    "surname": "1",
-    "login": "1",
-    "current": false,
     "uid": "ccd1cd1e-4c5d-11e8-ae3f-ec0ec42aa9f1",
     "name": "1",
+    "surname": "1",
+    "current": false,
+    "login": "1",
     "tasks": {
       "simple": [
         "dbdc590a-4c5d-11e8-ae3f-ec0ec42aa9f1"
       ],
-      "event": [],
-      "task": []
+      "task": [],
+      "event": []
     }
   },
   {
+    "uid": "d27a5278-4bc6-11e8-948e-ec0ec42aa9f1",
+    "name": "12",
     "surname": "12",
-    "login": "herman",
-    "current": true,
+    "current": false,
+    "login": "12",
+    "tasks": {
+      "task": [],
+      "simple": [
+        "319134e8-4bc7-11e8-948e-ec0ec42aa9f1",
+        "24d03778-4bda-11e8-948e-ec0ec42aa9f1",
+        "1635a056-4c5f-11e8-ae3f-ec0ec42aa9f1"
+      ]
+    }
+  },
+  {
     "uid": "7107e2a8-4bc6-11e8-948e-ec0ec42aa9f1",
     "name": "12",
+    "surname": "12",
+    "current": true,
+    "login": "herman",
     "tasks": {
+      "task": [
+        "05b37a0a-4b9c-11e8-bb00-ec0ec42aa9f1",
+        "d10d1954-4c6e-11e8-ae3f-ec0ec42aa9f1"
+      ],
       "simple": [
         "c83bee66-4bc6-11e8-948e-ec0ec42aa9f1",
         "295145d4-4bc7-11e8-948e-ec0ec42aa9f1",
         "829c37bc-4bda-11e8-948e-ec0ec42aa9f1",
         "8e72f3e8-4c55-11e8-ae3f-ec0ec42aa9f1",
         "91db0606-4c55-11e8-ae3f-ec0ec42aa9f1",
-        "0405881a-4c5f-11e8-ae3f-ec0ec42aa9f1"
-      ],
-      "task": []
-    }
-  },
-  {
-    "surname": "12",
-    "login": "12",
-    "current": false,
-    "uid": "d27a5278-4bc6-11e8-948e-ec0ec42aa9f1",
-    "name": "12",
-    "tasks": {
-      "simple": [
-        "319134e8-4bc7-11e8-948e-ec0ec42aa9f1",
-        "24d03778-4bda-11e8-948e-ec0ec42aa9f1",
-        "1635a056-4c5f-11e8-ae3f-ec0ec42aa9f1"
-      ],
-      "task": []
+        "0405881a-4c5f-11e8-ae3f-ec0ec42aa9f1",
+        "32248b3c-4c6a-11e8-ae3f-ec0ec42aa9f1"
+      ]
     }
   }
 ]

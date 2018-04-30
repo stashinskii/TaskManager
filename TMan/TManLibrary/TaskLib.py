@@ -84,10 +84,8 @@ class TrackedTask(BaseTask):
                           cancel_sync, is_completed, reminder, priority)
         self.subtasks = subtasks
 
-    def add_subtask(self, tid, title, description, start, end, tag, dash, author, observers, executor,
-                          cancel_sync, is_completed, reminder, priority):
-        self.subtasks.append(SubTask(tid, self.tid, title, description, start, end, tag, dash, author, observers, executor,
-                          cancel_sync, is_completed, reminder, priority).__dict__)
+    def add_subtask(self, tid):
+        self.subtasks.append(tid)
 
 
 class User:

@@ -68,9 +68,12 @@ def delete_user(users, user):
     pass
 
 
-def add_user_task(users, user, tid):
+def add_user_task(users, user, tid, type):
     users.__delitem__(users.index(user))
-    user.tasks['simple'].append(tid)
+    if type == "TODO":
+        user.tasks['simple'].append(tid)
+    elif type == "Task":
+        user.tasks['task'].append(tid)
     users.append(user)
 
     data = []

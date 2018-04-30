@@ -32,10 +32,11 @@ class Console:
         current_user = TManLibrary.set_current(users)
         simple_tasks = TManLibrary.data_from_json("TODO", current_user)
         tracked_tasks = TManLibrary.data_from_json("Task", current_user)
-        return (current_user, simple_tasks, tracked_tasks)
+        subtasks = TManLibrary.data_from_json("Subtask", current_user)
+        return (current_user, simple_tasks, tracked_tasks, subtasks)
 
     @staticmethod
-    def add_task(current_user, tracked_tasks):
+    def add_task(current_user, tracked_tasks, users):
         """
         Добавление новой задачи трекера. Возвращает измененную коллекцию с новым элементом
         """
@@ -56,12 +57,12 @@ class Console:
             tid = TManLibrary.tid_gen()
             return TManLibrary.add_tracked_task(
                 tracked_tasks, tid, title, description, start,
-                end, tag, dash, author, observers, executor, True, False, reminder, priority, [])
+                end, tag, dash, author, observers, executor, True, False, reminder, priority, [], users, current_user)
         except ValueError:
             logging.warning("ValueError: some troubles while adding task")
 
     @staticmethod
-    def add_subtask(current_user, tracked_tasks, subtask):
+    def add_subtask(current_user, subtasks, tracked_tasks, subtask):
 
         """subtask -  параметр Click, номер подзадачи"""
 
@@ -69,6 +70,7 @@ class Console:
         start = input("Choose start date: ")
         end = input("Choose end date: ")
         description = input("Add some info about task: ")
+        tid = TManLibrary.tid_gen()
         dash = input("Choose dashboard: ")
         tag = input("Add #tag to this task: ")
         observers = None  # TODO здесь указать объект пользователя в системе или его uid
@@ -76,9 +78,9 @@ class Console:
         priority = input("Choose priority: ")
         author = current_user.uid
         reminder = input("Reminder: ")
-        return TManLibrary.add_subtask(tracked_tasks, subtask, title, description, start,
-                                                end, tag, dash, author, observers, executor, True, False, reminder,
-                                                priority)
+        parent_id = tracked_tasks[subtask-1].tid
+        return TManLibrary.add_subtask(subtasks, tid, parent_id, title, description, start, end, tag, dash, author,
+                                       observers, executor, False, False, reminder, priority, tracked_tasks, subtask)
 
     @staticmethod
     def add_simple_task(users, current_user, simple_tasks):
