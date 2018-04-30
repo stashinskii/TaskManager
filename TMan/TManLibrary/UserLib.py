@@ -10,7 +10,6 @@ def set_current(users):
     """
     Установка текущего пользователя для данного сеанса
     """
-    #TODO сохранить изменения
     for user in users:
         if user.current:
             return user
@@ -21,8 +20,6 @@ def change_user(users, login):
     """
     Смена текущего пользователя
     """
-    #TODO Сохранить изменения
-    #TODO ошибка, если такого пользователя нет
     is_changed = None
     for user in users:
         user.current = False
@@ -61,10 +58,8 @@ def add_user(users, name, surname, login, tasks):
     from .TaskLib import User
     from .DataLib import data_to_json
     uid = str(uuid.uuid1())
-    print(users)
     new_user = User(name, surname, uid, tasks, login, False)
     users = data_to_json(users, new_user)
-    print(users)
     logging.info('User added. UID: {}'.format(uid))
     return users
 
@@ -74,7 +69,6 @@ def delete_user(users, user):
 
 
 def add_user_task(users, user, tid):
-    print(users.index(user))
     users.__delitem__(users.index(user))
     user.tasks['simple'].append(tid)
     users.append(user)

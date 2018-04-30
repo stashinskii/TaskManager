@@ -116,7 +116,6 @@ def data_from_json(type, current):
                     tracked_tasks.append(new_task)
             return tracked_tasks
 
-        # TODO пересмотреть опцию загрузки сех пользователей. Возможно при нахождении первого current == True стоит выйти и не загружать все.
         elif type == "User":
             with open(data_dir+'/users.json', 'r') as file:
                 data = json.load(file)
