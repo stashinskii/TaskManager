@@ -268,7 +268,7 @@ def delete_simple_task(simple_tasks, num):
 
 
 # Далее работа с Трекером дел
-def add_tracked_task(tracked_task, tid, title, description, start, end, tag, dash, author,
+def add_tracked_task(tracked_task, simple_tasks, tid, title, description, start, end, tag, dash, author,
                    observers, executor, cancel_sync, is_completed, reminder, priority, subtasks, users, current):
     tracked_task.append(TrackedTask(
         tid,
@@ -290,6 +290,9 @@ def add_tracked_task(tracked_task, tid, title, description, start, end, tag, das
     data_to_json(tracked_task, tracked_task[-1])
 
     add_user_task(users, current, tid, "Task")
+
+    if cancel_sync != True:
+        add_simple_task(users, current, simple_tasks, title, end, description, priority, tid, is_completed, tag)
 
 
 def add_subtask(subtasks, tid, parent_id, title, description, start, end, tag, dash, author, observers, executor,

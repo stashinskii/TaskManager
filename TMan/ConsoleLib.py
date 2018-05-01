@@ -38,7 +38,7 @@ class Console:
         return (current_user, simple_tasks, tracked_tasks, subtasks)
 
     @staticmethod
-    def add_task(current_user, tracked_tasks, users):
+    def add_task(current_user, tracked_tasks, users, simple_tasks):
         """
         Добавление новой задачи трекера. Возвращает измененную коллекцию с новым элементом
         """
@@ -57,9 +57,15 @@ class Console:
             author = current_user.uid
             reminder = input("Reminder: ")
             tid = TManLibrary.tid_gen()
+
+            if click.confirm('Canel sync w/ TODO list and events in calendar?', default=True):
+                cancel_sync = True
+            else:
+                cancel_sync = False
+
             return TManLibrary.add_tracked_task(
-                tracked_tasks, tid, title, description, start,
-                end, tag, dash, author, observers, executor, True, False, reminder, priority, [], users, current_user)
+                tracked_tasks, simple_tasks, tid, title, description, start,
+                end, tag, dash, author, observers, executor, cancel_sync, False, reminder, priority, [], users, current_user)
         except ValueError:
             logging.warning("ValueError: some troubles while adding task")
 
@@ -219,3 +225,4 @@ class Console:
         global_index = subtasks.index(connected_subtasks[choose-1])
         subtasks[global_index].complete()
         TManLibrary.resave_subtask_json(subtasks)
+

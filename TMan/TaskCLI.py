@@ -51,7 +51,7 @@ def add(task, subtask, todo, event):
     global simple_tasks, tracked_tasks, calendar_events, current_user, users, subtasks
 
     if task:
-        tracked_tasks = Console.add_task(current_user,tracked_tasks, users)
+        tracked_tasks = Console.add_task(current_user,tracked_tasks, users, simple_tasks)
     elif subtask:
         subtasks = Console.add_subtask(current_user, subtasks, tracked_tasks, subtask)
     elif todo:

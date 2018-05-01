@@ -223,3 +223,6 @@ INFO:TODO task was done/undone. TID: c52b4336-4c7d-11e8-ae3f-ec0ec42aa9f1:(2018-
 INFO:TODO task was deleted. TID: fefeb88e-4d1f-11e8-b588-ec0ec42aa9f1:(2018-05-01 13:28:43,447)
 WARNING:Troubles while trying to done task:(2018-05-01 13:30:20,240)
 WARNING:Troubles while trying to done task:(2018-05-01 13:32:29,853)
+INFO:TODO task added. TID: 0cd7740c-4d2d-11e8-b588-ec0ec42aa9f1:(2018-05-01 13:47:31,913)
+INFO:TODO task added. TID: 359974da-4d2d-11e8-b588-ec0ec42aa9f1:(2018-05-01 13:48:40,293)
+INFO:TODO task added. TID: ae50a7d4-4d2f-11e8-b588-ec0ec42aa9f1:(2018-05-01 14:06:26,970)
