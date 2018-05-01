@@ -191,9 +191,9 @@ class Console:
     #TODO - переделать на DataLib
     @staticmethod
     def done_task(task, subtasks, tracked_tasks):
-        tid_subtasks = [x.subtasks for x in tracked_tasks]
+        tid_subtasks = [x for x in tracked_tasks[task-1].subtasks]
         for subtask in subtasks:
-            if subtask.is_completed == False and subtask in tid_subtasks:
+            if subtask.is_completed == False and subtask.tid in tid_subtasks:
                 raise Exception("You have undone subtasks! Done them all before you finish this one!")
         tracked_tasks[task-1].complete()
         TManLibrary.resave_tracked_json(tracked_tasks)
@@ -206,7 +206,6 @@ class Console:
 
         """
         tid_subtasks = [x for x in tracked_tasks[task-1].subtasks]
-        marker = None
         connected_subtasks = [result for result in subtasks if result.tid in tid_subtasks]
         for subtask in connected_subtasks:
             if subtask.is_completed:

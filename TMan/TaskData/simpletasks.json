@@ -1,47 +1,29 @@
 [
   {
-    "tid": "0405881a-4c5f-11e8-ae3f-ec0ec42aa9f1",
     "description": "12",
-    "title": "15",
-    "date": "2",
-    "tag": "1",
-    "priority": "12",
-    "is_completed": false
-  },
-  {
-    "tid": "1635a056-4c5f-11e8-ae3f-ec0ec42aa9f1",
-    "description": "23",
-    "title": "12",
-    "date": "12",
-    "tag": "45",
-    "priority": "45",
-    "is_completed": false
-  },
-  {
-    "tid": "32248b3c-4c6a-11e8-ae3f-ec0ec42aa9f1",
-    "description": "12",
-    "title": "12",
-    "date": "12",
-    "tag": "12",
-    "priority": "12",
-    "is_completed": false
-  },
-  {
-    "tid": "c52b4336-4c7d-11e8-ae3f-ec0ec42aa9f1",
-    "description": "jk",
-    "title": "ljo",
-    "date": "jij",
-    "tag": "k",
-    "priority": "jk",
-    "is_completed": false
-  },
-  {
     "is_completed": false,
+    "tid": "0405881a-4c5f-11e8-ae3f-ec0ec42aa9f1",
+    "date": "2",
     "priority": "12",
+    "title": "15",
+    "tag": "1"
+  },
+  {
     "description": "12",
+    "is_completed": false,
+    "tid": "32248b3c-4c6a-11e8-ae3f-ec0ec42aa9f1",
     "date": "12",
+    "priority": "12",
     "title": "12",
-    "tag": "12",
-    "tid": "fefeb88e-4d1f-11e8-b588-ec0ec42aa9f1"
+    "tag": "12"
+  },
+  {
+    "description": "12",
+    "is_completed": false,
+    "tid": "fefeb88e-4d1f-11e8-b588-ec0ec42aa9f1",
+    "date": "12",
+    "priority": "12",
+    "title": "12",
+    "tag": "12"
   }
 ]
