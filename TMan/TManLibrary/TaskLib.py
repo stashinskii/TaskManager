@@ -13,10 +13,9 @@ class Task:
 
 class SimpleListTask(Task):
     """Сущность задачи списка дел"""
-    def __init__(self, title, date, description, priority, tid, permission, is_completed, tag):
+    def __init__(self, title, date, description, priority, tid, is_completed, tag):
         Task.__init__(self, title, date, description, priority, tid)
         self.is_completed = is_completed
-        self.permission = permission
         self.tag = tag
 
     def __str__(self):
@@ -32,9 +31,8 @@ class SimpleListTask(Task):
 
 class EventCalendar(Task):
     """Сущность события календаря"""
-    def __init__(self, title, date, description, priority, tid, permisson, location, reminder ):
+    def __init__(self, title, date, description, priority, tid, location, reminder ):
         Task.__init__(self, title, date, description, priority, tid)
-        self.permission = permisson
         self.location = location
         self.reminder = reminder
 
@@ -63,6 +61,13 @@ class BaseTask:
         self.is_completed = is_completed
         self.cancel_sync = cancel_sync
         self.reminder = reminder
+
+    def complete(self):
+        if self.is_completed:
+            self.is_completed = False
+        else:
+            self.is_completed = True
+
 
 
 class SubTask(BaseTask):

@@ -24,12 +24,12 @@ def tid_gen():
     return str(uuid.uuid1())
 
 
-def add_simple_task(users, current, simple_tasks, title, date, description, priority, tid, permission, is_completed, tag):
+def add_simple_task(users, current, simple_tasks, title, date, description, priority, tid, is_completed, tag):
     """
     Добавление задачи в список дел
     """
     simple_tasks.append(SimpleListTask(
-        title, date, description, priority, tid, permission, is_completed, tag))
+        title, date, description, priority, tid, is_completed, tag))
 
     data_to_json(simple_tasks, simple_tasks[-1])
     logging.info('TODO task added. TID: {}'.format(tid))
@@ -58,7 +58,6 @@ def data_from_json(type, current):
                 if task_dict['tid'] in current.tasks['simple']:
                     title = task_dict['title']
                     tid = task_dict['tid']
-                    permission = task_dict['permission']
                     date = task_dict['date']
                     description = task_dict['description']
                     priority = task_dict['priority']
@@ -70,7 +69,6 @@ def data_from_json(type, current):
                         description,
                         priority,
                         tid,
-                        permission,
                         is_completed,
                         tag
                     )

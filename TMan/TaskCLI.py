@@ -83,14 +83,22 @@ def list(task, todo, event):
               help='Опция для выполнения задачи')
 @click.option('--todo', type=int,
               help='Опция для выполнения todo')
-def done(task, todo):
+@click.option('--subtask', type=int,
+              help='Опция для выполнения подзадачи')
+def done(task, todo, subtask):
     """Выполнение задачи по номеру"""
-    global simple_tasks, tracked_tasks, calendar_events
-    if task:
-        pass
-    elif todo:
-        Console.done_todo(todo, simple_tasks)
+    global simple_tasks, tracked_tasks, calendar_events, subtasks
+    try:
+        if task:
+            Console.done_task(task, subtasks, tracked_tasks)
+        elif todo:
+            Console.done_todo(todo, simple_tasks)
+        elif subtask:
+            Console.done_subtask(subtask, subtasks, tracked_tasks)
 
+    except Exception as e:
+        print(e)
+        logging.warning("Troubles while trying to done task")
 
 @cli.command()
 @click.option('--task', type=int,

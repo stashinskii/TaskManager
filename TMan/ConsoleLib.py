@@ -95,10 +95,9 @@ class Console:
             priority = input("Choose priority: ")
             tag = input("Add #tag to this task: ")
             tid = TManLibrary.tid_gen()
-            permission = None
             is_completed = False
             return TManLibrary.add_simple_task(users, current_user, simple_tasks, title, date,
-                                                   description, priority, tid, permission, is_completed, tag)
+                                                   description, priority, tid, is_completed, tag)
         except TypeError as e:
             logging.warning("Trouble while input data at todo")
             print("Trouble while input data at todo")
@@ -188,3 +187,36 @@ class Console:
         except IndexError as e:
             logging.warning("Out of range while showing todo task info. Index was: {}".format(todo))
             print(e)
+
+    #TODO - переделать на DataLib
+    @staticmethod
+    def done_task(task, subtasks, tracked_tasks):
+        tid_subtasks = [x.subtasks for x in tracked_tasks]
+        for subtask in subtasks:
+            if subtask.is_completed == False and subtask in tid_subtasks:
+                raise Exception("You have undone subtasks! Done them all before you finish this one!")
+        tracked_tasks[task-1].complete()
+        TManLibrary.resave_tracked_json(tracked_tasks)
+
+    @staticmethod
+    def done_subtask(task, subtasks, tracked_tasks):
+        """
+        Тут не делим вывод с маркером, т.к. с GUI такой вывод не требуется ввиду обычного выделения подзадачи из списка
+        Cначала генерируем список с tid подзадач текущей задачи, затем генерируем список этих подзадач - т.е. связанных
+
+        """
+        tid_subtasks = [x for x in tracked_tasks[task-1].subtasks]
+        marker = None
+        connected_subtasks = [result for result in subtasks if result.tid in tid_subtasks]
+        for subtask in connected_subtasks:
+            if subtask.is_completed:
+                marker = "X"
+            else:
+                marker = " "
+            click.echo("[" + marker + "] - " + str(connected_subtasks.index(subtask)+1)
+                           + " - " + click.style(subtask.title, bg="red"))
+
+        choose = int(input("Choose subtask: "))
+        global_index = subtasks.index(connected_subtasks[choose-1])
+        subtasks[global_index].complete()
+        TManLibrary.resave_subtask_json(subtasks)
