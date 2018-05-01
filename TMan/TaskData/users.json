@@ -1,99 +1,97 @@
 [
   {
-    "tasks": [],
-    "name": "as",
     "login": "aloha",
     "uid": "5fbd4074-4bda-11e8-948e-ec0ec42aa9f1",
+    "current": false,
+    "name": "as",
     "surname": "as",
-    "current": false
+    "tasks": []
   },
   {
-    "tasks": [],
-    "name": "12",
     "login": "hel",
     "uid": "3e47b008-4c54-11e8-ae3f-ec0ec42aa9f1",
+    "current": false,
+    "name": "12",
     "surname": "12",
-    "current": false
+    "tasks": []
   },
   {
+    "login": "opa",
+    "uid": "04b614b4-4c55-11e8-ae3f-ec0ec42aa9f1",
+    "current": false,
+    "name": "as",
+    "surname": "as",
     "tasks": {
-      "task": [],
       "simple": [
         "654f8a1c-4c55-11e8-ae3f-ec0ec42aa9f1",
         "87c43912-4c55-11e8-ae3f-ec0ec42aa9f1"
       ],
-      "event": []
-    },
-    "name": "as",
-    "login": "opa",
-    "uid": "04b614b4-4c55-11e8-ae3f-ec0ec42aa9f1",
-    "surname": "as",
-    "current": false
+      "event": [],
+      "task": []
+    }
   },
   {
+    "login": "hello11",
+    "uid": "9ad8fbca-4c58-11e8-ae3f-ec0ec42aa9f1",
+    "current": false,
+    "name": "12",
+    "surname": "12",
     "tasks": {
-      "task": [],
       "simple": [
         "a94cb23c-4c58-11e8-ae3f-ec0ec42aa9f1"
       ],
-      "event": []
-    },
-    "name": "12",
-    "login": "hello11",
-    "uid": "9ad8fbca-4c58-11e8-ae3f-ec0ec42aa9f1",
-    "surname": "12",
-    "current": false
+      "event": [],
+      "task": []
+    }
   },
   {
+    "login": "1",
+    "uid": "ccd1cd1e-4c5d-11e8-ae3f-ec0ec42aa9f1",
+    "current": false,
+    "name": "1",
+    "surname": "1",
     "tasks": {
-      "task": [],
       "simple": [
         "dbdc590a-4c5d-11e8-ae3f-ec0ec42aa9f1"
       ],
-      "event": []
-    },
-    "name": "1",
-    "login": "1",
-    "uid": "ccd1cd1e-4c5d-11e8-ae3f-ec0ec42aa9f1",
-    "surname": "1",
-    "current": false
+      "event": [],
+      "task": []
+    }
   },
   {
+    "login": "12",
+    "uid": "d27a5278-4bc6-11e8-948e-ec0ec42aa9f1",
+    "current": false,
+    "name": "12",
+    "surname": "12",
     "tasks": {
-      "task": [],
       "simple": [
         "319134e8-4bc7-11e8-948e-ec0ec42aa9f1",
         "24d03778-4bda-11e8-948e-ec0ec42aa9f1",
         "1635a056-4c5f-11e8-ae3f-ec0ec42aa9f1"
-      ]
-    },
-    "name": "12",
-    "login": "12",
-    "uid": "d27a5278-4bc6-11e8-948e-ec0ec42aa9f1",
-    "surname": "12",
-    "current": false
+      ],
+      "task": []
+    }
   },
   {
-    "tasks": {
-      "task": [],
-      "simple": [],
-      "event": []
-    },
-    "name": "ds",
     "login": "df[pfd",
     "uid": "306c7452-4c98-11e8-ae3f-ec0ec42aa9f1",
+    "current": false,
+    "name": "ds",
     "surname": "sd",
-    "current": false
+    "tasks": {
+      "simple": [],
+      "event": [],
+      "task": []
+    }
   },
   {
+    "login": "herman",
+    "uid": "7107e2a8-4bc6-11e8-948e-ec0ec42aa9f1",
+    "current": true,
+    "name": "12",
+    "surname": "12",
     "tasks": {
-      "task": [
-        "05b37a0a-4b9c-11e8-bb00-ec0ec42aa9f1",
-        "d10d1954-4c6e-11e8-ae3f-ec0ec42aa9f1",
-        "44e70896-4c77-11e8-ae3f-ec0ec42aa9f1",
-        "ae50a7d4-4d2f-11e8-b588-ec0ec42aa9f1",
-        "d93b31e4-4d2f-11e8-b588-ec0ec42aa9f1"
-      ],
       "simple": [
         "c83bee66-4bc6-11e8-948e-ec0ec42aa9f1",
         "295145d4-4bc7-11e8-948e-ec0ec42aa9f1",
@@ -106,13 +104,25 @@
         "fefeb88e-4d1f-11e8-b588-ec0ec42aa9f1",
         "0cd7740c-4d2d-11e8-b588-ec0ec42aa9f1",
         "359974da-4d2d-11e8-b588-ec0ec42aa9f1",
-        "ae50a7d4-4d2f-11e8-b588-ec0ec42aa9f1"
+        "ae50a7d4-4d2f-11e8-b588-ec0ec42aa9f1",
+        "6a327166-4d31-11e8-b588-ec0ec42aa9f1",
+        "12",
+        "12",
+        "121",
+        "29618a78-4d36-11e8-b588-ec0ec42aa9f1"
+      ],
+      "task": [
+        "05b37a0a-4b9c-11e8-bb00-ec0ec42aa9f1",
+        "d10d1954-4c6e-11e8-ae3f-ec0ec42aa9f1",
+        "44e70896-4c77-11e8-ae3f-ec0ec42aa9f1",
+        "ae50a7d4-4d2f-11e8-b588-ec0ec42aa9f1",
+        "d93b31e4-4d2f-11e8-b588-ec0ec42aa9f1",
+        "6a327166-4d31-11e8-b588-ec0ec42aa9f1",
+        "7367f8a6-4d35-11e8-b588-ec0ec42aa9f1",
+        "ae9ba706-4d35-11e8-b588-ec0ec42aa9f1",
+        "d0904934-4d35-11e8-b588-ec0ec42aa9f1",
+        "29618a78-4d36-11e8-b588-ec0ec42aa9f1"
       ]
-    },
-    "name": "12",
-    "login": "herman",
-    "uid": "7107e2a8-4bc6-11e8-948e-ec0ec42aa9f1",
-    "surname": "12",
-    "current": true
+    }
   }
 ]

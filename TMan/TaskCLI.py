@@ -145,9 +145,9 @@ def edit(task, todo, event):
     """Просмотра подробной информации"""
     global simple_tasks, tracked_tasks, calendar_events
     if task:
-        Console.edit_task(task, tracked_tasks)
+        Console.edit_task(task, tracked_tasks, simple_tasks)
     elif todo:
-        Console.info_todo(todo, simple_tasks)
+        Console.edit_task(todo, simple_tasks)
     elif event:
         pass
 

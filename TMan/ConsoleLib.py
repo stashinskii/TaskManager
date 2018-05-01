@@ -3,6 +3,7 @@ import logging
 import os
 import TManLibrary
 
+
 data_dir = '/home/herman/Рабочий стол/TaskTracker/taskmanager/TMan/TaskData'
 
 class Console:
@@ -135,7 +136,7 @@ class Console:
 
 
     @staticmethod
-    def edit_task(task, tracked_tasks):
+    def edit_task(task, tracked_tasks, simple_tasks):
         try:
             if (task - 1) > len(tracked_tasks):
                 raise IndexError("Out of range")
@@ -161,9 +162,44 @@ class Console:
                 tracked_tasks[task - 1].end = data[2]
                 tracked_tasks[task - 1].description = data[3]
             TManLibrary.resave_tracked_json(tracked_tasks)
+
+            if tracked_tasks[task-1].cancel_sync != True:
+                TManLibrary.Sync.sync_changes_todo(tracked_tasks[task-1], simple_tasks)
         except Exception as e:
             logging.warning(e)
             print(e)
+
+    @staticmethod
+    def edit_todo(todo, simple_tasks):
+        try:
+            if (todo - 1) > len(simple_tasks):
+                raise IndexError("Out of range")
+            edit = simple_tasks[todo - 1]
+            data = []
+            data.append(edit.title)
+            data.append(edit.date)
+            data.append(edit.tag)
+            data.append(edit.description)
+            for x in data:
+                os.system("echo \"{}\" >> {}".format(x, "/tmp/tman_tempdata.tmp"))
+            os.system("nano {}".format("/tmp/tman_tempdata.tmp"))
+            data = []
+            file = open("/tmp/tman_tempdata.tmp")
+            for line in file:
+                data.append(line[0:-1])
+            os.system("rm /tmp/tman_tempdata.tmp")
+            if len(data) != 4:
+                raise Exception("Incorrect data")
+            else:
+                simple_tasks[todo - 1].title = data[0]
+                simple_tasks[todo - 1].date = data[1]
+                simple_tasks[todo - 1].tag= data[2]
+                simple_tasks[todo - 1].description = data[3]
+            TManLibrary.resave_simple_json(simple_tasks)
+        except Exception as e:
+            print(e)
+
+
 
     @staticmethod
     def delete_todo(todo, simple_tasks):

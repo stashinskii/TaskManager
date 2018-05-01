@@ -1,4 +1,5 @@
 from .TaskLib import *
+from .Synchronizer import *
 import logging
 import json
 import uuid
@@ -291,8 +292,9 @@ def add_tracked_task(tracked_task, simple_tasks, tid, title, description, start,
 
     add_user_task(users, current, tid, "Task")
 
+
     if cancel_sync != True:
-        add_simple_task(users, current, simple_tasks, title, end, description, priority, tid, is_completed, tag)
+        Sync.to_todo(users, current, simple_tasks, title, tid, description, priority, is_completed, end, tag)
 
 
 def add_subtask(subtasks, tid, parent_id, title, description, start, end, tag, dash, author, observers, executor,
