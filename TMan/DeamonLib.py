@@ -3,14 +3,14 @@ from datetime import datetime, timedelta
 
 
 class Daemon:
-    """A generic daemon class.
-    Usage: subclass the daemon class and override the run() method."""
+    """Общий класс дл работы с демоном.
+    Предполагает переопределение его методов дочерними классами"""
 
     def __init__(self, pidfile):
         self.pidfile = pidfile
 
     def daemonize(self):
-        """Deamonize class. UNIX double fork mechanism."""
+        """Демонизация"""
 
         try:
             pid = os.fork()
@@ -21,12 +21,10 @@ class Daemon:
             sys.stderr.write('fork #1 failed: {0}\n'.format(err))
             sys.exit(1)
 
-        # decouple from parent environment
         os.chdir('/')
         os.setsid()
         os.umask(0)
 
-        # do second fork
         try:
             pid = os.fork()
             if pid > 0:
@@ -36,7 +34,6 @@ class Daemon:
             sys.stderr.write('fork #2 failed: {0}\n'.format(err))
             sys.exit(1)
 
-        # redirect standard file descriptors
         sys.stdout.flush()
         sys.stderr.flush()
         si = open(os.devnull, 'r')
@@ -57,9 +54,7 @@ class Daemon:
         os.remove(self.pidfile)
 
     def start(self):
-        """Start the daemon."""
-
-        # Check for a pidfile to see if the daemon already runs
+        """Запуск демона"""
         try:
             with open(self.pidfile, 'r') as pf:
                 pid = int(pf.read().strip())
@@ -67,20 +62,12 @@ class Daemon:
             pid = None
 
         if pid:
-            message = "pidfile {0} already exist. " + \
-                      "Daemon already running?\n"
-            #sys.stderr.write(message.format(self.pidfile))
             sys.exit(1)
-
-        # Start the daemon
-
         self.daemonize()
         self.run()
 
     def stop(self):
         """Stop the daemon."""
-
-        # Get the pid from the pidfile
         try:
             with open(self.pidfile, 'r') as pf:
                 pid = int(pf.read().strip())
@@ -90,9 +77,8 @@ class Daemon:
             message = "pidfile {0} does not exist. " + \
                       "Daemon not running?\n"
             sys.stderr.write(message.format(self.pidfile))
-            return  # not an error in a restart
+            return
 
-        # Try killing the daemon process
         try:
             while 1:
                 os.kill(pid, signal.SIGTERM)
@@ -107,7 +93,6 @@ class Daemon:
                 sys.exit(1)
 
     def restart(self):
-        """Restart the daemon."""
         self.stop()
         self.start()
 
@@ -116,6 +101,9 @@ class Daemon:
 
 
 class TManReminder(Daemon):
+    """
+    Демон, следящий за напоминаниями в ближайшие 5 часов
+    """
     def __init__(self, tracked_tasks, pidfile):
         Daemon.__init__(self,  pidfile)
         self.tracked_tasks = tracked_tasks
@@ -123,7 +111,9 @@ class TManReminder(Daemon):
     def run(self):
         from TManLibrary import Sync, TaskLib
 
+        #Коллекция, содержащая задачи, которые доступны сегодня
         observed_day = []
+
         for task in self.tracked_tasks:
             for info in Sync.daterange(task.start.date(), (task.end + timedelta(days=1)).date()):
                 if datetime.today().date() == info:
@@ -133,11 +123,13 @@ class TManReminder(Daemon):
             time.sleep(1)
             if len(observed_day) != 0:
                 click.echo(click.style("\nYou have tasks in near 5 hours!\t\t\t", bg='green', fg='white'))
+            #проверяем, что данная задача имеет статус напоминания +- 5 часов от текущего времени
             for task in observed_day:
                 dt1 = datetime.now() + timedelta(hours=5)
                 dt2 = datetime.now() - timedelta(hours=5)
-                if (task.reminder.time() <= dt1.time() or task.reminder >= dt2.time()):
+                if (task.reminder.time() <= dt1.time() or task.reminder.time() >= dt2.time()):
                     click.echo(task.title)
+            #Прекращаем отслеживание на 30 минут
             time.sleep(1800)
 
 

@@ -3,8 +3,7 @@ from .Synchronizer import *
 import logging
 import json
 import uuid
-from datetime import datetime, time
-import os
+from datetime import datetime
 
 
 # TODO настроить автоматическое расположение файлов
@@ -20,16 +19,12 @@ logging.basicConfig(filename="tasklog.log", level=logging.WARNING,
 
 
 def tid_gen():
-    """
-    Генерирует task id
-    """
+    """Генерирует task id"""
     return str(uuid.uuid1())
 
 
 def add_simple_task(users, current, simple_tasks, title, date, description, priority, tid, is_completed, tag):
-    """
-    Добавление задачи в список дел
-    """
+    """Добавление задачи в список дел"""
     simple_tasks.append(SimpleListTask(
         title, str(date.year)+"-"+str(date.month)+"-"+str(date.day),
         description, priority, tid, is_completed, tag))
@@ -57,9 +52,7 @@ def check_time(mytime):
 
 
 def data_from_json(type, current):
-    """
-    Загрузка задач из файла
-    """
+    """Загрузка задач из файла"""
     simple_tasks = []
     tracked_tasks = []
     subtasks = []
@@ -107,7 +100,7 @@ def data_from_json(type, current):
                     tag = task_dict['tag']
                     observers = task_dict['observers']
                     executor = task_dict['executor']
-                    priority = task_dict['priority']
+                    priority = Priority[Priority(int(task_dict['priority'])).name]
                     author = task_dict['author']
                     reminder = check_time(task_dict['reminder'])
                     cancel_sync = task_dict['cancel_sync']
@@ -163,7 +156,7 @@ def data_from_json(type, current):
                     tag = task_dict['tag']
                     observers = task_dict['observers']
                     executor = task_dict['executor']
-                    priority = task_dict['priority']
+                    priority = Priority[Priority(int(task_dict['priority'])).name]
                     author = task_dict['author']
                     reminder = task_dict['reminder']
                     cancel_sync = task_dict['cancel_sync']
@@ -230,9 +223,7 @@ def data_to_json(collection, object):
 
 
 def show_simple_task(simple_tasks):
-    """
-    Вывод всех заданий из списка дел с отметкой о статусе выполения и номером
-    """
+    """Вывод всех заданий из списка дел с отметкой о статусе выполения и номером"""
     try:
         if simple_tasks is None:
             raise TypeError("TODO collection is not list")
@@ -249,9 +240,7 @@ def show_simple_task(simple_tasks):
 
 
 def show_simple_info(simple_tasks, num):
-    """
-    Показать подробную информацию по номеру
-    """
+    """Показать подробную информацию по номеру"""
     return simple_tasks[num-1]
 
 
@@ -338,6 +327,8 @@ def resave_subtask_json(subtasks):
             task.end = str(task.end.year) + "-" + str(task.end.month) + "-" + str(task.end.day)
         if isinstance(task.reminder, datetime):
             task.reminder = str(task.reminder.hour) +":"+str(task.reminder.minute)
+        if isinstance(task.priority, Priority):
+            task.priority = str(task.priority.value)
         data.append(task.__dict__)
 
     with open(data_dir+'/subtasks.json', 'w') as taskfile:
@@ -354,6 +345,8 @@ def resave_tracked_json(tracked_tasks):
             task.end = str(task.end.year) + "-" + str(task.end.month) + "-" + str(task.end.day)
         if isinstance(task.reminder, datetime):
             task.reminder = str(task.reminder.hour) +":"+str(task.reminder.minute)
+        if isinstance(task.priority, Priority):
+            task.priority = str(task.priority.value)
         data.append(task.__dict__)
 
     with open(data_dir+'/trackedtasks.json', 'w') as taskfile:
@@ -361,9 +354,7 @@ def resave_tracked_json(tracked_tasks):
 
 
 def show_tracked_task(tracked_tasks):
-    """
-    Вывод всех заданий с отметкой о статусе выполения и номером
-    """
+    """Вывод всех заданий с отметкой о статусе выполения и номером"""
     try:
         if tracked_tasks is None:
             raise TypeError("Task collection is not list")
@@ -378,7 +369,9 @@ def show_tracked_task(tracked_tasks):
         logging.warning('Unable to show tasks')
 
 def str_to_uuid(str_id):
+    """UUID строку в UUID"""
     return uuid.UUID(str_id)
 
 def uuid_to_datetime(uuid_id):
+    """UUID в объект datetime"""
     return datetime.fromtimestamp((uuid_id.time - 0x01b21dd213814000)*100/1e9)

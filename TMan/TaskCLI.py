@@ -19,10 +19,9 @@ current_user = None
               help='Добавить пользователя')
 @click.option('--current', is_flag=True,
               help='Просмотеть текущего полльзователя')
-@click.option('--off', is_flag=True,
-              help='Отключить напоминания')
-
-def cli(chuser, setuser, current, off):
+@click.option('--reminder', is_flag=True,
+              help='Перепросмотреть текущие напоминания (за 5 часов)')
+def cli(chuser, setuser, current, reminder):
     click.clear()
     global simple_tasks, tracked_tasks, calendar_events, current_user, users, subtasks
     try:
@@ -33,13 +32,10 @@ def cli(chuser, setuser, current, off):
             Console.create_new_user(users)
         elif (current):
             Console.show_current(users)
-        elif (off):
-            os.system("python3 /home/herman/Рабочий\ стол/TaskTracker/taskmanager/TMan/TManReminder.py stop")
+        elif (reminder):
+            os.system("python3 /home/herman/Рабочий\ стол/TaskTracker/taskmanager/TMan/TManReminder.py restart")
         else:
             (current_user, simple_tasks, tracked_tasks, subtasks, calendar_events) = Console.import_all_data(users)
-        if not off:
-            os.system("python3 /home/herman/Рабочий\ стол/TaskTracker/taskmanager/TMan/TManReminder.py start")
-
     except IOError as e:
         pass
     except Exception as e:
@@ -55,9 +51,7 @@ def cli(chuser, setuser, current, off):
               help='Опция для добавления подзадачи')
 @click.option('--todo', is_flag=True,
               help='Опция для добавления в todo')
-@click.option('--event', is_flag=True,
-              help='Опция для добавления события в календарь')
-def add(task, subtask, todo, event):
+def add(task, subtask, todo):
     """Добавление задачи"""
     global simple_tasks, tracked_tasks, calendar_events, current_user, users, subtasks
 
@@ -68,8 +62,6 @@ def add(task, subtask, todo, event):
         subtasks = Console.add_subtask(current_user, subtasks, tracked_tasks, subtask)
     elif todo:
         simple_tasks = Console.add_simple_task(users, current_user, simple_tasks)
-    else:
-        print("event")
 
 
 @cli.command()

@@ -1,4 +1,5 @@
 from .UserLib import *
+import enum
 
 class Task:
     """Базовый класс для задачи списка дел и события календаря"""
@@ -21,7 +22,7 @@ class SimpleListTask(Task):
         return self.title
 
     def complete(self):
-        """Функция завершения задачи и перевод в статус DONE"""
+        """Метод завершения задачи и перевод в статус DONE"""
         if self.is_completed:
             self.is_completed = False
         else:
@@ -35,10 +36,6 @@ class EventCalendar(Task):
 
     def __str__(self):
         return self.title
-
-    def set_reminder(self, reminder):
-        """Функция установки пользовательского напоминания на событие календря"""
-        self.reminder = reminder
 
 
 class BaseTask:
@@ -66,9 +63,7 @@ class BaseTask:
             self.is_completed = True
 
     def get_time(self):
-        """
-        Получить дату и время создания в виде datetime объекта
-        """
+        """Получить дату и время создания в виде datetime объекта"""
         from .DataLib import uuid_to_datetime, str_to_uuid
         return uuid_to_datetime(str_to_uuid(self.tid))
 
@@ -80,6 +75,22 @@ class SubTask(BaseTask):
         BaseTask.__init__(self, tid, title, description, start, end, tag, dash, author, observers, executor,
                           cancel_sync, is_completed, reminder, priority)
         self.parent_id = parent_id
+
+
+class Priority(enum.Enum):
+    high = 3
+    medium = 2
+    low = 1
+
+    @classmethod
+    def from_name(cls, name):
+        for priority, priority_name in Priority.items():
+            if priority_name == name:
+                return priority
+        raise ValueError('{} is not priority type'.format(name))
+
+    def to_name(self):
+        return Priority[self.value]
 
 
 class TrackedTask(BaseTask):
@@ -94,8 +105,6 @@ class TrackedTask(BaseTask):
 
     def add_subtask(self, tid):
         self.subtasks.append(tid)
-
-
 
 
 class User:
@@ -117,9 +126,7 @@ class User:
         self.tasks = tasks
 
     def set_current(self):
-        """
-        Сделать данного пользователя текущим
-        """
+        """Сделать данного пользователя текущим"""
         self.current = True
 
     def add_simpletasks(self, tid):

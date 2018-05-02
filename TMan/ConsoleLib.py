@@ -48,7 +48,7 @@ class Console:
         """
         try:
             if current_user is None:
-                raise Exception("There is no current user. Choose")
+                raise Exception("There is no current user. Choose one")
             title = input("Input title: ")
             start = TManLibrary.check_date(input("Choose start date: "))
             end = TManLibrary.check_date(input("Choose end date: "))
@@ -57,7 +57,7 @@ class Console:
             tag = input("Add #tag to this task: ")
             observers = None  # TODO здесь указать объект пользователя в системе или его uid
             executor = None  # TODO здесь указать объект пользователя в системе или его uid
-            priority = input("Choose priority: ")
+            priority = str(TManLibrary.Priority[input("Choose priority: ")].value)
             author = current_user.uid
             reminder = TManLibrary.check_time(input("Reminder: "))
             tid = TManLibrary.tid_gen()
@@ -70,9 +70,9 @@ class Console:
             return TManLibrary.add_tracked_task(
                 tracked_tasks, simple_tasks, tid, title, description, start,
                 end, tag, dash, author, observers, executor, cancel_sync, False, reminder, priority, [], users, current_user)
-        except ValueError as e:
+        except Exception as e:
             print(e)
-            logging.warning("ValueError: some troubles while adding task")
+            logging.warning("Some troubles while adding task")
 
     @staticmethod
     def add_subtask(current_user, subtasks, tracked_tasks, subtask):
