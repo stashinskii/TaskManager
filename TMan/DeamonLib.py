@@ -1,4 +1,5 @@
 import sys, os, time, atexit, signal, click
+from datetime import datetime, timedelta
 
 
 class Daemon:
@@ -42,6 +43,7 @@ class Daemon:
         so = open(os.devnull, 'a+')
         se = open(os.devnull, 'a+')
         os.dup2(si.fileno(), sys.stdin.fileno())
+        #os.dup2(so.fileno(), sys.stdout.fileno())
         os.dup2(se.fileno(), sys.stderr.fileno())
 
         # write pidfile
@@ -67,7 +69,7 @@ class Daemon:
         if pid:
             message = "pidfile {0} already exist. " + \
                       "Daemon already running?\n"
-            sys.stderr.write(message.format(self.pidfile))
+            #sys.stderr.write(message.format(self.pidfile))
             sys.exit(1)
 
         # Start the daemon
@@ -114,19 +116,28 @@ class Daemon:
 
 
 class TManReminder(Daemon):
-    """
     def __init__(self, tracked_tasks, pidfile):
         Daemon.__init__(self,  pidfile)
         self.tracked_tasks = tracked_tasks
-    """
+
     def run(self):
-        """Каждые 10 минут (600 секунд) напоминание"""
+        from TManLibrary import Sync, TaskLib
+
+        observed_day = []
+        for task in self.tracked_tasks:
+            for info in Sync.daterange(task.start.date(), (task.end + timedelta(days=1)).date()):
+                if datetime.today().date() == info:
+                    observed_day.append(task)
+
         while True:
-            click.echo(click.style("You have some reminds:", bg='red'))
-            with open('/tmp/tman_reminder.tmp', 'r') as reminds:
-                remind = reminds.read()
-                if remind != "":
-                    click.echo(remind)
-                time.sleep(500)
+            time.sleep(1)
+            if len(observed_day) != 0:
+                click.echo(click.style("\nYou have tasks in near 5 hours!\t\t\t", bg='green', fg='white'))
+            for task in observed_day:
+                dt1 = datetime.now() + timedelta(hours=5)
+                dt2 = datetime.now() - timedelta(hours=5)
+                if (task.reminder.time() <= dt1.time() or task.reminder >= dt2.time()):
+                    click.echo(task.title)
+            time.sleep(1800)
 
 

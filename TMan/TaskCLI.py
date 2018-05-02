@@ -23,10 +23,8 @@ current_user = None
               help='Отключить напоминания')
 
 def cli(chuser, setuser, current, off):
-    check_reminds = DeamonLib.TManReminder('/tmp/daemon-reminders.pid')
-
-    global simple_tasks, tracked_tasks, calendar_events, current_user, users, subtasks
     click.clear()
+    global simple_tasks, tracked_tasks, calendar_events, current_user, users, subtasks
     try:
         users = Console.import_users()
         if (chuser):
@@ -36,16 +34,12 @@ def cli(chuser, setuser, current, off):
         elif (current):
             Console.show_current(users)
         elif (off):
-            check_reminds.stop()
+            os.system("python3 /home/herman/Рабочий\ стол/TaskTracker/taskmanager/TMan/TManReminder.py stop")
         else:
             (current_user, simple_tasks, tracked_tasks, subtasks, calendar_events) = Console.import_all_data(users)
-        """
-        
-        with open('/tmp/tman_reminder.tmp', 'r'):
-            if not off:
-                check_reminds.start()
-        
-        """
+        if not off:
+            os.system("python3 /home/herman/Рабочий\ стол/TaskTracker/taskmanager/TMan/TManReminder.py start")
+
     except IOError as e:
         pass
     except Exception as e:
@@ -69,6 +63,7 @@ def add(task, subtask, todo, event):
 
     if task:
         tracked_tasks = Console.add_task(current_user,tracked_tasks, users, simple_tasks)
+        os.system("python3 /home/herman/Рабочий\ стол/TaskTracker/taskmanager/TMan/TManReminder.py restart")
     elif subtask:
         subtasks = Console.add_subtask(current_user, subtasks, tracked_tasks, subtask)
     elif todo:
