@@ -1,6 +1,5 @@
 from .UserLib import *
 
-
 class Task:
     """Базовый класс для задачи списка дел и события календаря"""
     def __init__(self, title, date, description, priority, tid):
@@ -31,10 +30,8 @@ class SimpleListTask(Task):
 
 class EventCalendar(Task):
     """Сущность события календаря"""
-    def __init__(self, title, date, description, priority, tid, location, reminder ):
+    def __init__(self, title, date, description, priority, tid):
         Task.__init__(self, title, date, description, priority, tid)
-        self.location = location
-        self.reminder = reminder
 
     def __str__(self):
         return self.title
@@ -68,6 +65,12 @@ class BaseTask:
         else:
             self.is_completed = True
 
+    def get_time(self):
+        """
+        Получить дату и время создания в виде datetime объекта
+        """
+        from .DataLib import uuid_to_datetime, str_to_uuid
+        return uuid_to_datetime(str_to_uuid(self.tid))
 
 
 class SubTask(BaseTask):
@@ -93,6 +96,8 @@ class TrackedTask(BaseTask):
         self.subtasks.append(tid)
 
 
+
+
 class User:
     """
     Данный класс описывает сущность пользователя
@@ -116,6 +121,7 @@ class User:
         Сделать данного пользователя текущим
         """
         self.current = True
+
     def add_simpletasks(self, tid):
         self.tasks['simple'].append(tid)
 

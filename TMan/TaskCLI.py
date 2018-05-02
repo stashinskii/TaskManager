@@ -1,4 +1,5 @@
 from ConsoleLib import *
+import DeamonLib
 
 # Коллекции, хранящие задачи
 simple_tasks = []
@@ -18,7 +19,12 @@ current_user = None
               help='Добавить пользователя')
 @click.option('--current', is_flag=True,
               help='Просмотеть текущего полльзователя')
-def cli(chuser, setuser, current):
+@click.option('--off', is_flag=True,
+              help='Отключить напоминания')
+
+def cli(chuser, setuser, current, off):
+    check_reminds = DeamonLib.TManReminder('/tmp/daemon-reminders.pid')
+
     global simple_tasks, tracked_tasks, calendar_events, current_user, users, subtasks
     click.clear()
     try:
@@ -29,8 +35,19 @@ def cli(chuser, setuser, current):
             Console.create_new_user(users)
         elif (current):
             Console.show_current(users)
+        elif (off):
+            check_reminds.stop()
         else:
-            (current_user, simple_tasks, tracked_tasks, subtasks) = Console.import_all_data(users)
+            (current_user, simple_tasks, tracked_tasks, subtasks, calendar_events) = Console.import_all_data(users)
+        """
+        
+        with open('/tmp/tman_reminder.tmp', 'r'):
+            if not off:
+                check_reminds.start()
+        
+        """
+    except IOError as e:
+        pass
     except Exception as e:
         print(e)
         logging.warning("Some troubles while open app")
@@ -58,6 +75,20 @@ def add(task, subtask, todo, event):
         simple_tasks = Console.add_simple_task(users, current_user, simple_tasks)
     else:
         print("event")
+
+
+@cli.command()
+@click.option('--week', is_flag=True,
+              help='Опция для просмотра задач')
+@click.option('--month', is_flag=True,
+              help='Опция для просмотра todo')
+def cal(week, month):
+    """Работа с календарем"""
+    global simple_tasks, tracked_tasks, calendar_events
+    if week:
+        Console.show_week(calendar_events)
+    elif month:
+        pass
 
 
 @cli.command()
@@ -100,6 +131,7 @@ def done(task, todo, subtask):
         print(e)
         logging.warning("Troubles while trying to done task")
 
+
 @cli.command()
 @click.option('--task', type=int,
               help='Опция для удаления задачи')
@@ -113,7 +145,7 @@ def delete(task, todo, event):
     if task:
         pass
     elif todo:
-        Console.delete_todo(todo, simple_tasks)
+        Console.delete_todo(todo, simple_tasks, tracked_tasks)
 
 
 @cli.command()

@@ -1,74 +1,20 @@
 [
   {
-    "tag": "1",
-    "date": "2",
+    "priority": "-",
     "is_completed": false,
-    "priority": "12",
-    "description": "12",
-    "title": "15",
-    "tid": "0405881a-4c5f-11e8-ae3f-ec0ec42aa9f1"
+    "tag": "-",
+    "tid": "f94a1cb8-4dc3-11e8-850a-b95f05a75764",
+    "date": "2018-5-3",
+    "description": "-",
+    "title": "New"
   },
   {
-    "tag": "12",
-    "date": "12",
-    "is_completed": false,
-    "priority": "12",
-    "description": "12",
-    "title": "12",
-    "tid": "32248b3c-4c6a-11e8-ae3f-ec0ec42aa9f1"
-  },
-  {
-    "tag": "12",
-    "date": "12",
-    "is_completed": false,
-    "priority": "12",
-    "description": "12",
-    "title": "12",
-    "tid": "fefeb88e-4d1f-11e8-b588-ec0ec42aa9f1"
-  },
-  {
-    "tag": "12",
-    "date": "12",
-    "is_completed": false,
-    "priority": "12",
-    "description": "12",
-    "title": "12",
-    "tid": "0cd7740c-4d2d-11e8-b588-ec0ec42aa9f1"
-  },
-  {
-    "tag": "1",
-    "date": "1",
-    "is_completed": false,
     "priority": "1",
+    "is_completed": false,
+    "tag": "1",
+    "tid": "1ec068aa-4df9-11e8-850a-b95f05a75764",
+    "date": "2018-2-2",
     "description": "1",
-    "title": "1",
-    "tid": "359974da-4d2d-11e8-b588-ec0ec42aa9f1"
-  },
-  {
-    "tag": "12",
-    "date": "today",
-    "is_completed": false,
-    "priority": "12",
-    "description": "12",
-    "title": "Testing sync between TODO and Task for the first time",
-    "tid": "ae50a7d4-4d2f-11e8-b588-ec0ec42aa9f1"
-  },
-  {
-    "tag": "12",
-    "date": "12",
-    "is_completed": false,
-    "priority": "2",
-    "description": "12",
-    "title": "Test in second time",
-    "tid": "6a327166-4d31-11e8-b588-ec0ec42aa9f1"
-  },
-  {
-    "tag": "21",
-    "date": "12",
-    "is_completed": false,
-    "priority": "2",
-    "description": "12",
-    "title": "It was edit!!!!",
-    "tid": "29618a78-4d36-11e8-b588-ec0ec42aa9f1"
+    "title": "114545"
   }
 ]

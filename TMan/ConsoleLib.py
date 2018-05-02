@@ -2,7 +2,8 @@ import click
 import logging
 import os
 import TManLibrary
-
+from datetime import datetime, timedelta, date
+import calendar
 
 data_dir = '/home/herman/Рабочий стол/TaskTracker/taskmanager/TMan/TaskData'
 
@@ -36,7 +37,9 @@ class Console:
         simple_tasks = TManLibrary.data_from_json("TODO", current_user)
         tracked_tasks = TManLibrary.data_from_json("Task", current_user)
         subtasks = TManLibrary.data_from_json("Subtask", current_user)
-        return (current_user, simple_tasks, tracked_tasks, subtasks)
+        events = TManLibrary.Sync.to_event(tracked_tasks)
+        return (current_user, simple_tasks, tracked_tasks, subtasks, events)
+
 
     @staticmethod
     def add_task(current_user, tracked_tasks, users, simple_tasks):
@@ -47,8 +50,8 @@ class Console:
             if current_user is None:
                 raise Exception("There is no current user. Choose")
             title = input("Input title: ")
-            start = input("Choose start date: ")
-            end = input("Choose end date: ")
+            start = TManLibrary.check_date(input("Choose start date: "))
+            end = TManLibrary.check_date(input("Choose end date: "))
             description = input("Add some info about task: ")
             dash = input("Choose dashboard: ")
             tag = input("Add #tag to this task: ")
@@ -56,7 +59,7 @@ class Console:
             executor = None  # TODO здесь указать объект пользователя в системе или его uid
             priority = input("Choose priority: ")
             author = current_user.uid
-            reminder = input("Reminder: ")
+            reminder = TManLibrary.check_time(input("Reminder: "))
             tid = TManLibrary.tid_gen()
 
             if click.confirm('Canel sync w/ TODO list and events in calendar?', default=True):
@@ -67,7 +70,8 @@ class Console:
             return TManLibrary.add_tracked_task(
                 tracked_tasks, simple_tasks, tid, title, description, start,
                 end, tag, dash, author, observers, executor, cancel_sync, False, reminder, priority, [], users, current_user)
-        except ValueError:
+        except ValueError as e:
+            print(e)
             logging.warning("ValueError: some troubles while adding task")
 
     @staticmethod
@@ -76,8 +80,8 @@ class Console:
         """subtask -  параметр Click, номер подзадачи"""
 
         title = input("Input title: ")
-        start = input("Choose start date: ")
-        end = input("Choose end date: ")
+        start = TManLibrary.check_date(input("Choose start date: "))
+        end = TManLibrary.check_date(input("Choose end date: "))
         description = input("Add some info about task: ")
         tid = TManLibrary.tid_gen()
         dash = input("Choose dashboard: ")
@@ -95,7 +99,7 @@ class Console:
     def add_simple_task(users, current_user, simple_tasks):
         try:
             title = input("Input title: ")
-            date = input("Choose date (YYYY-MM-DD): ")
+            date = TManLibrary.check_date(input("Choose date (YYYY-MM-DD): "))
             #year, month, day = map(int, date.split('-'))
             #date = datetime.date(year, month, day)
             description = input("Add some info about task: ")
@@ -134,7 +138,6 @@ class Console:
             logging.warning("Out of range")
             print(e)
 
-
     @staticmethod
     def edit_task(task, tracked_tasks, simple_tasks):
         try:
@@ -143,8 +146,8 @@ class Console:
             edit = tracked_tasks[task - 1]
             data = []
             data.append(edit.title)
-            data.append(edit.start)
-            data.append(edit.end)
+            data.append(edit.start.date())
+            data.append(edit.end.date())
             data.append(edit.description)
             for x in data:
                 os.system("echo \"{}\" >> {}".format(x, "/tmp/tman_tempdata.tmp"))
@@ -158,8 +161,8 @@ class Console:
                 raise Exception("Incorrect data")
             else:
                 tracked_tasks[task - 1].title = data[0]
-                tracked_tasks[task - 1].start = data[1]
-                tracked_tasks[task - 1].end = data[2]
+                tracked_tasks[task - 1].start = TManLibrary.check_date(data[1])
+                tracked_tasks[task - 1].end = TManLibrary.check_date(data[2])
                 tracked_tasks[task - 1].description = data[3]
             TManLibrary.resave_tracked_json(tracked_tasks)
 
@@ -202,11 +205,11 @@ class Console:
 
 
     @staticmethod
-    def delete_todo(todo, simple_tasks):
+    def delete_todo(todo, simple_tasks,tracked_tasks):
         try:
             if (todo - 1) > len(simple_tasks):
                 raise IndexError
-            simple_tasks = TManLibrary.delete_simple_task(simple_tasks, todo)
+            simple_tasks = TManLibrary.delete_simple_task(simple_tasks, todo, tracked_tasks)
         except IndexError as e:
             logging.warning("Out of range while deleting. Index was: {}".format(todo))
             print(e)
@@ -238,6 +241,7 @@ class Console:
             if subtask.is_completed == False and subtask.tid in tid_subtasks:
                 raise Exception("You have undone subtasks! Done them all before you finish this one!")
         tracked_tasks[task-1].complete()
+
         TManLibrary.resave_tracked_json(tracked_tasks)
 
     @staticmethod
@@ -262,3 +266,17 @@ class Console:
         subtasks[global_index].complete()
         TManLibrary.resave_subtask_json(subtasks)
 
+    @staticmethod
+    def show_week(events):
+        current_events = [date(x.date.year, x.date.month, x.date.day) for x in events]
+        week_range = TManLibrary.Sync.daterange(date.today(), date.today() + timedelta(days=7))
+        for week_day in week_range:
+            if week_day in current_events:
+                click.echo(click.style(str(week_day.day), bold=True, fg='black', bg='white') + " ", nl=False)
+            else:
+                click.echo(str(week_day.day)+" ", nl=False)
+        click.echo("\nEvents for today("+click.style("{}, {}".format(calendar.day_name[date.today().weekday()],
+                                                                     str(date.today())), bold=True)+"):")
+        for x in events:
+            if date(x.date.year, x.date.month, x.date.day) == date.today():
+                click.echo(click.style(x.title,bg='red', fg='white'))

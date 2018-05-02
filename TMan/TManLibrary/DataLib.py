@@ -3,6 +3,7 @@ from .Synchronizer import *
 import logging
 import json
 import uuid
+from datetime import datetime, time
 import os
 
 
@@ -30,12 +31,29 @@ def add_simple_task(users, current, simple_tasks, title, date, description, prio
     Добавление задачи в список дел
     """
     simple_tasks.append(SimpleListTask(
-        title, date, description, priority, tid, is_completed, tag))
+        title, str(date.year)+"-"+str(date.month)+"-"+str(date.day),
+        description, priority, tid, is_completed, tag))
 
     data_to_json(simple_tasks, simple_tasks[-1])
     logging.info('TODO task added. TID: {}'.format(tid))
     add_user_task(users, current, tid, "TODO")
     return simple_tasks
+
+
+def check_date(date):
+    time_format_one = "%b %d, %Y"
+    time_format_two = "%Y-%m-%d"
+
+    try:
+        date = datetime.strptime(date, time_format_one)
+    except ValueError:
+        date = datetime.strptime(date, time_format_two)
+    return date
+
+def check_time(mytime):
+    time_format = "%H:%M"
+    mytime = datetime.strptime(mytime, time_format)
+    return mytime
 
 
 def data_from_json(type, current):
@@ -45,7 +63,6 @@ def data_from_json(type, current):
     simple_tasks = []
     tracked_tasks = []
     subtasks = []
-    event_tasks = []
     users = []
     try:
         if type == "TODO":
@@ -83,8 +100,8 @@ def data_from_json(type, current):
             for task_dict in task_data:
                 if task_dict['tid'] in current.tasks['task']:
                     title = task_dict['title']
-                    start = task_dict['start']
-                    end = task_dict['end']
+                    start = check_date(task_dict['start'])
+                    end = check_date(task_dict['end'])
                     description = task_dict['description']
                     dash = task_dict['dash']
                     tag = task_dict['tag']
@@ -92,7 +109,7 @@ def data_from_json(type, current):
                     executor = task_dict['executor']
                     priority = task_dict['priority']
                     author = task_dict['author']
-                    reminder = task_dict['reminder']
+                    reminder = check_time(task_dict['reminder'])
                     cancel_sync = task_dict['cancel_sync']
                     is_completed = task_dict['is_completed']
                     subtasks = task_dict['subtasks']
@@ -172,9 +189,6 @@ def data_from_json(type, current):
                     subtasks.append(new_task)
                 return subtasks
 
-        elif type == "Event":
-            pass
-
     except FileNotFoundError:
         logging.warning("File not exist")
         return []
@@ -186,18 +200,15 @@ def data_to_json(collection, object):
     В зависимости от типа передаваемого объекта, выбираем конкретные файлы для загрузки
     """
     files = [data_dir+'/trackedtasks.json', data_dir+'/subtasks.json',
-             data_dir+'/simpletasks.json', data_dir+'/calendarevents.json',
-             data_dir+'/users.json']
+             data_dir+'/simpletasks.json', data_dir+'/users.json']
     if object.__class__.__name__ == 'TrackedTask':
         filename = files[0]
     elif object.__class__.__name__ == 'SubTask':
         filename = files[1]
     elif object.__class__.__name__ == 'SimpleListTask':
         filename = files[2]
-    elif object.__class__.__name__ == 'EventCalendar':
-        filename = files[3]
     elif object.__class__.__name__ == 'User':
-        filename = files[4]
+        filename = files[3]
     else:
         raise Exception("Unknown type of object")
 
@@ -262,10 +273,18 @@ def complete_simple_task(simple_tasks, num):
     return simple_tasks
 
 
-def delete_simple_task(simple_tasks, num):
+def delete_simple_task(simple_tasks, num, tracked_tasks):
+    for task in tracked_tasks:
+        if task.tid == simple_tasks[num-1].tid:
+            index = tracked_tasks.index(task)
+            break
+    if index is not None:
+        tracked_tasks[index].cancel_sync = True
+        resave_tracked_json(tracked_tasks)
+    deleted_tid = simple_tasks[num - 1].tid
     simple_tasks.__delitem__(num-1)
     resave_simple_json(simple_tasks)
-    logging.info('TODO task was deleted. TID: {}'.format(simple_tasks[num - 1].tid))
+    logging.info('TODO task was deleted. TID: {}'.format(deleted_tid))
 
 
 # Далее работа с Трекером дел
@@ -275,8 +294,8 @@ def add_tracked_task(tracked_task, simple_tasks, tid, title, description, start,
         tid,
         title,
         description,
-        start,
-        end,
+        str(start.year)+"-"+str(start.month)+"-"+str(start.day),
+        str(end.year) + "-" + str(end.month) + "-" + str(end.day),
         tag,
         dash,
         author,
@@ -284,14 +303,15 @@ def add_tracked_task(tracked_task, simple_tasks, tid, title, description, start,
         executor,
         cancel_sync,
         is_completed,
-        reminder,
+        str(reminder.hour) +":"+str(reminder.minute),
         priority,
         subtasks
     ))
     data_to_json(tracked_task, tracked_task[-1])
-
     add_user_task(users, current, tid, "Task")
 
+    a = tracked_task[-1].get_time()
+    print(a)
 
     if cancel_sync != True:
         Sync.to_todo(users, current, simple_tasks, title, tid, description, priority, is_completed, end, tag)
@@ -312,6 +332,12 @@ def resave_subtask_json(subtasks):
     """Пересохранение данных после изменения"""
     data = []
     for task in subtasks:
+        if isinstance(task.start, datetime):
+            task.start = str(task.start.year)+"-"+str(task.start.month)+"-"+str(task.start.day)
+        if isinstance(task.end, datetime):
+            task.end = str(task.end.year) + "-" + str(task.end.month) + "-" + str(task.end.day)
+        if isinstance(task.reminder, datetime):
+            task.reminder = str(task.reminder.hour) +":"+str(task.reminder.minute)
         data.append(task.__dict__)
 
     with open(data_dir+'/subtasks.json', 'w') as taskfile:
@@ -322,6 +348,12 @@ def resave_tracked_json(tracked_tasks):
     """Пересохранение данных после изменения"""
     data = []
     for task in tracked_tasks:
+        if isinstance(task.start, datetime):
+            task.start = str(task.start.year)+"-"+str(task.start.month)+"-"+str(task.start.day)
+        if isinstance(task.end, datetime):
+            task.end = str(task.end.year) + "-" + str(task.end.month) + "-" + str(task.end.day)
+        if isinstance(task.reminder, datetime):
+            task.reminder = str(task.reminder.hour) +":"+str(task.reminder.minute)
         data.append(task.__dict__)
 
     with open(data_dir+'/trackedtasks.json', 'w') as taskfile:
@@ -345,3 +377,8 @@ def show_tracked_task(tracked_tasks):
     except TypeError as e:
         logging.warning('Unable to show tasks')
 
+def str_to_uuid(str_id):
+    return uuid.UUID(str_id)
+
+def uuid_to_datetime(uuid_id):
+    return datetime.fromtimestamp((uuid_id.time - 0x01b21dd213814000)*100/1e9)

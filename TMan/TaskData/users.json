@@ -1,128 +1,19 @@
 [
   {
-    "login": "aloha",
-    "uid": "5fbd4074-4bda-11e8-948e-ec0ec42aa9f1",
-    "current": false,
-    "name": "as",
-    "surname": "as",
-    "tasks": []
-  },
-  {
-    "login": "hel",
-    "uid": "3e47b008-4c54-11e8-ae3f-ec0ec42aa9f1",
-    "current": false,
-    "name": "12",
-    "surname": "12",
-    "tasks": []
-  },
-  {
-    "login": "opa",
-    "uid": "04b614b4-4c55-11e8-ae3f-ec0ec42aa9f1",
-    "current": false,
-    "name": "as",
-    "surname": "as",
-    "tasks": {
-      "simple": [
-        "654f8a1c-4c55-11e8-ae3f-ec0ec42aa9f1",
-        "87c43912-4c55-11e8-ae3f-ec0ec42aa9f1"
-      ],
-      "event": [],
-      "task": []
-    }
-  },
-  {
-    "login": "hello11",
-    "uid": "9ad8fbca-4c58-11e8-ae3f-ec0ec42aa9f1",
-    "current": false,
-    "name": "12",
-    "surname": "12",
-    "tasks": {
-      "simple": [
-        "a94cb23c-4c58-11e8-ae3f-ec0ec42aa9f1"
-      ],
-      "event": [],
-      "task": []
-    }
-  },
-  {
-    "login": "1",
-    "uid": "ccd1cd1e-4c5d-11e8-ae3f-ec0ec42aa9f1",
-    "current": false,
-    "name": "1",
-    "surname": "1",
-    "tasks": {
-      "simple": [
-        "dbdc590a-4c5d-11e8-ae3f-ec0ec42aa9f1"
-      ],
-      "event": [],
-      "task": []
-    }
-  },
-  {
-    "login": "12",
-    "uid": "d27a5278-4bc6-11e8-948e-ec0ec42aa9f1",
-    "current": false,
-    "name": "12",
-    "surname": "12",
-    "tasks": {
-      "simple": [
-        "319134e8-4bc7-11e8-948e-ec0ec42aa9f1",
-        "24d03778-4bda-11e8-948e-ec0ec42aa9f1",
-        "1635a056-4c5f-11e8-ae3f-ec0ec42aa9f1"
-      ],
-      "task": []
-    }
-  },
-  {
-    "login": "df[pfd",
-    "uid": "306c7452-4c98-11e8-ae3f-ec0ec42aa9f1",
-    "current": false,
-    "name": "ds",
-    "surname": "sd",
-    "tasks": {
-      "simple": [],
-      "event": [],
-      "task": []
-    }
-  },
-  {
-    "login": "herman",
-    "uid": "7107e2a8-4bc6-11e8-948e-ec0ec42aa9f1",
+    "surname": "Stashynski",
+    "name": "Herman",
     "current": true,
-    "name": "12",
-    "surname": "12",
+    "uid": "a01c8534-4d4d-11e8-b588-ec0ec42aa9f1",
+    "login": "herman",
     "tasks": {
       "simple": [
-        "c83bee66-4bc6-11e8-948e-ec0ec42aa9f1",
-        "295145d4-4bc7-11e8-948e-ec0ec42aa9f1",
-        "829c37bc-4bda-11e8-948e-ec0ec42aa9f1",
-        "8e72f3e8-4c55-11e8-ae3f-ec0ec42aa9f1",
-        "91db0606-4c55-11e8-ae3f-ec0ec42aa9f1",
-        "0405881a-4c5f-11e8-ae3f-ec0ec42aa9f1",
-        "32248b3c-4c6a-11e8-ae3f-ec0ec42aa9f1",
-        "c52b4336-4c7d-11e8-ae3f-ec0ec42aa9f1",
-        "fefeb88e-4d1f-11e8-b588-ec0ec42aa9f1",
-        "0cd7740c-4d2d-11e8-b588-ec0ec42aa9f1",
-        "359974da-4d2d-11e8-b588-ec0ec42aa9f1",
-        "ae50a7d4-4d2f-11e8-b588-ec0ec42aa9f1",
-        "6a327166-4d31-11e8-b588-ec0ec42aa9f1",
-        "12",
-        "12",
-        "121",
-        "29618a78-4d36-11e8-b588-ec0ec42aa9f1"
+        "f94a1cb8-4dc3-11e8-850a-b95f05a75764",
+        "1ec068aa-4df9-11e8-850a-b95f05a75764"
       ],
       "task": [
-        "05b37a0a-4b9c-11e8-bb00-ec0ec42aa9f1",
-        "d10d1954-4c6e-11e8-ae3f-ec0ec42aa9f1",
-        "44e70896-4c77-11e8-ae3f-ec0ec42aa9f1",
-        "ae50a7d4-4d2f-11e8-b588-ec0ec42aa9f1",
-        "d93b31e4-4d2f-11e8-b588-ec0ec42aa9f1",
-        "6a327166-4d31-11e8-b588-ec0ec42aa9f1",
-        "7367f8a6-4d35-11e8-b588-ec0ec42aa9f1",
-        "ae9ba706-4d35-11e8-b588-ec0ec42aa9f1",
-        "d0904934-4d35-11e8-b588-ec0ec42aa9f1",
-        "29618a78-4d36-11e8-b588-ec0ec42aa9f1"
-      ]
+        "1ec068aa-4df9-11e8-850a-b95f05a75764"
+      ],
+      "event": []
     }
   }
 ]
