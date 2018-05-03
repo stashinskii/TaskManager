@@ -125,9 +125,9 @@ class TManReminder(Daemon):
                 click.echo(click.style("\nYou have tasks in near 5 hours!\t\t\t", bg='green', fg='white'))
             #проверяем, что данная задача имеет статус напоминания +- 5 часов от текущего времени
             for task in observed_day:
-                dt1 = datetime.now() + timedelta(hours=5)
-                dt2 = datetime.now() - timedelta(hours=5)
-                if (task.reminder.time() <= dt1.time() or task.reminder.time() >= dt2.time()):
+                dt1 = datetime.now() + timedelta(hours=2)
+                dt2 = datetime.now() - timedelta(hours=2)
+                if (task.reminder.time() >= dt1.time() or task.reminder.time() <= dt2.time()):
                     click.echo(task.title)
             #Прекращаем отслеживание на 30 минут
             time.sleep(1800)

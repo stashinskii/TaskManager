@@ -78,6 +78,7 @@ class SubTask(BaseTask):
 
 
 class Priority(enum.Enum):
+    """Перечеслитель важности/приоритета задачи: от 1 к 3 (3 - наивысший)"""
     high = 3
     medium = 2
     low = 1
