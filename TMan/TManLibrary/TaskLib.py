@@ -41,7 +41,7 @@ class EventCalendar(Task):
 class TrackedTask:
     """Базовый класс для сущности задачи и подзадачи трекинговой системы"""
     def __init__(self, tid, title, description, start, end, tag, dash, author,
-                 observers, executor, cancel_sync, is_completed, reminder, priority, parent):
+                 observers, executor, cancel_sync, is_completed, reminder, priority, parent, subtasks):
         self.title = title
         self.tid = tid
         self.description = description
@@ -57,6 +57,8 @@ class TrackedTask:
         self.cancel_sync = cancel_sync
         self.reminder = reminder
         self.parent = parent
+        self.subtasks = subtasks
+
 
     def complete(self):
         if self.is_completed:

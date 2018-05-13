@@ -69,7 +69,7 @@ class Console:
 
             return TManLibrary.add_tracked_task(
                 tracked_tasks, simple_tasks, tid, title, description, start,end, tag, dash,
-                author, observers, executor, cancel_sync, False, reminder, priority, users, current_user, parent)
+                author, observers, executor, cancel_sync, False, reminder, priority, users, current_user, parent, [])
         except Exception as e:
             print(e)
             logging.warning("Some troubles while adding task")
@@ -92,10 +92,11 @@ class Console:
         author = current_user.uid
         reminder = TManLibrary.check_time(input("Reminder: "))
         parent_id = tracked_tasks[subtask-1].tid
-
+        global_index = all_tasks.index(tracked_tasks[subtask-1])
+        all_tasks[global_index].subtasks.append(tid)
         return TManLibrary.add_tracked_task(
             all_tasks, None, tid, title, description, start, end, tag, dash,
-            author, observers, executor, True, False, reminder, priority, users, current_user, parent_id)
+            author, observers, executor, True, False, reminder, priority, users, current_user, parent_id, [])
 
     @staticmethod
     def add_simple_task(users, current_user, simple_tasks):
@@ -124,11 +125,21 @@ class Console:
             print(task)
 
     @staticmethod
+    def preorder_traversal(task, all_tasks):
+        for subtasks in all_tasks:
+            click.echo("subtasks.node")
+
+
+
+    @staticmethod
     def list_task(tracked_tasks, all_tasks):
         task_gen = TManLibrary.show_tracked_task(tracked_tasks, all_tasks)
         for task in task_gen:
             click.echo("[" + task[0] + "] - " + task[1] + " - " + click.style(
                 "Subtasks: " + task[2], bold=True, fg='yellow') + " - " + click.style(task[3], bold=True, bg='green'))
+            # Тут можно сделать preorder traversal
+
+
 
     @staticmethod
     def done_todo(todo, simple_tasks):

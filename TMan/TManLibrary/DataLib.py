@@ -107,6 +107,7 @@ def data_from_json(type, current):
                     is_completed = task_dict['is_completed']
                     parent = task_dict['parent']
                     tid = task_dict['tid']
+                    subtasks = task_dict['subtasks']
 
                     new_task = TrackedTask(
                         tid,
@@ -123,7 +124,8 @@ def data_from_json(type, current):
                         is_completed,
                         reminder,
                         priority,
-                        parent
+                        parent,
+                        subtasks
                     )
                     if task_dict['parent'] is None:
                         tracked_tasks.append(new_task)
@@ -242,7 +244,7 @@ def delete_simple_task(simple_tasks, num, tracked_tasks):
 
 # Далее работа с Трекером дел
 def add_tracked_task(all_tasks, simple_tasks, tid, title, description, start, end, tag, dash, author,
-                   observers, executor, cancel_sync, is_completed, reminder, priority, users, current, parent):
+                   observers, executor, cancel_sync, is_completed, reminder, priority, users, current, parent, subtasks):
     all_tasks.append(TrackedTask(
         tid,
         title,
@@ -258,7 +260,8 @@ def add_tracked_task(all_tasks, simple_tasks, tid, title, description, start, en
         is_completed,
         str(reminder.hour) +":"+str(reminder.minute),
         priority,
-        parent
+        parent,
+        subtasks
     ))
     data_to_json(all_tasks, all_tasks[-1])
     add_user_task(users, current, tid, "Task")
