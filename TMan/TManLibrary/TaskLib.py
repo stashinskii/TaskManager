@@ -38,9 +38,10 @@ class EventCalendar(Task):
         return self.title
 
 
-class BaseTask:
+class TrackedTask:
     """Базовый класс для сущности задачи и подзадачи трекинговой системы"""
-    def __init__(self, tid, title, description, start, end, tag, dash, author, observers, executor, cancel_sync, is_completed, reminder, priority):
+    def __init__(self, tid, title, description, start, end, tag, dash, author,
+                 observers, executor, cancel_sync, is_completed, reminder, priority, parent):
         self.title = title
         self.tid = tid
         self.description = description
@@ -55,6 +56,7 @@ class BaseTask:
         self.is_completed = is_completed
         self.cancel_sync = cancel_sync
         self.reminder = reminder
+        self.parent = parent
 
     def complete(self):
         if self.is_completed:
@@ -66,15 +68,6 @@ class BaseTask:
         """Получить дату и время создания в виде datetime объекта"""
         from .DataLib import uuid_to_datetime, str_to_uuid
         return uuid_to_datetime(str_to_uuid(self.tid))
-
-
-class SubTask(BaseTask):
-    """Сущность подзадачи"""
-    def __init__(self, tid, parent_id, title, description, start, end, tag, dash, author, observers, executor,
-                          cancel_sync, is_completed, reminder, priority):
-        BaseTask.__init__(self, tid, title, description, start, end, tag, dash, author, observers, executor,
-                          cancel_sync, is_completed, reminder, priority)
-        self.parent_id = parent_id
 
 
 class Priority(enum.Enum):
@@ -92,20 +85,6 @@ class Priority(enum.Enum):
 
     def to_name(self):
         return Priority[self.value]
-
-
-class TrackedTask(BaseTask):
-    """
-    Сузность задачи, которая включает в себя мелкие подзадачи в виде списка
-    """
-    def __init__(self, tid, title, description, start, end, tag, dash, author, observers, executor, cancel_sync, is_completed, reminder, priority, subtasks):
-
-        BaseTask.__init__(self, tid, title, description, start, end, tag, dash, author, observers, executor,
-                          cancel_sync, is_completed, reminder, priority)
-        self.subtasks = subtasks
-
-    def add_subtask(self, tid):
-        self.subtasks.append(tid)
 
 
 class User:

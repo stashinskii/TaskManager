@@ -55,8 +55,8 @@ def data_from_json(type, current):
     """Загрузка задач из файла"""
     simple_tasks = []
     tracked_tasks = []
-    subtasks = []
     users = []
+    all_tasks = []
     try:
         if type == "TODO":
             with open(data_dir+'/simpletasks.json', 'r') as todo_task_file:
@@ -105,8 +105,9 @@ def data_from_json(type, current):
                     reminder = check_time(task_dict['reminder'])
                     cancel_sync = task_dict['cancel_sync']
                     is_completed = task_dict['is_completed']
-                    subtasks = task_dict['subtasks']
+                    parent = task_dict['parent']
                     tid = task_dict['tid']
+
                     new_task = TrackedTask(
                         tid,
                         title,
@@ -122,10 +123,14 @@ def data_from_json(type, current):
                         is_completed,
                         reminder,
                         priority,
-                        subtasks
+                        parent
                     )
-                    tracked_tasks.append(new_task)
-            return tracked_tasks
+                    if task_dict['parent'] is None:
+                        tracked_tasks.append(new_task)
+                        all_tasks.append(new_task)
+                    else:
+                        all_tasks.append(new_task)
+            return tracked_tasks, all_tasks
 
         elif type == "User":
             with open(data_dir+'/users.json', 'r') as file:
@@ -142,45 +147,6 @@ def data_from_json(type, current):
                 users.append(user)
             return users
 
-        elif type == "Subtask":
-            with open(data_dir+'/subtasks.json', 'r') as file:
-                data = json.load(file)
-
-                for task_dict in data:
-                    title = task_dict['title']
-                    parent_id = task_dict['parent_id']
-                    start = task_dict['start']
-                    end = task_dict['end']
-                    description = task_dict['description']
-                    dash = task_dict['dash']
-                    tag = task_dict['tag']
-                    observers = task_dict['observers']
-                    executor = task_dict['executor']
-                    priority = Priority[Priority(int(task_dict['priority'])).name]
-                    author = task_dict['author']
-                    reminder = task_dict['reminder']
-                    cancel_sync = task_dict['cancel_sync']
-                    is_completed = task_dict['is_completed']
-                    tid = task_dict['tid']
-                    new_task = SubTask(
-                        tid,
-                        parent_id,
-                        title,
-                        description,
-                        start,
-                        end,
-                        tag,
-                        dash,
-                        author,
-                        observers,
-                        executor,
-                        cancel_sync,
-                        is_completed,
-                        reminder,
-                        priority
-                    )
-                    subtasks.append(new_task)
-                return subtasks
 
     except FileNotFoundError:
         logging.warning("File not exist")
@@ -192,16 +158,14 @@ def data_to_json(collection, object):
     Сохраняем состояние коллекции файле. В качестве аргумента передаем готовый слоаврь объекта
     В зависимости от типа передаваемого объекта, выбираем конкретные файлы для загрузки
     """
-    files = [data_dir+'/trackedtasks.json', data_dir+'/subtasks.json',
+    files = [data_dir+'/trackedtasks.json',
              data_dir+'/simpletasks.json', data_dir+'/users.json']
     if object.__class__.__name__ == 'TrackedTask':
         filename = files[0]
-    elif object.__class__.__name__ == 'SubTask':
-        filename = files[1]
     elif object.__class__.__name__ == 'SimpleListTask':
-        filename = files[2]
+        filename = files[1]
     elif object.__class__.__name__ == 'User':
-        filename = files[3]
+        filename = files[2]
     else:
         raise Exception("Unknown type of object")
 
@@ -277,9 +241,9 @@ def delete_simple_task(simple_tasks, num, tracked_tasks):
 
 
 # Далее работа с Трекером дел
-def add_tracked_task(tracked_task, simple_tasks, tid, title, description, start, end, tag, dash, author,
-                   observers, executor, cancel_sync, is_completed, reminder, priority, subtasks, users, current):
-    tracked_task.append(TrackedTask(
+def add_tracked_task(all_tasks, simple_tasks, tid, title, description, start, end, tag, dash, author,
+                   observers, executor, cancel_sync, is_completed, reminder, priority, users, current, parent):
+    all_tasks.append(TrackedTask(
         tid,
         title,
         description,
@@ -294,45 +258,18 @@ def add_tracked_task(tracked_task, simple_tasks, tid, title, description, start,
         is_completed,
         str(reminder.hour) +":"+str(reminder.minute),
         priority,
-        subtasks
+        parent
     ))
-    data_to_json(tracked_task, tracked_task[-1])
+    data_to_json(all_tasks, all_tasks[-1])
     add_user_task(users, current, tid, "Task")
 
-    a = tracked_task[-1].get_time()
+    a = all_tasks[-1].get_time()
     print(a)
 
     if cancel_sync != True:
         Sync.to_todo(users, current, simple_tasks, title, tid, description, priority, is_completed, end, tag)
 
 
-def add_subtask(subtasks, tid, parent_id, title, description, start, end, tag, dash, author, observers, executor,
-                          cancel_sync, is_completed, reminder, priority, tracked_tasks, subtask):
-
-    subtasks.append(SubTask(tid, parent_id, title, description, start, end, tag, dash, author, observers, executor,
-                          cancel_sync, is_completed, reminder, priority))
-    tracked_tasks[subtask-1].subtasks.append(tid)
-    resave_tracked_json(tracked_tasks)
-    resave_subtask_json(subtasks)
-    return subtasks
-
-
-def resave_subtask_json(subtasks):
-    """Пересохранение данных после изменения"""
-    data = []
-    for task in subtasks:
-        if isinstance(task.start, datetime):
-            task.start = str(task.start.year)+"-"+str(task.start.month)+"-"+str(task.start.day)
-        if isinstance(task.end, datetime):
-            task.end = str(task.end.year) + "-" + str(task.end.month) + "-" + str(task.end.day)
-        if isinstance(task.reminder, datetime):
-            task.reminder = str(task.reminder.hour) +":"+str(task.reminder.minute)
-        if isinstance(task.priority, Priority):
-            task.priority = str(task.priority.value)
-        data.append(task.__dict__)
-
-    with open(data_dir+'/subtasks.json', 'w') as taskfile:
-        json.dump(data, taskfile, indent=2, ensure_ascii=False)
 
 
 def resave_tracked_json(tracked_tasks):
@@ -353,18 +290,23 @@ def resave_tracked_json(tracked_tasks):
         json.dump(data, taskfile, indent=2, ensure_ascii=False)
 
 
-def show_tracked_task(tracked_tasks):
+def show_tracked_task(tracked_tasks, all_tasks):
     """Вывод всех заданий с отметкой о статусе выполения и номером"""
     try:
         if tracked_tasks is None:
             raise TypeError("Task collection is not list")
         for task in tracked_tasks:
+            subtasks = []
+            for subtask in all_tasks:
+                if subtask.parent == task.tid:
+                    subtasks.append(subtask.tid)
+
             if task.is_completed:
                 marker = "X"
             else:
                 marker = " "
             # Возвращаем строку со списком задач и их состоянием
-            yield (marker, str(tracked_tasks.index(task)+1),str(len(task.subtasks)), str(task.title))
+            yield (marker, str(tracked_tasks.index(task)+1),str(len(subtasks)), str(task.title))
     except TypeError as e:
         logging.warning('Unable to show tasks')
 

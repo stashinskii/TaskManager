@@ -5,7 +5,7 @@ import DeamonLib
 simple_tasks = []
 tracked_tasks = []
 calendar_events = []
-subtasks = []
+all_tasks = []
 
 
 users = []
@@ -23,7 +23,7 @@ current_user = None
               help='Перепросмотреть текущие напоминания (за 5 часов)')
 def cli(chuser, setuser, current, reminder):
     click.clear()
-    global simple_tasks, tracked_tasks, calendar_events, current_user, users, subtasks
+    global simple_tasks, tracked_tasks, calendar_events, current_user, users, all_tasks
     try:
         users = Console.import_users()
         if (chuser):
@@ -35,7 +35,7 @@ def cli(chuser, setuser, current, reminder):
         elif (reminder):
             os.system("python3 /home/herman/Рабочий\ стол/TaskTracker/taskmanager/TMan/TManReminder.py restart")
         else:
-            (current_user, simple_tasks, tracked_tasks, subtasks, calendar_events) = Console.import_all_data(users)
+            (current_user, simple_tasks, tracked_tasks, calendar_events, all_tasks) = Console.import_all_data(users)
     except IOError as e:
         pass
     except Exception as e:
@@ -59,7 +59,7 @@ def add(task, subtask, todo):
         tracked_tasks = Console.add_task(current_user,tracked_tasks, users, simple_tasks)
         os.system("python3 /home/herman/Рабочий\ стол/TaskTracker/taskmanager/TMan/TManReminder.py restart")
     elif subtask:
-        subtasks = Console.add_subtask(current_user, subtasks, tracked_tasks, subtask)
+        subtasks = Console.add_subtask(current_user, all_tasks, tracked_tasks, users, subtask)
     elif todo:
         simple_tasks = Console.add_simple_task(users, current_user, simple_tasks)
 
@@ -89,7 +89,7 @@ def list(task, todo, event):
     """Просмотр всех задач"""
     global simple_tasks, tracked_tasks, calendar_events
     if task:
-        Console.list_task(tracked_tasks)
+        Console.list_task(tracked_tasks, all_tasks)
     elif todo:
         Console.list_todo(simple_tasks)
     elif event:
@@ -105,14 +105,14 @@ def list(task, todo, event):
               help='Опция для выполнения подзадачи')
 def done(task, todo, subtask):
     """Выполнение задачи по номеру"""
-    global simple_tasks, tracked_tasks, calendar_events, subtasks
+    global simple_tasks, tracked_tasks, calendar_events
     try:
         if task:
-            Console.done_task(task, subtasks, tracked_tasks)
+            Console.done_task(task, all_tasks, tracked_tasks)
         elif todo:
             Console.done_todo(todo, simple_tasks)
         elif subtask:
-            Console.done_subtask(subtask, subtasks, tracked_tasks)
+            Console.done_subtask(subtask, all_tasks, tracked_tasks)
 
     except Exception as e:
         print(e)
@@ -164,7 +164,7 @@ def edit(task, todo, event):
     """Просмотра подробной информации"""
     global simple_tasks, tracked_tasks, calendar_events
     if task:
-        Console.edit_task(task, tracked_tasks, simple_tasks)
+        Console.edit_task(task, tracked_tasks, simple_tasks, all_tasks)
     elif todo:
         Console.edit_task(todo, simple_tasks)
     elif event:
