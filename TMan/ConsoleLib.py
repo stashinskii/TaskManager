@@ -20,19 +20,31 @@ class Console:
 
     @staticmethod
     def import_users():
+        """
+        Загрузить всех пользователей
+        """
         return TManLibrary.data_from_json("User", None)
 
     @staticmethod
     def set_current(users, chuser):
+        """
+        Установить текущнго пользователя
+        """
         return TManLibrary.change_user(users, chuser)
 
     @staticmethod
     def show_current(users):
+        """
+        Показать текущего
+        """
         current_user = TManLibrary.set_current(users)
         print("login: {}\nUID: {}".format(current_user.login, current_user.uid))
 
     @staticmethod
     def import_all_data(users):
+        """
+        Загрузить все данные
+        """
         current_user = TManLibrary.set_current(users)
         simple_tasks = TManLibrary.data_from_json("TODO", current_user)
         tracked_tasks, all_tasks = TManLibrary.data_from_json("Task", current_user)
@@ -100,11 +112,12 @@ class Console:
 
     @staticmethod
     def add_simple_task(users, current_user, simple_tasks):
+        """
+        Добавить задачу TO DO
+        """
         try:
             title = input("Input title: ")
             date = TManLibrary.check_date(input("Choose date (YYYY-MM-DD): "))
-            #year, month, day = map(int, date.split('-'))
-            #date = datetime.date(year, month, day)
             description = input("Add some info about task: ")
             priority = input("Choose priority: ")
             tag = input("Add #tag to this task: ")

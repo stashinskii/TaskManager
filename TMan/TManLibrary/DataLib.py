@@ -245,6 +245,7 @@ def delete_simple_task(simple_tasks, num, tracked_tasks):
 # Далее работа с Трекером дел
 def add_tracked_task(all_tasks, simple_tasks, tid, title, description, start, end, tag, dash, author,
                    observers, executor, cancel_sync, is_completed, reminder, priority, users, current, parent, subtasks):
+    from TManLibrary import Sync
     all_tasks.append(TrackedTask(
         tid,
         title,
