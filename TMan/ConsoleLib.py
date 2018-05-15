@@ -4,8 +4,11 @@ import os
 import TManLibrary
 from datetime import datetime, timedelta, date
 import calendar
+import configparser
+
 
 data_dir = '/home/herman/Рабочий стол/TaskTracker/src/TMan/TaskData'
+
 
 class Console:
     """Класс для организации работы с терминалом."""
@@ -54,7 +57,7 @@ class Console:
 
 
     @staticmethod
-    def add_task(current_user, tracked_tasks, users, simple_tasks):
+    def add_task(current_user, all_tasks, users, simple_tasks):
         """
         Добавление новой задачи трекера. Возвращает измененную коллекцию с новым элементом
         """
@@ -75,13 +78,13 @@ class Console:
             tid = TManLibrary.tid_gen()
             parent = None
 
-            if click.confirm('Canel sync w/ TODO list and events in calendar?', default=True):
+            if click.confirm('Cancel sync w/ TODO list and events in calendar?', default=True):
                 cancel_sync = True
             else:
                 cancel_sync = False
 
             return TManLibrary.add_tracked_task(
-                tracked_tasks, simple_tasks, tid, title, description, start,end, tag, dash,
+                all_tasks, simple_tasks, tid, title, description, start,end, tag, dash,
                 author, observers, executor, cancel_sync, False, reminder, priority, users, current_user, parent, [])
         except ValueError as e:
             print(e)
@@ -338,3 +341,37 @@ class Console:
         for x in events:
             if date(x.date.year, x.date.month, x.date.day) == date.today():
                 click.echo(click.style(x.title,bg='red', fg='white'))
+
+    @staticmethod
+    def add_scheduler():
+        click.secho("Choose list of days of the week, title,\nbasic description of your future task  ",
+                    bg="green", fg="white", bold=True)
+        click.secho("Sample of input weekdays: wed thu mon  ",
+                    bg="yellow", fg="white")
+        title = input("Input title of shelduler's task: ")
+        desc = input("Input small and common description: ")
+        weeks = input("Choose weekdays. Split by spaces: ")
+        #sid - schelduler ID
+        sid = TManLibrary.tid_gen()
+        week_list = weeks.split(" ")
+        new_scheduler = TManLibrary.Scheduler(week_list, title, desc, sid)
+        Console.scheduler_cfg(new_scheduler)
+
+    @staticmethod
+    def scheduler_cfg(new_scheduler):
+        #Временно
+        weekdays = str()
+        for day in new_scheduler.weekday:
+            weekdays = weekdays + " " + day
+        #
+        config = configparser.ConfigParser()
+        config.read(data_dir+"scheduler.ini")
+        section = new_scheduler.sid
+
+        config.add_section(section)
+        config.set(section, 'title', new_scheduler.title)
+        config.set(section, 'basic_description', new_scheduler.basic_description)
+        config.set(section, 'weekday', weekdays)
+        
+        with open(data_dir+"/scheduler.ini", 'a+') as f:
+            config.write(f)

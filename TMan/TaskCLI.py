@@ -45,17 +45,20 @@ def cli(chuser, setuser, current):
               help='Опция для добавления задачи в трекер задач')
 @click.option('--subtask', type=int,
               help='Опция для добавления подзадачи')
+@click.option('--plan', is_flag=True,
+              help='Задать конфигурацию планировщика')
 @click.option('--todo', is_flag=True,
               help='Опция для добавления в todo')
-def add(task, subtask, todo):
+def add(task, subtask, todo, plan):
     """Добавление задачи"""
     global simple_tasks, tracked_tasks, calendar_events, current_user, users, subtasks
 
     if task:
-        tracked_tasks = Console.add_task(current_user,tracked_tasks, users, simple_tasks)
-        os.system("python3 /home/herman/Рабочий\ стол/TaskTracker/taskmanager/TMan/TManReminder.py restart")
+        tracked_tasks = Console.add_task(current_user, all_tasks, users, simple_tasks)
     elif subtask:
         subtasks = Console.add_subtask(current_user, all_tasks, tracked_tasks, users, subtask)
+    elif plan:
+        Console.add_scheduler()
     elif todo:
         simple_tasks = Console.add_simple_task(users, current_user, simple_tasks)
 

@@ -1,11 +1,20 @@
 [
   {
-    "description": "-",
-    "title": "Hello, world",
-    "is_completed": false,
     "tid": "5b0e3032-56c1-11e8-9532-ec0ec42aa9f1",
-    "tag": "-",
     "date": "2018-5-15",
-    "priority": "3"
+    "tag": "-",
+    "title": "Hello, world",
+    "priority": "3",
+    "description": "-",
+    "is_completed": false
+  },
+  {
+    "tid": "25764578-585f-11e8-82aa-ec0ec42aa9f1",
+    "date": "2018-5-15",
+    "tag": "",
+    "title": "Добавить подробное описание задач и поделиться с пользователями",
+    "priority": "1",
+    "description": "",
+    "is_completed": false
   }
 ]

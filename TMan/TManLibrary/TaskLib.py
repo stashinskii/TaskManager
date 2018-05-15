@@ -117,3 +117,14 @@ class User:
     def add_task(self, tid):
         self.tasks['task'].append(tid)
 
+
+class Scheduler():
+    def __init__(self, weekday, title, basic_description, sid):
+        self.weekday = weekday
+        self.title = title
+        self.basic_description = basic_description
+        self.sid = sid
+
+
+
+
