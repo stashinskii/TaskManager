@@ -110,6 +110,8 @@ def data_from_json(type, current):
                     parent = task_dict['parent']
                     tid = task_dict['tid']
                     subtasks = task_dict['subtasks']
+                    planned = task_dict['planned']
+                    changed = task_dict['changed']
 
                     new_task = TrackedTask(
                         tid,
@@ -127,7 +129,9 @@ def data_from_json(type, current):
                         reminder,
                         priority,
                         parent,
-                        subtasks
+                        subtasks,
+                        changed,
+                        planned
                     )
                     if task_dict['parent'] is None:
                         tracked_tasks.append(new_task)
@@ -245,8 +249,9 @@ def delete_simple_task(simple_tasks, num, tracked_tasks):
 
 
 # Далее работа с Трекером дел
-def add_tracked_task(all_tasks, simple_tasks, tid, title, description, start, end, tag, dash, author,
-                   observers, executor, cancel_sync, is_completed, reminder, priority, users, current, parent, subtasks):
+def add_tracked_task(all_tasks, simple_tasks, tid, title, description, start, end, tag,
+                    dash, author,observers, executor, cancel_sync, is_completed,
+                    reminder, priority, users, current, parent, subtasks, changed, planned):
     from TManLibrary import Sync
     if start > end:
         raise ValueError("ERROR! Start date GT end date")
@@ -266,7 +271,9 @@ def add_tracked_task(all_tasks, simple_tasks, tid, title, description, start, en
         str(reminder.hour) +":"+str(reminder.minute),
         priority,
         parent,
-        subtasks
+        subtasks,
+        changed,
+        planned
     ))
     resave_tracked_json(all_tasks)
     #data_to_json(all_tasks, all_tasks[-1])

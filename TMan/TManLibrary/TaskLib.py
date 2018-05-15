@@ -31,8 +31,9 @@ class SimpleListTask(Task):
 
 class EventCalendar(Task):
     """Сущность события календаря"""
-    def __init__(self, title, date, description, priority, tid):
+    def __init__(self, title, date, description, priority, tid, planned):
         Task.__init__(self, title, date, description, priority, tid)
+        self.planned = planned
 
     def __str__(self):
         return self.title
@@ -40,8 +41,8 @@ class EventCalendar(Task):
 
 class TrackedTask:
     """Базовый класс для сущности задачи и подзадачи трекинговой системы"""
-    def __init__(self, tid, title, description, start, end, tag, dash, author,
-                 observers, executor, cancel_sync, is_completed, reminder, priority, parent, subtasks):
+    def __init__(self, tid, title, description, start, end, tag, dash, author, observers,
+                 executor, cancel_sync, is_completed, reminder, priority, parent, subtasks, changed, planned):
         self.title = title
         self.tid = tid
         self.description = description
@@ -58,6 +59,8 @@ class TrackedTask:
         self.reminder = reminder
         self.parent = parent
         self.subtasks = subtasks
+        self.planned = planned
+        self.changed = changed
 
 
     def complete(self):

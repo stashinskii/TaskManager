@@ -85,7 +85,7 @@ class Console:
 
             return TManLibrary.add_tracked_task(
                 all_tasks, simple_tasks, tid, title, description, start,end, tag, dash,
-                author, observers, executor, cancel_sync, False, reminder, priority, users, current_user, parent, [])
+                author, observers, executor, cancel_sync, False, reminder, priority, users, current_user, parent, [], None, False)
         except ValueError as e:
             print(e)
             logging.warning(e)
@@ -117,7 +117,7 @@ class Console:
             print(all_tasks[global_index].subtasks)
             return TManLibrary.add_tracked_task(
                 all_tasks, None, tid, title, description, start, end, tag, dash,
-                author, observers, executor, True, False, reminder, priority, users, current_user, parent_id, [])
+                author, observers, executor, True, False, reminder, priority, users, current_user, parent_id, [], None, False)
         except ValueError as e:
             logging.warning("Some troubles while adding subtask. Probably DATE/TIME or PRIORITY")
             print(e)
@@ -343,10 +343,40 @@ class Console:
                 click.echo(click.style(x.title,bg='red', fg='white'))
 
     @staticmethod
+    def add_scheduler_task(events, all_tasks, current, simple_tasks, users):
+        """Если в задачах на сегодня нету planned= True и оно попадает в этот день, то создаем"""
+        current_events = [x for x in events if date(x.date.year, x.date.month, x.date.day) == date.today()]
+        weekday = calendar.day_name[date.today().weekday()][0:3]
+        config = configparser.ConfigParser()
+        config.read(data_dir + "/scheduler.ini")
+        for section in config.sections():
+            weekdays = config.get(section, 'weekday').split(" ")
+            if weekday in weekdays:
+                title = config.get(section, 'title')
+                description = config.get(section, 'basic_description')
+                for x in current_events:
+                    if x.planned is True and x.title == title:
+                        pass
+                    else:
+                        today = TManLibrary.check_date(
+                            str(date.today().year)+":"+str(date.today().month)+":"+str(date.today().day))
+                        TManLibrary.add_tracked_task(
+                            all_tasks, simple_tasks, TManLibrary.tid_gen(), title, description, today,
+                            today, "Planned", "Planned",
+                            current.uid, None, None, True, False, TManLibrary.check_time("00:00"),
+                            str(TManLibrary.Priority['high'].value), users, current, None, [], None, True)
+                        #пересчитываем все данные
+                        (current, simple_tasks, tracked_tasks, calendar_events, all_tasks) = Console.import_all_data(users)
+                        current_events = [x for x in events if date(x.date.year, x.date.month, x.date.day) == date.today()]
+
+
+
+
+    @staticmethod
     def add_scheduler():
         click.secho("Choose list of days of the week, title,\nbasic description of your future task  ",
                     bg="green", fg="white", bold=True)
-        click.secho("Sample of input weekdays: wed thu mon  ",
+        click.secho("Sample of input weekdays: Wed Tue Mon  ",
                     bg="yellow", fg="white")
         title = input("Input title of shelduler's task: ")
         desc = input("Input small and common description: ")
@@ -365,13 +395,14 @@ class Console:
             weekdays = weekdays + " " + day
         #
         config = configparser.ConfigParser()
-        config.read(data_dir+"scheduler.ini")
         section = new_scheduler.sid
 
         config.add_section(section)
         config.set(section, 'title', new_scheduler.title)
         config.set(section, 'basic_description', new_scheduler.basic_description)
         config.set(section, 'weekday', weekdays)
-        
+
         with open(data_dir+"/scheduler.ini", 'a+') as f:
             config.write(f)
+
+

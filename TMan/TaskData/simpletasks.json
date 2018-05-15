@@ -1,20 +1,29 @@
 [
   {
-    "tid": "5b0e3032-56c1-11e8-9532-ec0ec42aa9f1",
-    "date": "2018-5-15",
-    "tag": "-",
-    "title": "Hello, world",
     "priority": "3",
+    "tag": "-",
+    "date": "2018-5-15",
+    "tid": "5b0e3032-56c1-11e8-9532-ec0ec42aa9f1",
+    "is_completed": false,
     "description": "-",
-    "is_completed": false
+    "title": "Hello, world"
   },
   {
-    "tid": "25764578-585f-11e8-82aa-ec0ec42aa9f1",
-    "date": "2018-5-15",
-    "tag": "",
-    "title": "Добавить подробное описание задач и поделиться с пользователями",
     "priority": "1",
+    "tag": "",
+    "date": "2018-5-15",
+    "tid": "25764578-585f-11e8-82aa-ec0ec42aa9f1",
+    "is_completed": false,
     "description": "",
-    "is_completed": false
+    "title": "Добавить подробное описание задач и поделиться с пользователями"
+  },
+  {
+    "priority": "3",
+    "tag": "-",
+    "date": "2018-5-15",
+    "tid": "3dafc678-5869-11e8-82aa-ec0ec42aa9f1",
+    "is_completed": false,
+    "description": "-",
+    "title": "Добавить планировщик, удаление, списки и сортировку по приоритетам"
   }
 ]

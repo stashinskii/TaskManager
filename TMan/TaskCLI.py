@@ -32,6 +32,7 @@ def cli(chuser, setuser, current):
             Console.show_current(users)
         else:
             (current_user, simple_tasks, tracked_tasks, calendar_events, all_tasks) = Console.import_all_data(users)
+            Console.add_scheduler_task(calendar_events, all_tasks, current_user, simple_tasks, users)
     except IOError as e:
         pass
     except Exception as e:
