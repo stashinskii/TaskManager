@@ -1,5 +1,4 @@
 from .TaskLib import *
-from .Synchronizer import *
 import logging
 import json
 import uuid
@@ -7,7 +6,7 @@ from datetime import datetime
 
 
 # TODO настроить автоматическое расположение файлов
-data_dir = '/home/herman/Рабочий стол/TaskTracker/taskmanager/TMan/TaskData'
+data_dir = '/home/herman/Рабочий стол/TaskTracker/src/TMan/TaskData'
 
 
 # задаем конфигурацию логгирования
@@ -37,15 +36,18 @@ def add_simple_task(users, current, simple_tasks, title, date, description, prio
 
 def check_date(date):
     time_format_one = "%b %d, %Y"
-    time_format_two = "%Y-%m-%d"
+    if (date is None):
+        raise ValueError
 
     try:
         date = datetime.strptime(date, time_format_one)
     except ValueError:
-        date = datetime.strptime(date, time_format_two)
+        date = datetime.now()
     return date
 
+
 def check_time(mytime):
+
     time_format = "%H:%M"
     mytime = datetime.strptime(mytime, time_format)
     return mytime
@@ -246,6 +248,8 @@ def delete_simple_task(simple_tasks, num, tracked_tasks):
 def add_tracked_task(all_tasks, simple_tasks, tid, title, description, start, end, tag, dash, author,
                    observers, executor, cancel_sync, is_completed, reminder, priority, users, current, parent, subtasks):
     from TManLibrary import Sync
+    if start > end:
+        raise ValueError("ERROR! Start date GT end date")
     all_tasks.append(TrackedTask(
         tid,
         title,
@@ -264,16 +268,11 @@ def add_tracked_task(all_tasks, simple_tasks, tid, title, description, start, en
         parent,
         subtasks
     ))
-    data_to_json(all_tasks, all_tasks[-1])
+    resave_tracked_json(all_tasks)
+    #data_to_json(all_tasks, all_tasks[-1])
     add_user_task(users, current, tid, "Task")
-
-    a = all_tasks[-1].get_time()
-    print(a)
-
     if cancel_sync != True:
         Sync.to_todo(users, current, simple_tasks, title, tid, description, priority, is_completed, end, tag)
-
-
 
 
 def resave_tracked_json(tracked_tasks):
@@ -314,9 +313,11 @@ def show_tracked_task(tracked_tasks, all_tasks):
     except TypeError as e:
         logging.warning('Unable to show tasks')
 
+
 def str_to_uuid(str_id):
     """UUID строку в UUID"""
     return uuid.UUID(str_id)
+
 
 def uuid_to_datetime(uuid_id):
     """UUID в объект datetime"""

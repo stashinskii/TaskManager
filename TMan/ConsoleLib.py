@@ -5,7 +5,7 @@ import TManLibrary
 from datetime import datetime, timedelta, date
 import calendar
 
-data_dir = '/home/herman/Рабочий стол/TaskTracker/taskmanager/TMan/TaskData'
+data_dir = '/home/herman/Рабочий стол/TaskTracker/src/TMan/TaskData'
 
 class Console:
     """Класс для организации работы с терминалом."""
@@ -17,6 +17,7 @@ class Console:
             name = input("Name: ")
             surname = input("Surname: ")
             TManLibrary.add_user(users, name, surname, login, {"simple": [], "task": [], "event": []})
+
 
     @staticmethod
     def import_users():
@@ -82,6 +83,9 @@ class Console:
             return TManLibrary.add_tracked_task(
                 tracked_tasks, simple_tasks, tid, title, description, start,end, tag, dash,
                 author, observers, executor, cancel_sync, False, reminder, priority, users, current_user, parent, [])
+        except ValueError as e:
+            print(e)
+            logging.warning(e)
         except Exception as e:
             print(e)
             logging.warning("Some troubles while adding task")
@@ -91,24 +95,32 @@ class Console:
 
         """subtask -  параметр Click, номер задачи"""
 
-        title = input("Input title: ")
-        start = TManLibrary.check_date(input("Choose start date: "))
-        end = TManLibrary.check_date(input("Choose end date: "))
-        description = input("Add some info about task: ")
-        tid = TManLibrary.tid_gen()
-        dash = input("Choose dashboard: ")
-        tag = input("Add #tag to this task: ")
-        observers = None  # TODO здесь указать объект пользователя в системе или его uid
-        executor = None  # TODO здесь указать объект пользователя в системе или его uid
-        priority = str(TManLibrary.Priority[input("Choose priority: ")].value)
-        author = current_user.uid
-        reminder = TManLibrary.check_time(input("Reminder: "))
-        parent_id = tracked_tasks[subtask-1].tid
-        global_index = all_tasks.index(tracked_tasks[subtask-1])
-        all_tasks[global_index].subtasks.append(tid)
-        return TManLibrary.add_tracked_task(
-            all_tasks, None, tid, title, description, start, end, tag, dash,
-            author, observers, executor, True, False, reminder, priority, users, current_user, parent_id, [])
+        try:
+            title = input("Input title: ")
+            start = TManLibrary.check_date(input("Choose start date: "))
+            end = TManLibrary.check_date(input("Choose end date: "))
+            description = input("Add some info about task: ")
+            tid = TManLibrary.tid_gen()
+            dash = input("Choose dashboard: ")
+            tag = input("Add #tag to this task: ")
+            observers = None  # TODO здесь указать объект пользователя в системе или его uid
+            executor = None  # TODO здесь указать объект пользователя в системе или его uid
+            priority = str(TManLibrary.Priority[input("Choose priority: ")].value)
+            author = current_user.uid
+            reminder = TManLibrary.check_time(input("Reminder: "))
+            parent_id = tracked_tasks[subtask-1].tid
+            global_index = all_tasks.index(tracked_tasks[subtask-1])
+            all_tasks[global_index].subtasks.append(tid)
+            print(all_tasks[global_index].subtasks)
+            return TManLibrary.add_tracked_task(
+                all_tasks, None, tid, title, description, start, end, tag, dash,
+                author, observers, executor, True, False, reminder, priority, users, current_user, parent_id, [])
+        except ValueError as e:
+            logging.warning("Some troubles while adding subtask. Probably DATE/TIME or PRIORITY")
+            print(e)
+        except Exception:
+            logging.warning("Some unexpected troubles while adding subtask")
+            print("Some unexpected troubles while adding subtask")
 
     @staticmethod
     def add_simple_task(users, current_user, simple_tasks):
@@ -165,38 +177,48 @@ class Console:
             print(e)
 
     @staticmethod
-    def edit_task(task, tracked_tasks, simple_tasks, all_tasks):
+    def open_nano(data, num):
+        os.system("echo \"{}\" >> {}".format(data[num], "/tmp/tman_tempdata.tmp"))
+        os.system("nano {}".format("/tmp/tman_tempdata.tmp"))
+        file = open("/tmp/tman_tempdata.tmp")
+        data[num] = file.read()[0:-1]
+        os.system("rm /tmp/tman_tempdata.tmp")
+        return data
+
+    @staticmethod
+    def edit_task(task_num, task_field,  tracked_tasks, simple_tasks, all_tasks):
         try:
-            if (task - 1) > len(tracked_tasks):
+            if (task_num - 1) > len(tracked_tasks):
                 raise IndexError("Out of range")
-            edit = tracked_tasks[task - 1]
+            edit = tracked_tasks[task_num - 1]
             # получаем индекс редактируемой задачи относительно коллекции всех задач
 
             task_index = all_tasks.index(edit)
-
+            # или можно сделать из объекта dict и работать с ним прямо по названию task_field
             data = []
             data.append(edit.title)
             data.append(edit.start.date())
             data.append(edit.end.date())
             data.append(edit.description)
-            for x in data:
-                os.system("echo \"{}\" >> {}".format(x, "/tmp/tman_tempdata.tmp"))
-            os.system("nano {}".format("/tmp/tman_tempdata.tmp"))
-            data = []
-            file = open("/tmp/tman_tempdata.tmp")
-            for line in file:
-                data.append(line[0:-1])
-            os.system("rm /tmp/tman_tempdata.tmp")
-            if len(data) != 4:
-                raise Exception("Incorrect data")
+
+            if task_field == "title":
+                data = Console.open_nano(data, 0)
+            elif task_field == "start":
+                data = Console.open_nano(data, 1)
+            elif task_field == "end":
+                data = Console.open_nano(data, 2)
+            elif task_field == "description":
+                data = Console.open_nano(data, 3)
             else:
-                all_tasks[task_index].title = data[0]
-                all_tasks[task_index].start = TManLibrary.check_date(data[1])
-                all_tasks[task_index].end = TManLibrary.check_date(data[2])
-                all_tasks[task_index].description = data[3]
+                raise ValueError("ERROR! Unsupported field!")
+
+            all_tasks[task_index].title = data[0]
+            all_tasks[task_index].start = TManLibrary.check_date(str(data[1]))
+            all_tasks[task_index].end = TManLibrary.check_date(str(data[2]))
+            all_tasks[task_index].description = data[3]
             TManLibrary.resave_tracked_json(all_tasks)
 
-            if tracked_tasks[task-1].cancel_sync != True:
+            if tracked_tasks[task_num-1].cancel_sync != True:
                 TManLibrary.Sync.sync_changes_todo(all_tasks[task_index], simple_tasks)
         except Exception as e:
             logging.warning(e)
@@ -269,10 +291,9 @@ class Console:
         for subtask in all_tasks:
             if subtask.parent == tracked_tasks[task-1].tid and subtask.is_completed == False:
                 raise Exception("You have undone subtasks! Done them all before you finish this one!")
-
-        tracked_tasks[task-1].complete()
-
-        TManLibrary.resave_tracked_json(tracked_tasks)
+        global_index = all_tasks.index(tracked_tasks[task-1])
+        all_tasks[global_index].complete()
+        TManLibrary.resave_tracked_json(all_tasks)
 
     @staticmethod
     def done_subtask(task, all_tasks, tracked_tasks):

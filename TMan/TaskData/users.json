@@ -1,15 +1,10 @@
 [
   {
-    "name": "Herman",
     "uid": "165cae50-56c1-11e8-9532-ec0ec42aa9f1",
-    "surname": "Stashynski",
-    "login": "herman",
-    "current": true,
     "tasks": {
       "simple": [
         "5b0e3032-56c1-11e8-9532-ec0ec42aa9f1"
       ],
-      "event": [],
       "task": [
         "5b0e3032-56c1-11e8-9532-ec0ec42aa9f1",
         "32f81828-56c2-11e8-9532-ec0ec42aa9f1",
@@ -17,8 +12,17 @@
         "95e88d28-56cc-11e8-9532-ec0ec42aa9f1",
         "281dc8d4-56d2-11e8-af79-ec0ec42aa9f1",
         "6b32534c-56d2-11e8-af79-ec0ec42aa9f1",
-        "8ab3fc3e-56d2-11e8-af79-ec0ec42aa9f1"
-      ]
-    }
+        "8ab3fc3e-56d2-11e8-af79-ec0ec42aa9f1",
+        "661c58da-584e-11e8-82aa-ec0ec42aa9f1",
+        "618c796e-5851-11e8-82aa-ec0ec42aa9f1",
+        "5c7a1a16-5852-11e8-82aa-ec0ec42aa9f1",
+        "a6ff115e-5852-11e8-82aa-ec0ec42aa9f1"
+      ],
+      "event": []
+    },
+    "login": "herman",
+    "current": true,
+    "surname": "Stashynski",
+    "name": "Herman"
   }
 ]

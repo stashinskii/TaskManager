@@ -19,9 +19,7 @@ current_user = None
               help='Добавить пользователя')
 @click.option('--current', is_flag=True,
               help='Просмотеть текущего полльзователя')
-@click.option('--reminder', is_flag=True,
-              help='Перепросмотреть текущие напоминания (за 5 часов)')
-def cli(chuser, setuser, current, reminder):
+def cli(chuser, setuser, current):
     click.clear()
     global simple_tasks, tracked_tasks, calendar_events, current_user, users, all_tasks
     try:
@@ -32,8 +30,6 @@ def cli(chuser, setuser, current, reminder):
             Console.create_new_user(users)
         elif (current):
             Console.show_current(users)
-        elif (reminder):
-            os.system("python3 /home/herman/Рабочий\ стол/TaskTracker/taskmanager/TMan/TManReminder.py restart")
         else:
             (current_user, simple_tasks, tracked_tasks, calendar_events, all_tasks) = Console.import_all_data(users)
     except IOError as e:
@@ -154,7 +150,7 @@ def info(task, todo, event):
 
 
 @cli.command()
-@click.option('--task', type=int,
+@click.option('--task', type=(int, str),
               help='Опция для редактирования задач')
 @click.option('--todo', type=int,
               help='Опция для редактирования todo')
@@ -164,7 +160,9 @@ def edit(task, todo, event):
     """Просмотра подробной информации"""
     global simple_tasks, tracked_tasks, calendar_events
     if task:
-        Console.edit_task(task, tracked_tasks, simple_tasks, all_tasks)
+        task_num = task[0]
+        task_field = task[1]
+        Console.edit_task(task_num, task_field, tracked_tasks, simple_tasks, all_tasks)
     elif todo:
         Console.edit_task(todo, simple_tasks)
     elif event:

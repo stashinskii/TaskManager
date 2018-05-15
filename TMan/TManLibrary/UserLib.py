@@ -3,7 +3,7 @@ import uuid
 import logging
 import json
 
-data_dir = '/home/herman/Рабочий стол/TaskTracker/taskmanager/TMan/TaskData'
+data_dir = '/home/herman/Рабочий стол/TaskTracker/src/TMan/TaskData'
 
 
 def set_current(users):
