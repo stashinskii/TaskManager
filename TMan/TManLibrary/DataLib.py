@@ -35,7 +35,7 @@ def add_simple_task(users, current, simple_tasks, title, date, description, prio
 
 
 def check_date(date):
-    time_format_one = "%b %d, %Y"
+    time_format_one = "%Y-%m-%d"
     if (date is None):
         raise ValueError
 

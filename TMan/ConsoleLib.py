@@ -345,31 +345,36 @@ class Console:
     @staticmethod
     def add_scheduler_task(events, all_tasks, current, simple_tasks, users):
         """Если в задачах на сегодня нету planned= True и оно попадает в этот день, то создаем"""
-        current_events = [x for x in events if date(x.date.year, x.date.month, x.date.day) == date.today()]
-        weekday = calendar.day_name[date.today().weekday()][0:3]
         config = configparser.ConfigParser()
         config.read(data_dir + "/scheduler.ini")
+        weekday = calendar.day_name[date.today().weekday()][0:3]
         for section in config.sections():
             weekdays = config.get(section, 'weekday').split(" ")
-            if weekday in weekdays:
+            status = None
+            # есили status = False, то не добавляем
+            if config.get(section, 'last_added') is not "":
+                is_added = TManLibrary.check_date(config.get(section, 'last_added'))
+                if is_added.date() == datetime.today().date():
+                    status = False
+                else:
+                    status = True
+            else:
+                status = True
+            if weekday in weekdays and status is True:
+                today = TManLibrary.check_date(
+                    str(date.today().year) + "-" + str(date.today().month) + "-" + str(date.today().day))
                 title = config.get(section, 'title')
                 description = config.get(section, 'basic_description')
-                for x in current_events:
-                    if x.planned is True and x.title == title:
-                        pass
-                    else:
-                        today = TManLibrary.check_date(
-                            str(date.today().year)+":"+str(date.today().month)+":"+str(date.today().day))
-                        TManLibrary.add_tracked_task(
-                            all_tasks, simple_tasks, TManLibrary.tid_gen(), title, description, today,
-                            today, "Planned", "Planned",
-                            current.uid, None, None, True, False, TManLibrary.check_time("00:00"),
-                            str(TManLibrary.Priority['high'].value), users, current, None, [], None, True)
-                        #пересчитываем все данные
-                        (current, simple_tasks, tracked_tasks, calendar_events, all_tasks) = Console.import_all_data(users)
-                        current_events = [x for x in events if date(x.date.year, x.date.month, x.date.day) == date.today()]
-
-
+                config.set(section, 'last_added', str(date.today().year)
+                           + "-" + str(date.today().month) + "-" + str(date.today().day))
+                TManLibrary.add_tracked_task(
+                    all_tasks, simple_tasks, TManLibrary.tid_gen(), title, description, today,
+                    today, "Planned", "Planned",
+                    current.uid, None, None, True, False, TManLibrary.check_time("00:00"),
+                    str(TManLibrary.Priority['high'].value), users, current, None, [], None, True)
+        with open(data_dir+"/scheduler.ini", 'w') as f:
+            config.write(f)
+        return Console.import_all_data(users)
 
 
     @staticmethod
@@ -384,7 +389,7 @@ class Console:
         #sid - schelduler ID
         sid = TManLibrary.tid_gen()
         week_list = weeks.split(" ")
-        new_scheduler = TManLibrary.Scheduler(week_list, title, desc, sid)
+        new_scheduler = TManLibrary.Scheduler(week_list, title, desc, sid, None)
         Console.scheduler_cfg(new_scheduler)
 
     @staticmethod
@@ -401,6 +406,7 @@ class Console:
         config.set(section, 'title', new_scheduler.title)
         config.set(section, 'basic_description', new_scheduler.basic_description)
         config.set(section, 'weekday', weekdays)
+        config.set(section, 'last_added', "")
 
         with open(data_dir+"/scheduler.ini", 'a+') as f:
             config.write(f)

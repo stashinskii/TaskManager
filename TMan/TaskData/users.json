@@ -1,6 +1,9 @@
 [
   {
+    "surname": "Stashynski",
+    "name": "Herman",
     "uid": "165cae50-56c1-11e8-9532-ec0ec42aa9f1",
+    "current": true,
     "login": "herman",
     "tasks": {
       "event": [],
@@ -12,7 +15,8 @@
         "c349c28a-585e-11e8-82aa-ec0ec42aa9f1",
         "e94e85e2-585e-11e8-82aa-ec0ec42aa9f1",
         "25764578-585f-11e8-82aa-ec0ec42aa9f1",
-        "3dafc678-5869-11e8-82aa-ec0ec42aa9f1"
+        "3dafc678-5869-11e8-82aa-ec0ec42aa9f1",
+        "5696cb10-58cc-11e8-a98d-ec0ec42aa9f1"
       ],
       "task": [
         "5b0e3032-56c1-11e8-9532-ec0ec42aa9f1",
@@ -161,11 +165,11 @@
         "a5dd4511-5871-11e8-82aa-ec0ec42aa9f1",
         "a5dd453c-5871-11e8-82aa-ec0ec42aa9f1",
         "a5dd4568-5871-11e8-82aa-ec0ec42aa9f1",
-        "a5dd4595-5871-11e8-82aa-ec0ec42aa9f1"
+        "a5dd4595-5871-11e8-82aa-ec0ec42aa9f1",
+        "f2f515a1-58d0-11e8-a98d-ec0ec42aa9f1",
+        "35c1ea54-58d1-11e8-a98d-ec0ec42aa9f1",
+        "a9ee01c5-58d1-11e8-a98d-ec0ec42aa9f1"
       ]
-    },
-    "surname": "Stashynski",
-    "name": "Herman",
-    "current": true
+    }
   }
 ]

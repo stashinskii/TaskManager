@@ -1,29 +1,38 @@
 [
   {
+    "date": "2018-5-15",
+    "description": "-",
     "priority": "3",
     "tag": "-",
-    "date": "2018-5-15",
     "tid": "5b0e3032-56c1-11e8-9532-ec0ec42aa9f1",
-    "is_completed": false,
-    "description": "-",
-    "title": "Hello, world"
+    "title": "Hello, world",
+    "is_completed": false
   },
   {
+    "date": "2018-5-15",
+    "description": "",
     "priority": "1",
     "tag": "",
-    "date": "2018-5-15",
     "tid": "25764578-585f-11e8-82aa-ec0ec42aa9f1",
-    "is_completed": false,
-    "description": "",
-    "title": "Добавить подробное описание задач и поделиться с пользователями"
+    "title": "Добавить подробное описание задач и поделиться с пользователями",
+    "is_completed": false
   },
   {
+    "date": "2018-5-15",
+    "description": "-",
     "priority": "3",
     "tag": "-",
-    "date": "2018-5-15",
     "tid": "3dafc678-5869-11e8-82aa-ec0ec42aa9f1",
-    "is_completed": false,
+    "title": "Добавить планировщик, удаление, списки и сортировку по приоритетам",
+    "is_completed": false
+  },
+  {
+    "date": "2018-5-16",
     "description": "-",
-    "title": "Добавить планировщик, удаление, списки и сортировку по приоритетам"
+    "priority": "low",
+    "tag": "-",
+    "tid": "5696cb10-58cc-11e8-a98d-ec0ec42aa9f1",
+    "title": "sd",
+    "is_completed": false
   }
 ]

@@ -122,11 +122,12 @@ class User:
 
 
 class Scheduler():
-    def __init__(self, weekday, title, basic_description, sid):
+    def __init__(self, weekday, title, basic_description, sid, last_added):
         self.weekday = weekday
         self.title = title
         self.basic_description = basic_description
         self.sid = sid
+        self.last_added = last_added
 
 
 
