@@ -160,19 +160,30 @@ def info(task, todo, event):
               help='Опция для редактирования задач')
 @click.option('--todo', type=int,
               help='Опция для редактирования todo')
-@click.option('--event', type=int,
-              help='Опция для редактирования события в календаре')
-def edit(task, todo, event):
+def edit(task, todo):
     """Просмотра подробной информации"""
-    global simple_tasks, tracked_tasks, calendar_events, all_users_tasks
-    if task:
-        task_num = task[0]
-        task_field = task[1]
-        Console.edit_task(task_num, task_field, all_users_tasks, tracked_tasks, simple_tasks, all_tasks)
-    elif todo:
-        Console.edit_task(todo, simple_tasks)
-    elif event:
-        pass
+    global simple_tasks, tracked_tasks, calendar_events, all_users_tasksm, current_user
+    try:
+        if task:
+            task_num = task[0]
+            task_field = task[1]
+            Console.edit_task(current_user, task_num, task_field, all_users_tasks, tracked_tasks, simple_tasks, all_tasks)
+        elif todo:
+            Console.edit_task(todo, simple_tasks)
+    except ValueError as e:
+        print(e)
+
+@cli.command()
+@click.option('--tag', type = str)
+@click.option('--value', type=click.Choice(['high', 'medium', 'low']))
+def showtools(tag, value):
+    """Форматированный вывод по заданным критериям"""
+    global tracked_tasks, users
+    if tag:
+        Console.show_by_tag(tag, tracked_tasks)
+    elif value:
+        priority = TManLibrary.Priority[value]
+        Console.show_by_priority(priority, tracked_tasks, users)
 
 
 if __name__ == '__main__':

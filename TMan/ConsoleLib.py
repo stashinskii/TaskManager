@@ -193,7 +193,11 @@ class Console:
         return data
 
     @staticmethod
-    def edit_task(task_num, task_field, all_users_tasks,  tracked_tasks, simple_tasks, all_tasks):
+    def edit_task(current, task_num, task_field, all_users_tasks,  tracked_tasks, simple_tasks, all_tasks):
+        author_name = tracked_tasks[task_num-1].author
+        if author_name != current.uid:
+            raise ValueError("Access denied")
+            logging.warning("Trying to get access to other user's task")
         try:
             if (task_num - 1) > len(tracked_tasks):
                 raise IndexError("Out of range")
@@ -415,4 +419,29 @@ class Console:
         with open(data_dir+"/scheduler.ini", 'a+') as f:
             config.write(f)
 
+    @staticmethod
+    def show_by_priority(priority, tracked_tasks, users):
+        tasks = [x for x in tracked_tasks if x.priority is priority]
+        for task in tasks:
+            if task.is_completed:
+                marker = "X"
+            else:
+                marker = " "
+            click.echo(
+                click.style('['+marker+']'+' - '+task.title+'\n', bg='blue', fg='white')
+                +click.style(task.description, bg='green', fg='white')+"\n"
+                +click.style("From: "+str(task.start)+" - To: "+ str(task.end), bg='green', fg='white') + "\n"
+                +click.style("Author: "+TManLibrary.get_login(task.author, users), bg='green', fg='white') + "\n"
+                +click.style("#"+task.tag, bg='red', fg='white') + "\n")
 
+    @staticmethod
+    def show_by_tag(tag, tracked_tasks):
+        #переделать на классы-теги
+        tasks = [x for x in tracked_tasks if x.tag == tag]
+        for task in tasks:
+            if task.is_completed:
+                marker = "X"
+            else:
+                marker = " "
+            click.echo(
+                click.style('[' + marker + ']' + ' - ' + task.title + '\n', bg='blue', fg='white'))

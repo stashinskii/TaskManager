@@ -283,7 +283,7 @@ def add_tracked_task(all_tasks, simple_tasks, tid, title, description, start, en
         changed,
         planned
     ))
-    resave_tracked_json(all_tasks) 
+    resave_tracked_json(all_tasks)
     from TManLibrary import UserLib
     #data_to_json(all_tasks, all_tasks[-1])
     add_user_task(users, current, tid, "Task")

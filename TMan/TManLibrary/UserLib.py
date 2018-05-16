@@ -23,6 +23,12 @@ def get_user(login, users):
     raise Exception("There is no such user")
 
 
+def get_login(uid, users):
+    for user in users:
+        if user.uid == uid:
+            return user.login
+    raise Exception("There is no such user")
+
 def change_user(users, login):
     """
     Смена текущего пользователя

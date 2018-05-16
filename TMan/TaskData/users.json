@@ -1,36 +1,43 @@
 [
   {
-    "uid": "9c53792a-58d4-11e8-a98d-ec0ec42aa9f1",
-    "surname": "12",
     "name": "ola",
-    "current": true,
+    "current": false,
+    "uid": "9c53792a-58d4-11e8-a98d-ec0ec42aa9f1",
+    "login": "herman1",
+    "surname": "12",
     "tasks": {
-      "event": [],
-      "simple": [],
       "task": [
         "d5e057b6-590c-11e8-a98d-ec0ec42aa9f1",
         "128c733e-590d-11e8-a98d-ec0ec42aa9f1",
         "7d883d1c-590d-11e8-a98d-ec0ec42aa9f1",
-        "8c163bf4-590d-11e8-a98d-ec0ec42aa9f1"
-      ]
-    },
-    "login": "herman1"
+        "8c163bf4-590d-11e8-a98d-ec0ec42aa9f1",
+        "97c1df78-5910-11e8-a98d-ec0ec42aa9f1",
+        "b057d308-5910-11e8-a98d-ec0ec42aa9f1",
+        "7364be58-5914-11e8-a98d-ec0ec42aa9f1",
+        "3b889d0a-5915-11e8-a98d-ec0ec42aa9f1",
+        "25e3ff86-5919-11e8-a98d-ec0ec42aa9f1"
+      ],
+      "simple": [],
+      "event": []
+    }
   },
   {
-    "uid": "165cae50-56c1-11e8-9532-ec0ec42aa9f1",
-    "surname": "Stashynski",
     "name": "Herman",
-    "current": false,
+    "current": true,
+    "uid": "165cae50-56c1-11e8-9532-ec0ec42aa9f1",
+    "login": "herman",
+    "surname": "Stashynski",
     "tasks": {
-      "event": [],
-      "simple": [],
       "task": [
         "a3a1ca78-590c-11e8-a98d-ec0ec42aa9f1",
         "02f1f9f8-590d-11e8-a98d-ec0ec42aa9f1",
         "7d883d1c-590d-11e8-a98d-ec0ec42aa9f1",
-        "a6171c6c-590d-11e8-a98d-ec0ec42aa9f1"
-      ]
-    },
-    "login": "herman"
+        "a6171c6c-590d-11e8-a98d-ec0ec42aa9f1",
+        "b057d308-5910-11e8-a98d-ec0ec42aa9f1",
+        "25e3ff86-5919-11e8-a98d-ec0ec42aa9f1"
+      ],
+      "simple": [],
+      "event": []
+    }
   }
 ]
