@@ -59,6 +59,7 @@ def data_from_json(type, current):
     tracked_tasks = []
     users = []
     all_tasks = []
+    all_users_tasks = []
     try:
         if type == "TODO":
             with open(data_dir+'/simpletasks.json', 'r') as todo_task_file:
@@ -93,27 +94,26 @@ def data_from_json(type, current):
                 task_data = json.load(task_file)
 
             for task_dict in task_data:
-                if task_dict['tid'] in current.tasks['task']:
-                    title = task_dict['title']
-                    start = check_date(task_dict['start'])
-                    end = check_date(task_dict['end'])
-                    description = task_dict['description']
-                    dash = task_dict['dash']
-                    tag = task_dict['tag']
-                    observers = task_dict['observers']
-                    executor = task_dict['executor']
-                    priority = Priority[Priority(int(task_dict['priority'])).name]
-                    author = task_dict['author']
-                    reminder = check_time(task_dict['reminder'])
-                    cancel_sync = task_dict['cancel_sync']
-                    is_completed = task_dict['is_completed']
-                    parent = task_dict['parent']
-                    tid = task_dict['tid']
-                    subtasks = task_dict['subtasks']
-                    planned = task_dict['planned']
-                    changed = task_dict['changed']
+                title = task_dict['title']
+                start = check_date(task_dict['start'])
+                end = check_date(task_dict['end'])
+                description = task_dict['description']
+                dash = task_dict['dash']
+                tag = task_dict['tag']
+                observers = task_dict['observers']
+                executor = task_dict['executor']
+                priority = Priority[Priority(int(task_dict['priority'])).name]
+                author = task_dict['author']
+                reminder = check_time(task_dict['reminder'])
+                cancel_sync = task_dict['cancel_sync']
+                is_completed = task_dict['is_completed']
+                parent = task_dict['parent']
+                tid = task_dict['tid']
+                subtasks = task_dict['subtasks']
+                planned = task_dict['planned']
+                changed = task_dict['changed']
 
-                    new_task = TrackedTask(
+                new_task = TrackedTask(
                         tid,
                         title,
                         description,
@@ -133,12 +133,15 @@ def data_from_json(type, current):
                         changed,
                         planned
                     )
-                    if task_dict['parent'] is None:
+                if task_dict['parent'] is None:
+                    if task_dict['tid'] in current.tasks['task']:
                         tracked_tasks.append(new_task)
                         all_tasks.append(new_task)
-                    else:
-                        all_tasks.append(new_task)
-            return tracked_tasks, all_tasks
+                    all_users_tasks.append(new_task)
+                else:
+                    all_tasks.append(new_task)
+                    all_users_tasks.append(new_task)
+            return tracked_tasks, all_tasks, all_users_tasks
 
         elif type == "User":
             with open(data_dir+'/users.json', 'r') as file:
@@ -161,7 +164,7 @@ def data_from_json(type, current):
         return []
 
 
-def data_to_json(collection, object):
+def data_to_json(collect, object):
     """
     Сохраняем состояние коллекции файле. В качестве аргумента передаем готовый слоаврь объекта
     В зависимости от типа передаваемого объекта, выбираем конкретные файлы для загрузки
@@ -253,6 +256,11 @@ def add_tracked_task(all_tasks, simple_tasks, tid, title, description, start, en
                     dash, author,observers, executor, cancel_sync, is_completed,
                     reminder, priority, users, current, parent, subtasks, changed, planned):
     from TManLibrary import Sync
+    if observers != "":
+        observers = observers.split(",")
+        print(observers)
+    else:
+        observers = []
     if start > end:
         raise ValueError("ERROR! Start date GT end date")
     all_tasks.append(TrackedTask(
@@ -275,9 +283,15 @@ def add_tracked_task(all_tasks, simple_tasks, tid, title, description, start, en
         changed,
         planned
     ))
-    resave_tracked_json(all_tasks)
+    resave_tracked_json(all_tasks) 
+    from TManLibrary import UserLib
     #data_to_json(all_tasks, all_tasks[-1])
     add_user_task(users, current, tid, "Task")
+    for us in observers:
+        if us!=current.login:
+            user = UserLib.get_user(us, users)
+            add_user_task(users, user, tid, "Task")
+
     if cancel_sync != True:
         Sync.to_todo(users, current, simple_tasks, title, tid, description, priority, is_completed, end, tag)
 

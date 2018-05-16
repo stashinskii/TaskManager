@@ -16,6 +16,13 @@ def set_current(users):
     raise Exception("There is no current user")
 
 
+def get_user(login, users):
+    for user in users:
+        if user.login == login:
+            return user
+    raise Exception("There is no such user")
+
+
 def change_user(users, login):
     """
     Смена текущего пользователя

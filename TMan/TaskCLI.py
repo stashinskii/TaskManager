@@ -6,6 +6,7 @@ simple_tasks = []
 tracked_tasks = []
 calendar_events = []
 all_tasks = []
+all_users_tasks = []
 
 
 users = []
@@ -21,7 +22,7 @@ current_user = None
               help='Просмотеть текущего полльзователя')
 def cli(chuser, setuser, current):
     click.clear()
-    global simple_tasks, tracked_tasks, calendar_events, current_user, users, all_tasks
+    global simple_tasks, tracked_tasks, calendar_events, current_user, users, all_tasks, all_users_tasks
     try:
         users = Console.import_users()
         if (chuser):
@@ -31,8 +32,8 @@ def cli(chuser, setuser, current):
         elif (current):
             Console.show_current(users)
         else:
-            (current_user, simple_tasks, tracked_tasks, calendar_events, all_tasks) = Console.import_all_data(users)
-            (current_user, simple_tasks, tracked_tasks, calendar_events, all_tasks) = Console.add_scheduler_task(
+            (current_user, simple_tasks, tracked_tasks, calendar_events, all_tasks, all_users_tasks) = Console.import_all_data(users)
+            (current_user, simple_tasks, tracked_tasks, calendar_events, all_tasks, all_users_tasks) = Console.add_scheduler_task(
                 calendar_events, all_tasks, current_user, simple_tasks, users)
     except IOError as e:
         pass
@@ -53,12 +54,12 @@ def cli(chuser, setuser, current):
               help='Опция для добавления в todo')
 def add(task, subtask, todo, plan):
     """Добавление задачи"""
-    global simple_tasks, tracked_tasks, calendar_events, current_user, users, subtasks
+    global simple_tasks, tracked_tasks, calendar_events, current_user, users, subtasks, all_users_tasks
 
     if task:
-        tracked_tasks = Console.add_task(current_user, all_tasks, users, simple_tasks)
+        tracked_tasks = Console.add_task(current_user, all_tasks, all_users_tasks, users, simple_tasks)
     elif subtask:
-        subtasks = Console.add_subtask(current_user, all_tasks, tracked_tasks, users, subtask)
+        subtasks = Console.add_subtask(current_user, all_tasks, all_users_tasks, simple_tasks, tracked_tasks, users, subtask)
     elif plan:
         Console.add_scheduler()
     elif todo:
@@ -106,14 +107,14 @@ def list(task, todo, event):
               help='Опция для выполнения подзадачи')
 def done(task, todo, subtask):
     """Выполнение задачи по номеру"""
-    global simple_tasks, tracked_tasks, calendar_events
+    global simple_tasks, tracked_tasks, calendar_events, all_users_tasks, all_tasks
     try:
         if task:
-            Console.done_task(task, all_tasks, tracked_tasks)
+            Console.done_task(task, all_tasks, tracked_tasks, all_users_tasks)
         elif todo:
             Console.done_todo(todo, simple_tasks)
         elif subtask:
-            Console.done_subtask(subtask, all_tasks, tracked_tasks)
+            Console.done_subtask(subtask, all_tasks, tracked_tasks, all_users_tasks)
 
     except Exception as e:
         print(e)
@@ -163,11 +164,11 @@ def info(task, todo, event):
               help='Опция для редактирования события в календаре')
 def edit(task, todo, event):
     """Просмотра подробной информации"""
-    global simple_tasks, tracked_tasks, calendar_events
+    global simple_tasks, tracked_tasks, calendar_events, all_users_tasks
     if task:
         task_num = task[0]
         task_field = task[1]
-        Console.edit_task(task_num, task_field, tracked_tasks, simple_tasks, all_tasks)
+        Console.edit_task(task_num, task_field, all_users_tasks, tracked_tasks, simple_tasks, all_tasks)
     elif todo:
         Console.edit_task(todo, simple_tasks)
     elif event:

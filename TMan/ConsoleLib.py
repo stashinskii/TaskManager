@@ -51,13 +51,13 @@ class Console:
         """
         current_user = TManLibrary.set_current(users)
         simple_tasks = TManLibrary.data_from_json("TODO", current_user)
-        tracked_tasks, all_tasks = TManLibrary.data_from_json("Task", current_user)
+        tracked_tasks, all_tasks, all_users_tasks = TManLibrary.data_from_json("Task", current_user)
         events = TManLibrary.Sync.to_event(tracked_tasks)
-        return (current_user, simple_tasks, tracked_tasks, events, all_tasks)
+        return (current_user, simple_tasks, tracked_tasks, events, all_tasks, all_users_tasks)
 
 
     @staticmethod
-    def add_task(current_user, all_tasks, users, simple_tasks):
+    def add_task(current_user, all_tasks, all_users_tasks, users, simple_tasks):
         """
         Добавление новой задачи трекера. Возвращает измененную коллекцию с новым элементом
         """
@@ -70,7 +70,11 @@ class Console:
             description = input("Add some info about task: ")
             dash = input("Choose dashboard: ")
             tag = input("Add #tag to this task: ")
-            observers = None  # TODO здесь указать объект пользователя в системе или его uid
+            observers = input("Please, input logins to share task:")
+            if observers != "":
+                observers+=',{}'.format(current_user.login)
+            else:
+                observers = current_user.login
             executor = None  # TODO здесь указать объект пользователя в системе или его uid
             priority = str(TManLibrary.Priority[input("Choose priority: ")].value)
             author = current_user.uid
@@ -84,7 +88,7 @@ class Console:
                 cancel_sync = False
 
             return TManLibrary.add_tracked_task(
-                all_tasks, simple_tasks, tid, title, description, start,end, tag, dash,
+                all_users_tasks, simple_tasks, tid, title, description, start,end, tag, dash,
                 author, observers, executor, cancel_sync, False, reminder, priority, users, current_user, parent, [], None, False)
         except ValueError as e:
             print(e)
@@ -94,7 +98,7 @@ class Console:
             logging.warning("Some troubles while adding task")
 
     @staticmethod
-    def add_subtask(current_user, all_tasks, tracked_tasks, users, subtask):
+    def add_subtask(current_user, all_tasks, all_users_tasks, simple_tasks, tracked_tasks,  users, subtask):
 
         """subtask -  параметр Click, номер задачи"""
 
@@ -106,7 +110,7 @@ class Console:
             tid = TManLibrary.tid_gen()
             dash = input("Choose dashboard: ")
             tag = input("Add #tag to this task: ")
-            observers = None  # TODO здесь указать объект пользователя в системе или его uid
+            observers = ','.join(tracked_tasks[subtask-1].observers)
             executor = None  # TODO здесь указать объект пользователя в системе или его uid
             priority = str(TManLibrary.Priority[input("Choose priority: ")].value)
             author = current_user.uid
@@ -116,14 +120,14 @@ class Console:
             all_tasks[global_index].subtasks.append(tid)
             print(all_tasks[global_index].subtasks)
             return TManLibrary.add_tracked_task(
-                all_tasks, None, tid, title, description, start, end, tag, dash,
+                all_users_tasks, simple_tasks, tid, title, description, start, end, tag, dash,
                 author, observers, executor, True, False, reminder, priority, users, current_user, parent_id, [], None, False)
         except ValueError as e:
             logging.warning("Some troubles while adding subtask. Probably DATE/TIME or PRIORITY")
             print(e)
-        except Exception:
+        except Exception as e:
             logging.warning("Some unexpected troubles while adding subtask")
-            print("Some unexpected troubles while adding subtask")
+            print("Some unexpected troubles while adding subtask\n+{}".format(e))
 
     @staticmethod
     def add_simple_task(users, current_user, simple_tasks):
@@ -189,14 +193,14 @@ class Console:
         return data
 
     @staticmethod
-    def edit_task(task_num, task_field,  tracked_tasks, simple_tasks, all_tasks):
+    def edit_task(task_num, task_field, all_users_tasks,  tracked_tasks, simple_tasks, all_tasks):
         try:
             if (task_num - 1) > len(tracked_tasks):
                 raise IndexError("Out of range")
             edit = tracked_tasks[task_num - 1]
             # получаем индекс редактируемой задачи относительно коллекции всех задач
 
-            task_index = all_tasks.index(edit)
+            task_index = all_users_tasks.index(edit)
             # или можно сделать из объекта dict и работать с ним прямо по названию task_field
             data = []
             data.append(edit.title)
@@ -215,14 +219,14 @@ class Console:
             else:
                 raise ValueError("ERROR! Unsupported field!")
 
-            all_tasks[task_index].title = data[0]
-            all_tasks[task_index].start = TManLibrary.check_date(str(data[1]))
-            all_tasks[task_index].end = TManLibrary.check_date(str(data[2]))
-            all_tasks[task_index].description = data[3]
-            TManLibrary.resave_tracked_json(all_tasks)
+            all_users_tasks[task_index].title = data[0]
+            all_users_tasks[task_index].start = TManLibrary.check_date(str(data[1]))
+            all_users_tasks[task_index].end = TManLibrary.check_date(str(data[2]))
+            all_users_tasks[task_index].description = data[3]
+            TManLibrary.resave_tracked_json(all_users_tasks)
 
             if tracked_tasks[task_num-1].cancel_sync != True:
-                TManLibrary.Sync.sync_changes_todo(all_tasks[task_index], simple_tasks)
+                TManLibrary.Sync.sync_changes_todo(all_users_tasks[task_index], simple_tasks)
         except Exception as e:
             logging.warning(e)
             print(e)
@@ -290,16 +294,16 @@ class Console:
 
     #TODO - переделать на DataLib
     @staticmethod
-    def done_task(task, all_tasks, tracked_tasks):
+    def done_task(task, all_tasks, tracked_tasks, all_users_tasks):
         for subtask in all_tasks:
             if subtask.parent == tracked_tasks[task-1].tid and subtask.is_completed == False:
                 raise Exception("You have undone subtasks! Done them all before you finish this one!")
-        global_index = all_tasks.index(tracked_tasks[task-1])
-        all_tasks[global_index].complete()
-        TManLibrary.resave_tracked_json(all_tasks)
+        global_index = all_users_tasks.index(tracked_tasks[task-1])
+        all_users_tasks[global_index].complete()
+        TManLibrary.resave_tracked_json(all_users_tasks)
 
     @staticmethod
-    def done_subtask(task, all_tasks, tracked_tasks):
+    def done_subtask(task, all_tasks, tracked_tasks, all_users_tasks):
         """
         Тут не делим вывод с маркером, т.к. с GUI такой вывод не требуется ввиду обычного выделения подзадачи из списка
         Cначала генерируем список с tid подзадач текущей задачи, затем генерируем список этих подзадач - т.е. связанных
@@ -323,9 +327,9 @@ class Console:
                        + " - " + click.style(subtask.title, bg="red"))
 
         choose = int(input("Choose subtask: "))
-        global_index = all_tasks.index(tid_subtasks[choose - 1])
-        all_tasks[global_index].complete()
-        TManLibrary.resave_tracked_json(all_tasks)
+        global_index = all_users_tasks.index(tid_subtasks[choose - 1])
+        all_users_tasks[global_index].complete()
+        TManLibrary.resave_tracked_json(all_users_tasks)
 
     @staticmethod
     def show_week(events):
