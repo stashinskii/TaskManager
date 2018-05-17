@@ -2,8 +2,9 @@ from .DataLib import *
 import uuid
 import logging
 import json
+import os
 
-data_dir = '/home/herman/Рабочий стол/TaskTracker/src/TMan/TaskData'
+data_dir = os.environ['HOME']+'/tmandata/'
 
 
 def set_current(users):
@@ -79,6 +80,12 @@ def add_user(users, name, surname, login, tasks):
 
 def delete_user(users, user):
     pass
+
+
+def logout(users):
+    for user in users:
+        user.current = False
+    resave_users_json(users)
 
 
 def add_user_task(users, user, tid, type):

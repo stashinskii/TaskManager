@@ -7,7 +7,7 @@ import calendar
 import configparser
 
 
-data_dir = '/home/herman/Рабочий стол/TaskTracker/src/TMan/TaskData'
+data_dir = os.environ['HOME']+'/tmandata/'
 
 
 class Console:
@@ -421,6 +421,8 @@ class Console:
 
     @staticmethod
     def show_by_priority(priority, tracked_tasks, users):
+        if not isinstance(priority, TManLibrary.Priority):
+            raise TypeError("Incorrect priority type")
         tasks = [x for x in tracked_tasks if x.priority is priority]
         for task in tasks:
             if task.is_completed:

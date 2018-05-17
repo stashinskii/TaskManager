@@ -1,9 +1,9 @@
 [
   {
-    "name": "ola",
-    "current": false,
     "uid": "9c53792a-58d4-11e8-a98d-ec0ec42aa9f1",
+    "name": "ola",
     "login": "herman1",
+    "current": true,
     "surname": "12",
     "tasks": {
       "task": [
@@ -22,10 +22,10 @@
     }
   },
   {
-    "name": "Herman",
-    "current": true,
     "uid": "165cae50-56c1-11e8-9532-ec0ec42aa9f1",
+    "name": "Herman",
     "login": "herman",
+    "current": false,
     "surname": "Stashynski",
     "tasks": {
       "task": [
@@ -36,6 +36,18 @@
         "b057d308-5910-11e8-a98d-ec0ec42aa9f1",
         "25e3ff86-5919-11e8-a98d-ec0ec42aa9f1"
       ],
+      "simple": [],
+      "event": []
+    }
+  },
+  {
+    "uid": "testid",
+    "name": "Test",
+    "login": "testuser",
+    "current": false,
+    "surname": "Test",
+    "tasks": {
+      "task": [],
       "simple": [],
       "event": []
     }

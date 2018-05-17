@@ -2,11 +2,13 @@ from .TaskLib import *
 import logging
 import json
 import uuid
+import os
 from datetime import datetime
 
-
-# TODO настроить автоматическое расположение файлов
-data_dir = '/home/herman/Рабочий стол/TaskTracker/src/TMan/TaskData'
+#при отсутствии такой директории - создаем её
+data_dir = os.environ['HOME']+'/tmandata'
+if not os.path.exists(data_dir):
+    os.makedirs(data_dir)
 
 
 # задаем конфигурацию логгирования
@@ -60,6 +62,13 @@ def data_from_json(type, current):
     users = []
     all_tasks = []
     all_users_tasks = []
+    files = ['/simpletasks.json', '/trackedtasks.json', '/users.json']
+    for file in files:
+        if not os.path.isfile(data_dir+file):
+            f = open(data_dir+'/simpletasks.json', "w+")
+            f.write('[]')
+            f.close()
+
     try:
         if type == "TODO":
             with open(data_dir+'/simpletasks.json', 'r') as todo_task_file:
@@ -258,7 +267,6 @@ def add_tracked_task(all_tasks, simple_tasks, tid, title, description, start, en
     from TManLibrary import Sync
     if observers != "":
         observers = observers.split(",")
-        print(observers)
     else:
         observers = []
     if start > end:
@@ -291,7 +299,6 @@ def add_tracked_task(all_tasks, simple_tasks, tid, title, description, start, en
         if us!=current.login:
             user = UserLib.get_user(us, users)
             add_user_task(users, user, tid, "Task")
-
     if cancel_sync != True:
         Sync.to_todo(users, current, simple_tasks, title, tid, description, priority, is_completed, end, tag)
 

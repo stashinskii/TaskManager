@@ -1,5 +1,5 @@
 from ConsoleLib import *
-import DeamonLib
+import os
 
 # Коллекции, хранящие задачи
 simple_tasks = []
@@ -32,7 +32,8 @@ def cli(chuser, setuser, current):
         elif (current):
             Console.show_current(users)
         else:
-            (current_user, simple_tasks, tracked_tasks, calendar_events, all_tasks, all_users_tasks) = Console.import_all_data(users)
+            (current_user, simple_tasks, tracked_tasks,
+             calendar_events, all_tasks, all_users_tasks) = Console.import_all_data(users)
             (current_user, simple_tasks, tracked_tasks, calendar_events, all_tasks, all_users_tasks) = Console.add_scheduler_task(
                 calendar_events, all_tasks, current_user, simple_tasks, users)
     except IOError as e:
