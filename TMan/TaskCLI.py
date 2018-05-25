@@ -32,16 +32,16 @@ def cli(chuser, setuser, current):
         elif (current):
             Console.show_current(users)
         else:
-            (current_user, simple_tasks, tracked_tasks,
+            (current_user, tracked_tasks,
              calendar_events, all_tasks, all_users_tasks) = Console.import_all_data(users)
-            (current_user, simple_tasks, tracked_tasks, calendar_events, all_tasks, all_users_tasks) = Console.add_scheduler_task(
-                calendar_events, all_tasks, current_user, simple_tasks, users)
+            (current_user, tracked_tasks, calendar_events, all_tasks, all_users_tasks) = Console.add_scheduler_task(
+                calendar_events, all_tasks, current_user, users)
     except IOError as e:
         pass
-    except Exception as e:
-        print(e)
-        logging.warning("Some troubles while open app")
-        raise click.Abort()
+    #except Exception as e:
+    #    print(e)
+    #    logging.warning("Some troubles while open app")
+    #    raise click.Abort()
 
 
 @cli.command()
@@ -51,20 +51,33 @@ def cli(chuser, setuser, current):
               help='Опция для добавления подзадачи')
 @click.option('--plan', is_flag=True,
               help='Задать конфигурацию планировщика')
-@click.option('--todo', is_flag=True,
-              help='Опция для добавления в todo')
-def add(task, subtask, todo, plan):
+@click.option('-sd', type=str,
+              help='Начало')
+@click.option('-ed', type=str,
+              help='Конец')
+@click.option('-tg', type=str,
+              help='Тег')
+@click.option('-de', type=str,
+              help='Описание')
+@click.option('-ti', type=str,
+              help='Название')
+@click.option('-re', type=str,
+              help='Название')
+@click.option('-ob', type=str,
+              help='Наблюдатели')
+@click.option('-pr', type=str,
+              help='Приоритет')
+def add(task, subtask, plan, sd, ed, tg, de, ti, re, ob, pr):
     """Добавление задачи"""
-    global simple_tasks, tracked_tasks, calendar_events, current_user, users, subtasks, all_users_tasks
-
+    global tracked_tasks, calendar_events, current_user, users, subtasks, all_users_tasks
     if task:
-        tracked_tasks = Console.add_task(current_user, all_tasks, all_users_tasks, users, simple_tasks)
+        tracked_tasks = Console.add_task(current_user, all_tasks, all_users_tasks, users, sd, ed, tg, de, ti, re, ob, pr)
     elif subtask:
-        subtasks = Console.add_subtask(current_user, all_tasks, all_users_tasks, simple_tasks, tracked_tasks, users, subtask)
+        subtasks = Console.add_subtask(current_user, all_tasks, all_users_tasks, tracked_tasks, users, subtask,
+                                       sd, ed, tg, de, ti, re, ob, pr)
     elif plan:
         Console.add_scheduler()
-    elif todo:
-        simple_tasks = Console.add_simple_task(users, current_user, simple_tasks)
+
 
 
 @cli.command()
@@ -84,17 +97,13 @@ def cal(week, month):
 @cli.command()
 @click.option('--task', is_flag=True,
               help='Опция для просмотра задач')
-@click.option('--todo', is_flag=True,
-              help='Опция для просмотра todo')
 @click.option('--event', is_flag=True,
               help='Опция для просмотра события в календаре')
-def list(task, todo, event):
+def list(task, event):
     """Просмотр всех задач"""
     global simple_tasks, tracked_tasks, calendar_events
     if task:
         Console.list_task(tracked_tasks, all_tasks)
-    elif todo:
-        Console.list_todo(simple_tasks)
     elif event:
         pass
 
@@ -102,8 +111,6 @@ def list(task, todo, event):
 @cli.command()
 @click.option('--task', type=int,
               help='Опция для выполнения задачи')
-@click.option('--todo', type=int,
-              help='Опция для выполнения todo')
 @click.option('--subtask', type=int,
               help='Опция для выполнения подзадачи')
 def done(task, todo, subtask):
@@ -112,8 +119,6 @@ def done(task, todo, subtask):
     try:
         if task:
             Console.done_task(task, all_tasks, tracked_tasks, all_users_tasks)
-        elif todo:
-            Console.done_todo(todo, simple_tasks)
         elif subtask:
             Console.done_subtask(subtask, all_tasks, tracked_tasks, all_users_tasks)
 
@@ -125,33 +130,23 @@ def done(task, todo, subtask):
 @cli.command()
 @click.option('--task', type=int,
               help='Опция для удаления задачи')
-@click.option('--todo', type=int,
-              help='Опция для удаления todo')
-@click.option('--event', type=int,
-              help='Опция для удаления события')
-def delete(task, todo, event):
+def delete(task):
     """Удаление задачи по номеру"""
     global simple_tasks, tracked_tasks, calendar_events
     if task:
         pass
-    elif todo:
-        Console.delete_todo(todo, simple_tasks, tracked_tasks)
 
 
 @cli.command()
 @click.option('--task', type=int,
               help='Опция для просмотра задач')
-@click.option('--todo', type=int,
-              help='Опция для просмотра todo')
 @click.option('--event', type=int,
               help='Опция для просмотра события в календаре')
-def info(task, todo, event):
+def info(task, event):
     """Просмотра подробной информации"""
     global simple_tasks, tracked_tasks, calendar_events
     if task:
         pass
-    elif todo:
-        Console.info_todo(todo, simple_tasks)
     elif event:
         pass
 
@@ -159,18 +154,16 @@ def info(task, todo, event):
 @cli.command()
 @click.option('--task', type=(int, str),
               help='Опция для редактирования задач')
-@click.option('--todo', type=int,
-              help='Опция для редактирования todo')
-def edit(task, todo):
+
+def edit(task):
     """Просмотра подробной информации"""
     global simple_tasks, tracked_tasks, calendar_events, all_users_tasksm, current_user
     try:
         if task:
             task_num = task[0]
             task_field = task[1]
-            Console.edit_task(current_user, task_num, task_field, all_users_tasks, tracked_tasks, simple_tasks, all_tasks)
-        elif todo:
-            Console.edit_task(todo, simple_tasks)
+            Console.edit_task(current_user, task_num, task_field, all_users_tasks, tracked_tasks, all_tasks)
+
     except ValueError as e:
         print(e)
 

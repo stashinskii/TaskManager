@@ -1,6 +1,7 @@
 from .UserLib import *
 import enum
 
+
 class Task:
     """Базовый класс для задачи списка дел и события календаря"""
     def __init__(self, title, date, description, priority, tid):
@@ -9,24 +10,6 @@ class Task:
         self.description = description
         self.priority = priority
         self.tid = tid
-
-
-class SimpleListTask(Task):
-    """Сущность задачи списка дел"""
-    def __init__(self, title, date, description, priority, tid, is_completed, tag):
-        Task.__init__(self, title, date, description, priority, tid)
-        self.is_completed = is_completed
-        self.tag = tag
-
-    def __str__(self):
-        return self.title
-
-    def complete(self):
-        """Метод завершения задачи и перевод в статус DONE"""
-        if self.is_completed:
-            self.is_completed = False
-        else:
-            self.is_completed = True
 
 
 class EventCalendar(Task):
@@ -41,8 +24,8 @@ class EventCalendar(Task):
 
 class TrackedTask:
     """Базовый класс для сущности задачи и подзадачи трекинговой системы"""
-    def __init__(self, tid, title, description, start, end, tag, dash, author, observers,
-                 executor, cancel_sync, is_completed, reminder, priority, parent, subtasks, changed, planned):
+    def __init__(self, tid, title, description, start, end, tag, author, observers,
+                 executor, is_completed, reminder, priority, parent, subtasks, changed, planned):
         self.title = title
         self.tid = tid
         self.description = description
@@ -51,11 +34,9 @@ class TrackedTask:
         self.end = end
         self.author = author
         self.tag = tag
-        self.dash = dash
         self.observers = observers
         self.executor = executor
         self.is_completed = is_completed
-        self.cancel_sync = cancel_sync
         self.reminder = reminder
         self.parent = parent
         self.subtasks = subtasks

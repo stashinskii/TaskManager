@@ -5,6 +5,7 @@ import uuid
 import os
 from datetime import datetime
 
+
 #при отсутствии такой директории - создаем её
 data_dir = os.environ['HOME']+'/tmandata'
 if not os.path.exists(data_dir):
@@ -22,18 +23,6 @@ logging.basicConfig(filename="tasklog.log", level=logging.WARNING,
 def tid_gen():
     """Генерирует task id"""
     return str(uuid.uuid1())
-
-
-def add_simple_task(users, current, simple_tasks, title, date, description, priority, tid, is_completed, tag):
-    """Добавление задачи в список дел"""
-    simple_tasks.append(SimpleListTask(
-        title, str(date.year)+"-"+str(date.month)+"-"+str(date.day),
-        description, priority, tid, is_completed, tag))
-
-    data_to_json(simple_tasks, simple_tasks[-1])
-    logging.info('TODO task added. TID: {}'.format(tid))
-    add_user_task(users, current, tid, "TODO")
-    return simple_tasks
 
 
 def check_date(date):
@@ -57,48 +46,19 @@ def check_time(mytime):
 
 def data_from_json(type, current):
     """Загрузка задач из файла"""
-    simple_tasks = []
     tracked_tasks = []
     users = []
     all_tasks = []
     all_users_tasks = []
-    files = ['/simpletasks.json', '/trackedtasks.json', '/users.json']
+    files = ['/trackedtasks.json', '/users.json']
     for file in files:
         if not os.path.isfile(data_dir+file):
-            f = open(data_dir+'/simpletasks.json', "w+")
+            f = open(data_dir+file, "w+")
             f.write('[]')
             f.close()
 
     try:
-        if type == "TODO":
-            with open(data_dir+'/simpletasks.json', 'r') as todo_task_file:
-                simple_data = json.load(todo_task_file)
-
-            for task_dict in simple_data:
-                """
-                Загрузка задач, которые принадлежат пользователю
-                """
-                if task_dict['tid'] in current.tasks['simple']:
-                    title = task_dict['title']
-                    tid = task_dict['tid']
-                    date = task_dict['date']
-                    description = task_dict['description']
-                    priority = task_dict['priority']
-                    tag = task_dict['tag']
-                    is_completed = task_dict['is_completed']
-                    new_task = SimpleListTask(
-                        title,
-                        date,
-                        description,
-                        priority,
-                        tid,
-                        is_completed,
-                        tag
-                    )
-                    simple_tasks.append(new_task)
-            return simple_tasks
-
-        elif type=="Task":
+        if type=="Task":
             with open(data_dir+'/trackedtasks.json', 'r') as task_file:
                 task_data = json.load(task_file)
 
@@ -107,14 +67,12 @@ def data_from_json(type, current):
                 start = check_date(task_dict['start'])
                 end = check_date(task_dict['end'])
                 description = task_dict['description']
-                dash = task_dict['dash']
                 tag = task_dict['tag']
                 observers = task_dict['observers']
                 executor = task_dict['executor']
                 priority = Priority[Priority(int(task_dict['priority'])).name]
                 author = task_dict['author']
                 reminder = check_time(task_dict['reminder'])
-                cancel_sync = task_dict['cancel_sync']
                 is_completed = task_dict['is_completed']
                 parent = task_dict['parent']
                 tid = task_dict['tid']
@@ -129,11 +87,9 @@ def data_from_json(type, current):
                         start,
                         end,
                         tag,
-                        dash,
                         author,
                         observers,
                         executor,
-                        cancel_sync,
                         is_completed,
                         reminder,
                         priority,
@@ -178,14 +134,11 @@ def data_to_json(collect, object):
     Сохраняем состояние коллекции файле. В качестве аргумента передаем готовый слоаврь объекта
     В зависимости от типа передаваемого объекта, выбираем конкретные файлы для загрузки
     """
-    files = [data_dir+'/trackedtasks.json',
-             data_dir+'/simpletasks.json', data_dir+'/users.json']
+    files = [data_dir+'/trackedtasks.json', data_dir+'/users.json']
     if object.__class__.__name__ == 'TrackedTask':
         filename = files[0]
-    elif object.__class__.__name__ == 'SimpleListTask':
-        filename = files[1]
     elif object.__class__.__name__ == 'User':
-        filename = files[2]
+        filename = files[1]
     else:
         raise Exception("Unknown type of object")
 
@@ -205,47 +158,8 @@ def data_to_json(collect, object):
 
     return collection
 
-
-def show_simple_task(simple_tasks):
-    """Вывод всех заданий из списка дел с отметкой о статусе выполения и номером"""
-    try:
-        if simple_tasks is None:
-            raise TypeError("TODO collection is not list")
-        for task in simple_tasks:
-            if task.is_completed:
-                marker = "X"
-            else:
-                marker = " "
-            # Возвращаем строку со списком задач и их состоянием
-            yield ("[" + marker + "]" + " - " + str(simple_tasks.index(task)+1)
-                   + " - " + str(task.title))
-    except TypeError as e:
-        logging.warning('Unable to show todo tasks')
-
-
-def show_simple_info(simple_tasks, num):
-    """Показать подробную информацию по номеру"""
-    return simple_tasks[num-1]
-
-
-def resave_simple_json(simple_tasks):
-    """Пересохранение данных после изменения"""
-    data = []
-    for task in simple_tasks:
-        data.append(task.__dict__)
-
-    with open(data_dir+'/simpletasks.json', 'w') as todotaskfile:
-        json.dump(data, todotaskfile, indent=2, ensure_ascii=False)
-
-
-def complete_simple_task(simple_tasks, num):
-    """Пометить задачу как выполненную"""
-    simple_tasks[num-1].complete()
-    resave_simple_json(simple_tasks)
-    logging.info('TODO task was done/undone. TID: {}'.format(simple_tasks[num-1].tid))
-    return simple_tasks
-
-
+"""
+#TODO удалить и переделать на TrackedTask
 def delete_simple_task(simple_tasks, num, tracked_tasks):
     for task in tracked_tasks:
         if task.tid == simple_tasks[num-1].tid:
@@ -258,11 +172,12 @@ def delete_simple_task(simple_tasks, num, tracked_tasks):
     simple_tasks.__delitem__(num-1)
     resave_simple_json(simple_tasks)
     logging.info('TODO task was deleted. TID: {}'.format(deleted_tid))
+"""
 
 
 # Далее работа с Трекером дел
-def add_tracked_task(all_tasks, simple_tasks, tid, title, description, start, end, tag,
-                    dash, author,observers, executor, cancel_sync, is_completed,
+def add_tracked_task(all_tasks, tid, title, description, start, end, tag,
+                    author,observers, executor, is_completed,
                     reminder, priority, users, current, parent, subtasks, changed, planned):
     from TManLibrary import Sync
     if observers != "":
@@ -278,11 +193,9 @@ def add_tracked_task(all_tasks, simple_tasks, tid, title, description, start, en
         str(start.year)+"-"+str(start.month)+"-"+str(start.day),
         str(end.year) + "-" + str(end.month) + "-" + str(end.day),
         tag,
-        dash,
         author,
         observers,
         executor,
-        cancel_sync,
         is_completed,
         str(reminder.hour) +":"+str(reminder.minute),
         priority,
@@ -299,8 +212,6 @@ def add_tracked_task(all_tasks, simple_tasks, tid, title, description, start, en
         if us!=current.login:
             user = UserLib.get_user(us, users)
             add_user_task(users, user, tid, "Task")
-    if cancel_sync != True:
-        Sync.to_todo(users, current, simple_tasks, title, tid, description, priority, is_completed, end, tag)
 
 
 def resave_tracked_json(tracked_tasks):

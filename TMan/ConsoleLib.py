@@ -50,46 +50,38 @@ class Console:
         Загрузить все данные
         """
         current_user = TManLibrary.set_current(users)
-        simple_tasks = TManLibrary.data_from_json("TODO", current_user)
         tracked_tasks, all_tasks, all_users_tasks = TManLibrary.data_from_json("Task", current_user)
         events = TManLibrary.Sync.to_event(tracked_tasks)
-        return (current_user, simple_tasks, tracked_tasks, events, all_tasks, all_users_tasks)
+        return (current_user, tracked_tasks, events, all_tasks, all_users_tasks)
 
 
     @staticmethod
-    def add_task(current_user, all_tasks, all_users_tasks, users, simple_tasks):
+    def add_task(current_user, all_users_tasks, users, sd, ed, tg, de, ti, re, ob, pr):
         """
         Добавление новой задачи трекера. Возвращает измененную коллекцию с новым элементом
         """
         try:
             if current_user is None:
                 raise Exception("There is no current user. Choose one")
-            title = input("Input title: ")
-            start = TManLibrary.check_date(input("Choose start date: "))
-            end = TManLibrary.check_date(input("Choose end date: "))
-            description = input("Add some info about task: ")
-            dash = input("Choose dashboard: ")
-            tag = input("Add #tag to this task: ")
-            observers = input("Please, input logins to share task:")
-            if observers != "":
-                observers+=',{}'.format(current_user.login)
-            else:
-                observers = current_user.login
-            executor = None  # TODO здесь указать объект пользователя в системе или его uid
-            priority = str(TManLibrary.Priority[input("Choose priority: ")].value)
-            author = current_user.uid
-            reminder = TManLibrary.check_time(input("Reminder: "))
-            tid = TManLibrary.tid_gen()
-            parent = None
 
-            if click.confirm('Cancel sync w/ TODO list and events in calendar?', default=True):
-                cancel_sync = True
+            sd = TManLibrary.check_date(sd)
+            ed = TManLibrary.check_date(ed)
+            re = TManLibrary.check_time(re)
+            pr = str(TManLibrary.Priority[pr].value)
+
+            if ob != "":
+                ob+=',{}'.format(current_user.login)
             else:
-                cancel_sync = False
+                ob = current_user.login
+            executor = None
+            author = current_user.uid
+            parent = None
+            tid = TManLibrary.tid_gen()
 
             return TManLibrary.add_tracked_task(
-                all_users_tasks, simple_tasks, tid, title, description, start,end, tag, dash,
-                author, observers, executor, cancel_sync, False, reminder, priority, users, current_user, parent, [], None, False)
+                all_users_tasks, tid, ti, de, sd, ed, tg,
+                author, ob, executor, False, re, pr, users, current_user, parent, [], None, False)
+
         except ValueError as e:
             print(e)
             logging.warning(e)
@@ -98,30 +90,28 @@ class Console:
             logging.warning("Some troubles while adding task")
 
     @staticmethod
-    def add_subtask(current_user, all_tasks, all_users_tasks, simple_tasks, tracked_tasks,  users, subtask):
-
+    def add_subtask(current_user, all_tasks, all_users_tasks, tracked_tasks,  users, subtask,
+                    sd, ed, tg, de, ti, re, ob, pr):
         """subtask -  параметр Click, номер задачи"""
-
         try:
-            title = input("Input title: ")
-            start = TManLibrary.check_date(input("Choose start date: "))
-            end = TManLibrary.check_date(input("Choose end date: "))
-            description = input("Add some info about task: ")
-            tid = TManLibrary.tid_gen()
-            dash = input("Choose dashboard: ")
-            tag = input("Add #tag to this task: ")
-            observers = ','.join(tracked_tasks[subtask-1].observers)
-            executor = None  # TODO здесь указать объект пользователя в системе или его uid
-            priority = str(TManLibrary.Priority[input("Choose priority: ")].value)
+            sd = TManLibrary.check_date(sd)
+            ed = TManLibrary.check_date(ed)
+            re = TManLibrary.check_time(re)
+            pr = str(TManLibrary.Priority[pr].value)
+            if ob != "":
+                ob += ',{}'.format(current_user.login)
+            else:
+                ob = current_user.login
+            executor = None
             author = current_user.uid
-            reminder = TManLibrary.check_time(input("Reminder: "))
+            tid = TManLibrary.tid_gen()
             parent_id = tracked_tasks[subtask-1].tid
             global_index = all_tasks.index(tracked_tasks[subtask-1])
             all_tasks[global_index].subtasks.append(tid)
-            print(all_tasks[global_index].subtasks)
+
             return TManLibrary.add_tracked_task(
-                all_users_tasks, simple_tasks, tid, title, description, start, end, tag, dash,
-                author, observers, executor, True, False, reminder, priority, users, current_user, parent_id, [], None, False)
+                all_users_tasks, tid, ti, de, sd, ed, tg,
+                author, ob, executor, False, re, pr, users, current_user, parent_id, [], None, False)
         except ValueError as e:
             logging.warning("Some troubles while adding subtask. Probably DATE/TIME or PRIORITY")
             print(e)
@@ -130,38 +120,9 @@ class Console:
             print("Some unexpected troubles while adding subtask\n+{}".format(e))
 
     @staticmethod
-    def add_simple_task(users, current_user, simple_tasks):
-        """
-        Добавить задачу TO DO
-        """
-        try:
-            title = input("Input title: ")
-            date = TManLibrary.check_date(input("Choose date (YYYY-MM-DD): "))
-            description = input("Add some info about task: ")
-            priority = input("Choose priority: ")
-            tag = input("Add #tag to this task: ")
-            tid = TManLibrary.tid_gen()
-            is_completed = False
-            return TManLibrary.add_simple_task(users, current_user, simple_tasks, title, date,
-                                                   description, priority, tid, is_completed, tag)
-        except TypeError as e:
-            logging.warning("Trouble while input data at todo")
-            print("Trouble while input data at todo")
-        except Exception as e:
-            print(e)
-
-    @staticmethod
-    def list_todo(simple_tasks):
-        task_gen = TManLibrary.show_simple_task(simple_tasks)
-        for task in task_gen:
-            print(task)
-
-    @staticmethod
     def preorder_traversal(task, all_tasks):
         for subtasks in all_tasks:
             click.echo("subtasks.node")
-
-
 
     @staticmethod
     def list_task(tracked_tasks, all_tasks):
@@ -170,7 +131,6 @@ class Console:
             click.echo("[" + task[0] + "] - " + task[1] + " - " + click.style(
                 "Subtasks: " + task[2], bold=True, fg='yellow') + " - " + click.style(task[3], bold=True, bg='green'))
             # Тут можно сделать preorder traversal
-
 
 
     @staticmethod
@@ -193,7 +153,7 @@ class Console:
         return data
 
     @staticmethod
-    def edit_task(current, task_num, task_field, all_users_tasks,  tracked_tasks, simple_tasks, all_tasks):
+    def edit_task(current, task_num, task_field, all_users_tasks,  tracked_tasks, all_tasks):
         author_name = tracked_tasks[task_num-1].author
         if author_name != current.uid:
             raise ValueError("Access denied")
@@ -229,42 +189,10 @@ class Console:
             all_users_tasks[task_index].description = data[3]
             TManLibrary.resave_tracked_json(all_users_tasks)
 
-            if tracked_tasks[task_num-1].cancel_sync != True:
-                TManLibrary.Sync.sync_changes_todo(all_users_tasks[task_index], simple_tasks)
+
         except Exception as e:
             logging.warning(e)
             print(e)
-
-    @staticmethod
-    def edit_todo(todo, simple_tasks):
-        try:
-            if (todo - 1) > len(simple_tasks):
-                raise IndexError("Out of range")
-            edit = simple_tasks[todo - 1]
-            data = []
-            data.append(edit.title)
-            data.append(edit.date)
-            data.append(edit.tag)
-            data.append(edit.description)
-            for x in data:
-                os.system("echo \"{}\" >> {}".format(x, "/tmp/tman_tempdata.tmp"))
-            os.system("nano {}".format("/tmp/tman_tempdata.tmp"))
-            data = []
-            file = open("/tmp/tman_tempdata.tmp")
-            for line in file:
-                data.append(line[0:-1])
-            os.system("rm /tmp/tman_tempdata.tmp")
-            if len(data) != 4:
-                raise Exception("Incorrect data")
-            else:
-                simple_tasks[todo - 1].title = data[0]
-                simple_tasks[todo - 1].date = data[1]
-                simple_tasks[todo - 1].tag= data[2]
-                simple_tasks[todo - 1].description = data[3]
-            TManLibrary.resave_simple_json(simple_tasks)
-        except Exception as e:
-            print(e)
-
 
 
     @staticmethod
@@ -280,21 +208,6 @@ class Console:
             print(e)
             logging.warning("Something done wrong while deleting. Index was: {}".format(todo))
 
-    @staticmethod
-    def info_todo(todo, simple_tasks):
-        try:
-            if (todo - 1) > len(simple_tasks):
-                raise IndexError("Такой задачи не существует. Выход за границы списка")
-            selected_task = TManLibrary.show_simple_info(simple_tasks, todo)
-            click.echo(click.style("TODO Task description: \t\t\t", bold=True, blink=True, bg='green'))
-            click.echo("Title: "+click.style(str('\t\t' + selected_task.title), fg='white', bold=True))
-            click.echo("Description: " + click.style(str('\t' + selected_task.description), fg='yellow'))
-            click.echo("Date: " + click.style(str('\t\t' + selected_task.date), fg='yellow'))
-            click.echo("Tag: " + click.style(str('\t\t' + selected_task.tag), fg='yellow'))
-            click.echo("Is completed: " + click.style('\t' + str(selected_task.is_completed), fg='yellow'))
-        except IndexError as e:
-            logging.warning("Out of range while showing todo task info. Index was: {}".format(todo))
-            print(e)
 
     #TODO - переделать на DataLib
     @staticmethod
@@ -351,7 +264,7 @@ class Console:
                 click.echo(click.style(x.title,bg='red', fg='white'))
 
     @staticmethod
-    def add_scheduler_task(events, all_tasks, current, simple_tasks, users):
+    def add_scheduler_task(events, all_tasks, current, users):
         """Если в задачах на сегодня нету planned= True и оно попадает в этот день, то создаем"""
         config = configparser.ConfigParser()
         config.read(data_dir + "/scheduler.ini")
@@ -376,7 +289,7 @@ class Console:
                 config.set(section, 'last_added', str(date.today().year)
                            + "-" + str(date.today().month) + "-" + str(date.today().day))
                 TManLibrary.add_tracked_task(
-                    all_tasks, simple_tasks, TManLibrary.tid_gen(), title, description, today,
+                    all_tasks, TManLibrary.tid_gen(), title, description, today,
                     today, "Planned", "Planned",
                     current.uid, None, None, True, False, TManLibrary.check_time("00:00"),
                     str(TManLibrary.Priority['high'].value), users, current, None, [], None, True)

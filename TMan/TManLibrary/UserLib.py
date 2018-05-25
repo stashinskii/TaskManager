@@ -30,6 +30,7 @@ def get_login(uid, users):
             return user.login
     raise Exception("There is no such user")
 
+
 def change_user(users, login):
     """
     Смена текущего пользователя
