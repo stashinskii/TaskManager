@@ -1,13 +1,11 @@
 from ConsoleLib import *
-import os
+import logging
+
 
 # Коллекции, хранящие задачи
 tracked_tasks = []
-calendar_events = []
 all_tasks = []
 all_users_tasks = []
-
-
 users = []
 current_user = None
 
@@ -21,7 +19,7 @@ current_user = None
               help='Просмотеть текущего полльзователя')
 def cli(chuser, setuser, current):
     click.clear()
-    global tracked_tasks, calendar_events, current_user, users, all_tasks, all_users_tasks
+    global tracked_tasks, current_user, users, all_tasks, all_users_tasks
     try:
         users = Console.import_users()
         if (chuser):
@@ -31,11 +29,13 @@ def cli(chuser, setuser, current):
         elif (current):
             Console.show_current(users)
         else:
-
             (current_user, tracked_tasks,
-             calendar_events, all_tasks, all_users_tasks) = Console.import_all_data(users)
-            (current_user, tracked_tasks, calendar_events, all_tasks, all_users_tasks) = Console.add_scheduler_task(
-                calendar_events, all_tasks, current_user, users)
+             all_tasks, all_users_tasks) = Console.import_all_data(users)
+            (current_user, tracked_tasks, all_tasks, all_users_tasks) = \
+                Console.add_scheduler_task(
+                all_tasks,
+                current_user,
+                users)
     except IOError as e:
         pass
     except Exception as e:
@@ -69,7 +69,7 @@ def cli(chuser, setuser, current):
               help='Приоритет')
 def add(task, subtask, plan, sd, ed, tg, de, ti, re, ob, pr):
     """Добавление задачи"""
-    global tracked_tasks, calendar_events, current_user, users, subtasks, all_users_tasks
+    global tracked_tasks, current_user, users, subtasks, all_users_tasks
     if task:
         tracked_tasks = Console.add_task(current_user, all_users_tasks, users, sd, ed, tg, de, ti, re, ob, pr)
     elif subtask:
@@ -81,27 +81,13 @@ def add(task, subtask, plan, sd, ed, tg, de, ti, re, ob, pr):
 
 
 @cli.command()
-@click.option('--week', is_flag=True,
-              help='Опция для просмотра задач')
-@click.option('--month', is_flag=True,
-              help='Опция для просмотра todo')
-def cal(week, month):
-    """Работа с календарем"""
-    global simple_tasks, tracked_tasks, calendar_events
-    if week:
-        Console.show_week(calendar_events)
-    elif month:
-        pass
-
-
-@cli.command()
 @click.option('--task', is_flag=True,
               help='Опция для просмотра задач')
 @click.option('--event', is_flag=True,
               help='Опция для просмотра события в календаре')
 def list(task, event):
     """Просмотр всех задач"""
-    global simple_tasks, tracked_tasks, calendar_events
+    global simple_tasks, tracked_tasks
     if task:
         Console.list_task(tracked_tasks, all_tasks)
     elif event:
@@ -115,7 +101,7 @@ def list(task, event):
               help='Опция для выполнения подзадачи')
 def done(task, subtask):
     """Выполнение задачи по номеру"""
-    global simple_tasks, tracked_tasks, calendar_events, all_users_tasks, all_tasks
+    global simple_tasks, tracked_tasks, all_users_tasks, all_tasks
     try:
         if task:
             Console.done_task(task, all_tasks, tracked_tasks, all_users_tasks)
@@ -132,7 +118,7 @@ def done(task, subtask):
               help='Опция для удаления задачи')
 def delete(task):
     """Удаление задачи по номеру"""
-    global simple_tasks, tracked_tasks, calendar_events
+    global simple_tasks, tracked_tasks
     if task:
         pass
 
@@ -144,7 +130,7 @@ def delete(task):
               help='Опция для просмотра события в календаре')
 def info(task, event):
     """Просмотра подробной информации"""
-    global simple_tasks, tracked_tasks, calendar_events
+    global simple_tasks, tracked_tasks
     if task:
         pass
     elif event:
@@ -154,10 +140,9 @@ def info(task, event):
 @cli.command()
 @click.option('--task', type=(int, str),
               help='Опция для редактирования задач')
-
 def edit(task):
     """Просмотра подробной информации"""
-    global simple_tasks, tracked_tasks, calendar_events, all_users_tasksm, current_user
+    global simple_tasks, tracked_tasks, all_users_tasksm, current_user
     try:
         if task:
             task_num = task[0]

@@ -11,7 +11,9 @@ data_dir = os.environ['HOME']+'/tmandata/'
 
 
 class Console:
-    """Класс для организации работы с терминалом."""
+    """
+    Класс для организации работы с терминалом
+    """
 
     @staticmethod
     def create_new_user(users):
@@ -51,8 +53,7 @@ class Console:
         """
         current_user = TManLibrary.set_current(users)
         tracked_tasks, all_tasks, all_users_tasks = TManLibrary.data_from_json("Task", current_user)
-        events = TManLibrary.Sync.to_event(tracked_tasks)
-        return (current_user, tracked_tasks, events, all_tasks, all_users_tasks)
+        return (current_user, tracked_tasks, all_tasks, all_users_tasks)
 
 
     @staticmethod
@@ -365,7 +366,8 @@ class Console:
                 level = logging.WARNING
             else:
                 raise Exception
-            TManLibrary.loggingConfig.set_logging_config(level, str(format), str(file))
+            TManLibrary.loggingConfig.set_logging_config(level, str(format), str(file)
+                                                         )
         except ValueError:
             pass
         except Exception:

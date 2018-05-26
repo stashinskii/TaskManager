@@ -14,8 +14,8 @@
       <file leaf-file-name="TaskCLI.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/TaskCLI.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="469">
-              <caret line="193" column="43" lean-forward="true" selection-start-line="193" selection-start-column="43" selection-end-line="193" selection-end-column="43" />
+            <state relative-caret-position="594">
+              <caret line="42" column="17" selection-start-line="42" selection-start-column="17" selection-end-line="42" selection-end-column="17" />
               <folding>
                 <element signature="e#0#24#0" expanded="true" />
               </folding>
@@ -26,8 +26,8 @@
       <file leaf-file-name="LoggingConfig.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/TManLibrary/LoggingConfig.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="501">
-              <caret line="34" column="42" selection-start-line="34" selection-start-column="42" selection-end-line="34" selection-end-column="42" />
+            <state relative-caret-position="54">
+              <caret line="3" lean-forward="true" selection-start-line="3" selection-end-line="3" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -35,14 +35,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Synchronizer.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/TManLibrary/Synchronizer.py">
+      <file leaf-file-name="setup.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/setup.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="396">
-              <caret line="22" column="32" selection-start-line="22" selection-start-column="32" selection-end-line="22" selection-end-column="32" />
-              <folding>
-                <element signature="e#0#22#0" expanded="true" />
-              </folding>
+            <state>
+              <caret column="12" selection-start-column="12" selection-end-column="12" />
             </state>
           </provider>
         </entry>
@@ -50,8 +47,8 @@
       <file leaf-file-name="ConsoleLib.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ConsoleLib.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="6606">
-              <caret line="367" column="86" selection-start-line="367" selection-start-column="86" selection-end-line="367" selection-end-column="86" />
+            <state relative-caret-position="180">
+              <caret line="10" lean-forward="true" selection-start-line="10" selection-end-line="10" />
               <folding>
                 <element signature="e#0#12#0" expanded="true" />
               </folding>
@@ -74,17 +71,8 @@
       <file leaf-file-name="__init__.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/TManLibrary/__init__.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret column="22" selection-start-column="22" selection-end-column="22" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DataLib.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/TManLibrary/DataLib.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="216">
-              <caret line="33" column="24" lean-forward="true" selection-start-line="33" selection-start-column="24" selection-end-line="33" selection-end-column="24" />
+            <state relative-caret-position="54">
+              <caret line="3" lean-forward="true" selection-start-line="3" selection-end-line="3" />
               <folding>
                 <element signature="e#0#22#0" expanded="true" />
               </folding>
@@ -92,11 +80,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="UserLib.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/TManLibrary/UserLib.py">
+      <file leaf-file-name="DataLib.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/TManLibrary/DataLib.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1602">
-              <caret line="93" column="21" selection-start-line="93" selection-start-column="21" selection-end-line="93" selection-end-column="21" />
+            <state relative-caret-position="594">
+              <caret line="33" column="29" selection-start-line="33" selection-start-column="29" selection-end-line="33" selection-end-column="29" />
               <folding>
                 <element signature="e#0#22#0" expanded="true" />
               </folding>
@@ -151,17 +139,17 @@
         <option value="$PROJECT_DIR$/UserLib.py" />
         <option value="$PROJECT_DIR$/DataLib.py" />
         <option value="$PROJECT_DIR$/TaskLib.py" />
-        <option value="$PROJECT_DIR$/TManLibrary/__init__.py" />
         <option value="$PROJECT_DIR$/TManLibrary/DeamonLib.py" />
         <option value="$PROJECT_DIR$/DeamonLib.py" />
         <option value="$PROJECT_DIR$/testrep/users.py" />
         <option value="$PROJECT_DIR$/TManLibrary/UserLib.py" />
-        <option value="$PROJECT_DIR$/TManLibrary/Synchronizer.py" />
         <option value="$PROJECT_DIR$/TManLibrary/TaskLib.py" />
-        <option value="$PROJECT_DIR$/TaskCLI.py" />
-        <option value="$PROJECT_DIR$/ConsoleLib.py" />
-        <option value="$PROJECT_DIR$/TManLibrary/LoggingConfig.py" />
         <option value="$PROJECT_DIR$/TManLibrary/DataLib.py" />
+        <option value="$PROJECT_DIR$/TManLibrary/LoggingConfig.py" />
+        <option value="$PROJECT_DIR$/TManLibrary/Synchronizer.py" />
+        <option value="$PROJECT_DIR$/ConsoleLib.py" />
+        <option value="$PROJECT_DIR$/TaskCLI.py" />
+        <option value="$PROJECT_DIR$/TManLibrary/__init__.py" />
       </list>
     </option>
   </component>
@@ -287,13 +275,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/setup.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="5" column="42" selection-start-line="5" selection-start-column="42" selection-end-line="5" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/TaskCLI.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="414">
@@ -397,13 +378,6 @@
     <entry file="file://$PROJECT_DIR$/UserLib.py" />
     <entry file="file://$PROJECT_DIR$/DataLib.py" />
     <entry file="file://$PROJECT_DIR$/TaskLib.py" />
-    <entry file="file://$PROJECT_DIR$/setup.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="12" selection-start-column="12" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../../../TaskManager/venv/lib/python3.5/site-packages/click/__init__.py" />
     <entry file="file://$PROJECT_DIR$/testrep/data_tests.py" />
     <entry file="file://$PROJECT_DIR$/DeamonLib.py" />
@@ -427,6 +401,23 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Безымянный документ">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="108">
+          <caret line="6" column="26" lean-forward="true" selection-start-line="6" selection-start-column="26" selection-end-line="6" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TManLibrary/LoggingConfig.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="54">
+          <caret line="3" lean-forward="true" selection-start-line="3" selection-end-line="3" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/testrep/users.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="522">
@@ -437,17 +428,27 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/TManLibrary/__init__.py">
+    <entry file="file://$PROJECT_DIR$/TManLibrary/Synchronizer.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="22" selection-start-column="22" selection-end-column="22" />
+        <state relative-caret-position="162">
+          <caret line="9" column="4" selection-start-line="9" selection-start-column="4" selection-end-line="12" selection-end-column="43" />
+          <folding>
+            <element signature="e#0#22#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/TManLibrary/Synchronizer.py">
+    <entry file="file://$PROJECT_DIR$/setup.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="396">
-          <caret line="22" column="32" selection-start-line="22" selection-start-column="32" selection-end-line="22" selection-end-column="32" />
+        <state>
+          <caret column="12" selection-start-column="12" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TManLibrary/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="54">
+          <caret line="3" lean-forward="true" selection-start-line="3" selection-end-line="3" />
           <folding>
             <element signature="e#0#22#0" expanded="true" />
           </folding>
@@ -456,8 +457,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ConsoleLib.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6606">
-          <caret line="367" column="86" selection-start-line="367" selection-start-column="86" selection-end-line="367" selection-end-column="86" />
+        <state relative-caret-position="180">
+          <caret line="10" lean-forward="true" selection-start-line="10" selection-end-line="10" />
           <folding>
             <element signature="e#0#12#0" expanded="true" />
           </folding>
@@ -466,28 +467,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/TManLibrary/DataLib.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="33" column="24" lean-forward="true" selection-start-line="33" selection-start-column="24" selection-end-line="33" selection-end-column="24" />
+        <state relative-caret-position="594">
+          <caret line="33" column="29" selection-start-line="33" selection-start-column="29" selection-end-line="33" selection-end-column="29" />
           <folding>
             <element signature="e#0#22#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/TManLibrary/LoggingConfig.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="501">
-          <caret line="34" column="42" selection-start-line="34" selection-start-column="42" selection-end-line="34" selection-end-column="42" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/TaskCLI.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="469">
-          <caret line="193" column="43" lean-forward="true" selection-start-line="193" selection-start-column="43" selection-end-line="193" selection-end-column="43" />
+        <state relative-caret-position="594">
+          <caret line="42" column="17" selection-start-line="42" selection-start-column="17" selection-end-line="42" selection-end-column="17" />
           <folding>
             <element signature="e#0#24#0" expanded="true" />
           </folding>

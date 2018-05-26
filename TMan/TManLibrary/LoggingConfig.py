@@ -2,10 +2,11 @@ import configparser
 import logging
 import os
 
+
 class loggingConfig:
-    OFF = 0
-    LOW_LEVEL = 1
-    HIGH = 2
+    """
+    Класс, предназначенный для задания и получения информации о конфигурации
+    """
     DATA_DIR = os.environ['HOME'] + '/tmandata/'
 
     @staticmethod

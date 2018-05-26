@@ -29,6 +29,12 @@ def tid_gen():
 
 
 def check_date(ctx, date):
+    """
+    Проверка даты
+    :param ctx: параметр, для
+    :param date:
+    :return:
+    """
     time_format_one = "%Y-%m-%d"
     if (date is None):
         raise ValueError
