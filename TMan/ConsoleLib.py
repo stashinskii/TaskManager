@@ -64,11 +64,7 @@ class Console:
             if current_user is None:
                 raise Exception("There is no current user. Choose one")
 
-            sd = TManLibrary.check_date(sd)
-            ed = TManLibrary.check_date(ed)
-            re = TManLibrary.check_time(re)
             pr = str(TManLibrary.Priority[pr].value)
-
             if ob != "":
                 ob+=',{}'.format(current_user.login)
             else:
@@ -94,9 +90,7 @@ class Console:
                     sd, ed, tg, de, ti, re, ob, pr):
         """subtask -  параметр Click, номер задачи"""
         try:
-            sd = TManLibrary.check_date(sd)
-            ed = TManLibrary.check_date(ed)
-            re = TManLibrary.check_time(re)
+
             pr = str(TManLibrary.Priority[pr].value)
             if ob != "":
                 ob += ',{}'.format(current_user.login)
@@ -360,3 +354,20 @@ class Console:
                 marker = " "
             click.echo(
                 click.style('[' + marker + ']' + ' - ' + task.title + '\n', bg='blue', fg='white'))
+
+    @staticmethod
+    def set_logger(level, format, file):
+        try:
+            print(level)
+            if level == "INFO":
+                level = logging.INFO
+            elif level == "WARNING":
+                level = logging.WARNING
+            else:
+                raise Exception
+            TManLibrary.loggingConfig.set_logging_config(level, str(format), str(file))
+        except ValueError:
+            pass
+        except Exception:
+            click.echo("Choose correct level")
+

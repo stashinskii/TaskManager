@@ -1,4 +1,5 @@
 from .TaskLib import *
+from .LoggingConfig import *
 import logging
 import json
 import uuid
@@ -13,11 +14,13 @@ if not os.path.exists(data_dir):
 
 
 # задаем конфигурацию логгирования
-logging.basicConfig(filename=data_dir+"/tasklog.log", level=logging.INFO,
-                    format='%(levelname)s:%(message)s:(%(asctime)s)')
-
-logging.basicConfig(filename="tasklog.log", level=logging.WARNING,
-                    format='%(levelname)s:%(message)s:(%(asctime)s)')
+format_info, file_info = loggingConfig.get_logging_config(logging.INFO)
+logging.basicConfig(filename=file_info, level=logging.INFO,
+                    format=format_info)
+print(file_info)
+format_warning, file_warning = loggingConfig.get_logging_config(logging.WARNING)
+logging.basicConfig(filename=file_warning, level=logging.WARNING,
+                    format=format_warning)
 
 
 def tid_gen():
@@ -25,7 +28,7 @@ def tid_gen():
     return str(uuid.uuid1())
 
 
-def check_date(date):
+def check_date(ctx, date):
     time_format_one = "%Y-%m-%d"
     if (date is None):
         raise ValueError
@@ -37,7 +40,7 @@ def check_date(date):
     return date
 
 
-def check_time(mytime):
+def check_time(ctx, mytime):
 
     time_format = "%H:%M"
     mytime = datetime.strptime(mytime, time_format)
@@ -64,15 +67,15 @@ def data_from_json(type, current):
 
             for task_dict in task_data:
                 title = task_dict['title']
-                start = check_date(task_dict['start'])
-                end = check_date(task_dict['end'])
+                start = check_date(None, task_dict['start'])
+                end = check_date(None, task_dict['end'])
                 description = task_dict['description']
                 tag = task_dict['tag']
                 observers = task_dict['observers']
                 executor = task_dict['executor']
                 priority = Priority[Priority(int(task_dict['priority'])).name]
                 author = task_dict['author']
-                reminder = check_time(task_dict['reminder'])
+                reminder = check_time(None, task_dict['reminder'])
                 is_completed = task_dict['is_completed']
                 parent = task_dict['parent']
                 tid = task_dict['tid']
@@ -157,22 +160,6 @@ def data_to_json(collect, object):
         json.dump(collection, objfile, indent=2, ensure_ascii=False)
 
     return collection
-
-"""
-#TODO удалить и переделать на TrackedTask
-def delete_simple_task(simple_tasks, num, tracked_tasks):
-    for task in tracked_tasks:
-        if task.tid == simple_tasks[num-1].tid:
-            index = tracked_tasks.index(task)
-            break
-    if index is not None:
-        tracked_tasks[index].cancel_sync = True
-        resave_tracked_json(tracked_tasks)
-    deleted_tid = simple_tasks[num - 1].tid
-    simple_tasks.__delitem__(num-1)
-    resave_simple_json(simple_tasks)
-    logging.info('TODO task was deleted. TID: {}'.format(deleted_tid))
-"""
 
 
 # Далее работа с Трекером дел
