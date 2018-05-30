@@ -11,7 +11,6 @@ if not os.path.exists(data_dir):
 
 
 class DataStorage:
-
     @staticmethod
     def load_tasks_from_json():
         """
@@ -47,7 +46,7 @@ class DataStorage:
 
             new_task = TrackedTask(
                 title, desc, start, end, tag, author, observers, executor,
-                reminder, priority, changed, planned, tid, subtasks, is_completed, parent
+                reminder, priority, changed, planned, parent, tid, subtasks, is_completed
             )
             if task_dict['parent'] is None:
                 if task_dict['tid'] in current.tasks:
@@ -59,38 +58,14 @@ class DataStorage:
                 all_users_tasks.append(new_task)
         return tasks, all_tasks, all_users_tasks
 
-    @staticmethod
-    def append_task_to_json(new_task):
-        """
-        Resave Task's collection to json file
-        :param new_task: Tasks's object
-        :return:
-        """
-        users = DataStorage.load_users_from_json()
-        current = get_active_user(users)
-        DataStorage.add_user_task(current, new_task.tid)
-        DataStorage.give_task_permission(new_task.observers, new_task.tid)
-
-        tasks = DataStorage.load_tasks_from_json()[2]
-        tasks.append(new_task)
-        data = []
-        for task in tasks:
-            if isinstance(task.start, datetime):
-                task.start = date_to_str(task.start)
-            if isinstance(task.end, datetime):
-                task.end = date_to_str(task.end)
-            if isinstance(task.reminder, datetime):
-                task.reminder = time_to_str(task.reminder)
-            if isinstance(task.priority, Priority):
-                task.priority = str(task.priority.value)
-            data.append(task.__dict__)
-        with open(data_dir + '/trackedtasks.json', 'w') as taskfile:
-            json.dump(data, taskfile, indent=2, ensure_ascii=False)
-
 
     @staticmethod
-    def resave_all_tasks_to_json(all_tasks):
+    def resave_all_tasks_to_json(all_tasks, task=None):
         data = list()
+        if task is not None:
+            users = DataStorage.load_users_from_json()
+            current = get_active_user(users)
+            DataStorage.add_user_task(current, task.tid)
         for task in all_tasks:
             if isinstance(task.start, datetime):
                 task.start = date_to_str(task.start)
@@ -101,7 +76,6 @@ class DataStorage:
             if isinstance(task.priority, Priority):
                 task.priority = str(task.priority.value)
             data.append(task.__dict__)
-
         with open(data_dir + '/trackedtasks.json', 'w') as taskfile:
             json.dump(data, taskfile, indent=2, ensure_ascii=False)
 
@@ -205,6 +179,8 @@ class DataStorage:
             if us != current.login:
                 user = get_user(us, users)
                 DataStorage.add_user_task(user, tid)
+
+
 
 
 

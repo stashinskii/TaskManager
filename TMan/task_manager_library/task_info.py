@@ -27,7 +27,7 @@ class EventCalendar(Task):
 class TrackedTask:
 
     def __init__(self, title, desc, start, end, tag, author, observers, executor,
-                 reminder, priority, changed, planned, tid=None, subtasks=None, is_completed=None, parent=None):
+                 reminder, priority, changed, planned, parent=None, tid=None, subtasks=None, is_completed=None):
         self.title = title
         if tid is None:
             self.tid = tid_gen()
@@ -86,6 +86,10 @@ class Priority(enum.Enum):
 
     def to_name(self):
         return Priority[self.value]
+
+    @staticmethod
+    def convert_priority_to_str(priority):
+        return str(Priority[priority].value)
 
 
 class User:

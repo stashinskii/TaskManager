@@ -3,6 +3,7 @@ import uuid
 from datetime import datetime
 
 
+
 def str_to_uuid(str_id):
     return uuid.UUID(str_id)
 
@@ -104,6 +105,22 @@ def get_user_index(user, users):
     raise Exception("Trouble while adding task to user")
 
 
+def get_task_index(task, tasks):
+    """
+    Get task's index at json file
+    :param task: Task's object
+    :param tasks: list of Task's objects
+    :return: int object
+    """
+
+    counter = 0
+    for x in tasks:
+        if task == x.tid:
+            return counter
+        counter += 1
+    raise Exception("Trouble while adding task to user")
+
+
 def get_user(login, users):
     """
     Get Users's object by his login (str object)
@@ -124,12 +141,41 @@ def get_login(uid, users):
 
 
 def open_nano(data, num):
+    """
+    Open nano editor
+    :param data: list of task's title, startdate, enddate and description
+    :param num: position in list to be changed
+    :return: changed data
+    """
     os.system("echo \"{}\" >> {}".format(data[num], "/tmp/tman_tempdata.tmp"))
     os.system("nano {}".format("/tmp/tman_tempdata.tmp"))
     file = open("/tmp/tman_tempdata.tmp")
     data[num] = file.read()[0:-1]
     os.system("rm /tmp/tman_tempdata.tmp")
     return data
+
+
+#TODO TEST IT
+def split_str_to_list(splitter, current_user):
+    """
+    Split string separated by ',' and convert it to list
+    :param splitter:
+    :return:
+    """
+    if splitter != "":
+        splitter += ',{}'.format(current_user.login)
+    else:
+        splitter = current_user.login
+
+    if splitter != "":
+        splitter = splitter.split(",")
+    else:
+        splitter = []
+
+    return splitter
+
+
+
 
 
 

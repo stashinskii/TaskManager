@@ -17,14 +17,43 @@ if not os.path.exists(data_dir):
 
 
 def add_tracked_task(title=None, desc=None, start=None, end=None,
-                     tag=None, author=None, observers=None,executor=None,
+                     tag=None, observers=None,
                      reminder=None, priority=None,
-                     changed=None, planned=None):
+                     changed=None, planned=None, executor=None):
     """Adding new task"""
+    tasks, all, all_users_tasks = DataStorage.load_tasks_from_json()
+    current = UserTools.get_current_user()
+    observers = split_str_to_list(observers, current)
+    priority = Priority.convert_priority_to_str(priority)
+    author = UserTools.get_current_user().uid
     task = TrackedTask(title, desc, start, end, tag, author, observers, executor,
                        reminder, priority, changed, planned)
+    all_users_tasks.append(task)
     check_date_range(start, end)
-    DataStorage.append_task_to_json(task)
+    DataStorage.resave_all_tasks_to_json(all_users_tasks, task)
+
+
+def add_subtask(index, title=None, desc=None, start=None, end=None,
+                tag=None, observers=None,
+                reminder=None, priority=None,
+                changed=None, planned=None, executor=None):
+
+    """Adding new subtask task"""
+    current = UserTools.get_current_user()
+    observers = split_str_to_list(observers, current)
+    priority = Priority.convert_priority_to_str(priority)
+    author = UserTools.get_current_user().uid
+
+    tasks, all, all_users_tasks = DataStorage.load_tasks_from_json()
+    parent_id = tasks[index - 1].tid
+
+    task = TrackedTask(title, desc, start, end, tag, author, observers, executor,
+                       reminder, priority, changed, planned, parent_id)
+    all_users_tasks.append(task)
+    global_index = get_task_index(parent_id, all_users_tasks)
+    all_users_tasks[global_index].subtasks.append(task.tid)
+    check_date_range(start, end)
+    DataStorage.resave_all_tasks_to_json(all_users_tasks, task)
 
 
 def edit_task(task_num, task_field):
@@ -34,36 +63,29 @@ def edit_task(task_num, task_field):
     if author_name != current.uid:
         raise ValueError("Access denied")
 
-    try:
-        if (task_num - 1) > len(tasks):
-            raise IndexError("Out of range")
-        edit = tasks[task_num - 1]
-        task_index = all_users_tasks.index(edit)
-        data = list()
-        data.append(edit.title)
-        data.append(edit.start.date())
-        data.append(edit.end.date())
-        data.append(edit.description)
+    if (task_num - 1) > len(tasks):
+        raise IndexError("Out of range")
+    edit = tasks[task_num - 1]
+    task_index = all_users_tasks.index(edit)
+    data = list()
+    data.extend((edit.title, edit.start.date(), edit.end.date(), edit.description))
 
-        if task_field == "title":
-            data = open_nano(data, 0)
-        elif task_field == "start":
-            data = open_nano(data, 1)
-        elif task_field == "end":
-            data = open_nano(data, 2)
-        elif task_field == "description":
-            data = open_nano(data, 3)
-        else:
-            raise ValueError("ERROR! Unsupported field!")
+    if task_field == "title":
+        data = open_nano(data, 0)
+    elif task_field == "start":
+        data = open_nano(data, 1)
+    elif task_field == "end":
+        data = open_nano(data, 2)
+    elif task_field == "description":
+        data = open_nano(data, 3)
+    else:
+        raise ValueError("ERROR! Unsupported field!")
 
-        all_users_tasks[task_index].title = data[0]
-        all_users_tasks[task_index].start = check_date(None, None, str(data[1]))
-        all_users_tasks[task_index].end = check_date(None, None, str(data[2]))
-        all_users_tasks[task_index].description = data[3]
-        DataStorage.resave_all_tasks_to_json(all_users_tasks)
-    except Exception as e:
-        logging.warning(e)
-        print(e)
+    all_users_tasks[task_index].title = data[0]
+    all_users_tasks[task_index].start = check_date(None, None, str(data[1]))
+    all_users_tasks[task_index].end = check_date(None, None, str(data[2]))
+    all_users_tasks[task_index].description = data[3]
+    DataStorage.resave_all_tasks_to_json(all_users_tasks)
 
 
 def show_tracked_task():
@@ -94,8 +116,28 @@ def done_task(task):
     DataStorage.resave_all_tasks_to_json(all_users_tasks)
 
 
+def done_subtask(task_index, subtask_index):
+    tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
+    tid_subtasks = []
+
+    for subtask in all_tasks:
+        if subtask.parent == tasks[task_index - 1].tid:
+            tid_subtasks.append(subtask)
+
+    global_index = get_task_index(tid_subtasks[subtask_index - 1].tid, all_users_tasks)
+    all_users_tasks[global_index].complete()
+    DataStorage.resave_all_tasks_to_json(all_users_tasks)
 
 
+"""
+ for subtask in tid_subtasks:
+        if subtask.is_completed:
+            marker = "X"
+        else:
+            marker = " "
+        click.echo("[" + marker + "] - " + str(tid_subtasks.index(subtask) + 1)
+                   + " - " + click.style(subtask.title, bg="red"))
+            """
 
 
 
@@ -110,74 +152,3 @@ format_warning, file_warning = loggingConfig.get_logging_config(logging.WARNING)
 logging.basicConfig(filename=file_warning, level=logging.WARNING,
                     format=format_warning)
 """
-
-"""
-
-
-def add_tracked_task(all_tasks, tid, title, description, start, end, tag,
-                    author,observers, executor, is_completed,
-                    reminder, priority, users, current, parent, subtasks, changed, planned):
-    
-    Создание новой задачи, добавление в коллекцию и сохранение в файл
-    
-    from task_manager_library import EventActions
-    if observers != "":
-        observers = observers.split(",")
-    else:
-        observers = []
-    if start > end:
-        raise ValueError("ERROR! Start date GT end date")
-    all_tasks.append(TrackedTask(
-        tid,
-        title,
-        description,
-        str(start.year)+"-"+str(start.month)+"-"+str(start.day),
-        str(end.year) + "-" + str(end.month) + "-" + str(end.day),
-        tag,
-        author,
-        observers,
-        executor,
-        is_completed,
-        str(reminder.hour) +":"+str(reminder.minute),
-        priority,
-        parent,
-        subtasks,
-        changed,
-        planned
-    ))
-    resave_task_to_json(all_tasks)
-    from task_manager_library import user_actions
-    #data_to_json(all_tasks, all_tasks[-1])
-    add_user_task(users, current, tid, "Task")
-    for us in observers:
-        if us!=current.login:
-            user = user_actions.get_user(us, users)
-            add_user_task(users, user, tid, "Task")
-
-
-def resave_task_to_json(tracked_tasks):
- 
-    Пересохранение задач
-    :param tracked_tasks: коллекция задач
-    :return:
-   
-    data = []
-    for task in tracked_tasks:
-        if isinstance(task.start, datetime):
-            task.start = str(task.start.year)+"-"+str(task.start.month)+"-"+str(task.start.day)
-        if isinstance(task.end, datetime):
-            task.end = str(task.end.year) + "-" + str(task.end.month) + "-" + str(task.end.day)
-        if isinstance(task.reminder, datetime):
-            task.reminder = str(task.reminder.hour) +":"+str(task.reminder.minute)
-        if isinstance(task.priority, Priority):
-            task.priority = str(task.priority.value)
-        data.append(task.__dict__)
-
-    with open(data_dir+'/trackedtasks.json', 'w') as taskfile:
-        json.dump(data, taskfile, indent=2, ensure_ascii=False)
-
-
-"""
-
-
-
