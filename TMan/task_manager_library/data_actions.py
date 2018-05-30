@@ -129,6 +129,50 @@ def done_subtask(task_index, subtask_index):
     DataStorage.resave_all_tasks_to_json(all_users_tasks)
 
 
+def get_task(task_index):
+    """
+    Get task by index
+    :param task_index: int object
+    :return:
+    """
+    tasks = DataStorage.load_tasks_from_json()[0]
+    task = tasks[task_index-1]
+    return task
+
+
+def add_sheduler(title=None, description=None, date=None, enddate=None,
+                 tag=None, observers=None,
+                 reminder=None, priority=None,
+                 changed=None, planned=None, executor=None):
+    current = UserTools.get_current_user()
+    observers = split_str_to_list(observers, current)
+    priority = Priority.convert_priority_to_str(priority)
+    author = UserTools.get_current_user().uid
+
+    task = TrackedTask(title, description, date, enddate, tag, author, observers, executor,
+                 reminder, priority, changed, planned)
+
+    check_date_range(date, enddate)
+
+    scheduler = Scheduler(date, task)
+
+    DataStorage.save_scheduler_to_json(scheduler)
+
+
+def get_schedulers():
+    schedulers = DataStorage.load_schedulers_from_json()
+    for scheduler in schedulers:
+        print(scheduler.date.date())
+        print(datetime.now().date())
+        if datetime.now().date() >= scheduler.date.date():
+            all_tasks = DataStorage.load_tasks_from_json()[2]
+            all_tasks.append(scheduler.task)
+            DataStorage.resave_all_tasks_to_json(all_tasks, scheduler.task)
+            DataStorage.delete_scheduler_from_json(scheduler)
+
+
+
+
 """
  for subtask in tid_subtasks:
         if subtask.is_completed:

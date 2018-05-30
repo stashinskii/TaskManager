@@ -9,6 +9,7 @@ def cli():
     """
     Entry point to CLI application
     """
+    task_manager_library.get_schedulers()
     click.clear()
 
 # region User actions
@@ -57,8 +58,12 @@ def change_user(login):
 
 
 @cli.command()
-@click.option('--task/--subtask',
-              help='Adding task or subtask to tracker manager')
+@click.option('--task', is_flag=True,
+              help='Adding task to tracker manager')
+@click.option('--subtask',is_flag=True,
+              help='Adding subtask to tracker manager')
+@click.option('--scheduler',is_flag=True,
+              help='Adding scheduler to tracker manager')
 @click.option('-sd', '--startdate', type=str, callback=task_manager_library.check_date,
               help='Start date')
 @click.option('-ed', '--enddate', type=str, callback=task_manager_library.check_date,
@@ -77,22 +82,27 @@ def change_user(login):
               help='Priority')
 @click.option('-i', '--index', type=int,
               help='Index of task to add subtask')
-def add(task, startdate, enddate, tag, description,
+def add(task, subtask, scheduler, startdate, enddate, tag, description,
         title, reminder, observers, priority, index):
     """Adding new task"""
     if task:
         task_manager_library.add_tracked_task(title, description, startdate, enddate,
                                               tag, observers, reminder, priority)
-    else:
+    elif subtask:
         task_manager_library.add_subtask(index, title, description, startdate, enddate,
                                               tag, observers, reminder, priority)
-
+    elif scheduler:
+        task_manager_library.add_sheduler(title, description, startdate, enddate,
+                                              tag, observers, reminder, priority)
 
 
 @cli.command()
 @click.option('--task', is_flag=True,
               help='List of tasks')
 def list(task):
+    """
+    Showing list of current tasks
+    """
 
     if task:
         import task_manager_library
@@ -124,8 +134,11 @@ def done(task, subtask):
 
 @cli.command()
 @click.option('--task', type=(int, str),
-              help='Опция для редактирования задач')
+              help='Editing task')
 def edit(task):
+    """
+    Editing tasks
+    """
     try:
         if task:
             task_num = task[0]
@@ -134,6 +147,23 @@ def edit(task):
     except ValueError as e:
         print(e)
 
+@cli.command()
+@click.option('--index', type=int,
+              help='Index of task')
+def show(index):
+    task = task_manager_library.get_task(index)
+    if task.is_completed:
+        status = "Done"
+        color = 'green'
+    else:
+        status = "Undone"
+        color = 'red'
+    click.echo("Title: \t\t" + click.style(task.title, bold=True, fg='yellow'))
+    click.echo("Description: \t" + click.style(task.description, bold=True, fg='yellow'))
+    click.echo("Start date: \t" + click.style(str(task.start.date()), bold=True, fg='yellow'))
+    click.echo("End date: \t" + click.style(str(task.end.date()), bold=True, fg='yellow'))
+    click.echo("Status: \t" + click.style(status, bold=True, fg=color))
+    click.echo(click.style("#" + task.tag, bold=True, bg='red'))
 
 @cli.command()
 @click.option('--level', type=str,

@@ -3,8 +3,12 @@ import uuid
 from datetime import datetime
 
 
-
 def str_to_uuid(str_id):
+    """
+    Convert str object of task id to UUID object
+    :param str_id:
+    :return:
+    """
     return uuid.UUID(str_id)
 
 
@@ -14,7 +18,7 @@ def uuid_to_datetime(uuid_id):
 
 def tid_gen():
     """
-    Task id generator
+    Task id generator, using UUID
     :return: id in str
     """
     return str(uuid.uuid1())

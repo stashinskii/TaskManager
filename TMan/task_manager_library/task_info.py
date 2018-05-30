@@ -118,12 +118,15 @@ class User:
 
 
 class Scheduler():
-    def __init__(self, weekday, title, basic_description, sid, last_added):
-        self.weekday = weekday
-        self.title = title
-        self.basic_description = basic_description
-        self.sid = sid
-        self.last_added = last_added
+    def __init__(self, date, task, sid=None):
+        self.date = date
+        # param: task Task's object
+        self.task = task
+        if sid is None:
+            self.sid = tid_gen()
+        else:
+            self.sid = sid
+
 
 
 

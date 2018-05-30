@@ -180,9 +180,93 @@ class DataStorage:
                 user = get_user(us, users)
                 DataStorage.add_user_task(user, tid)
 
+    @staticmethod
+    def load_schedulers_from_json():
+        schedulers = DataStorage.load_schedulers_dict_from_json()
+        schedulers_list = list()
+
+        for scheduler in schedulers:
+            date = check_date(None, None, scheduler['date'])
+            title = scheduler['task']['title']
+            start = check_date(None, None, scheduler['task']['start'])
+            end = check_date(None, None, scheduler['task']['end'])
+            desc = scheduler['task']['description']
+            tag = scheduler['task']['tag']
+            observers = scheduler['task']['observers']
+            executor = scheduler['task']['executor']
+            priority = Priority[Priority(int(scheduler['task']['priority'])).name]
+            author = scheduler['task']['author']
+            reminder = check_time(None, None, scheduler['task']['reminder'])
+            is_completed = scheduler['task']['is_completed']
+            parent = scheduler['task']['parent']
+            tid = scheduler['task']['tid']
+            subtasks = scheduler['task']['subtasks']
+            planned = scheduler['task']['planned']
+            changed = scheduler['task']['changed']
+            sid = scheduler['sid']
+            new_task = TrackedTask(
+                title, desc, start, end, tag, author, observers, executor,
+                reminder, priority, changed, planned, parent, tid, subtasks, is_completed
+            )
+            new_scheduler = Scheduler(date, new_task, sid)
+            schedulers_list.append(new_scheduler)
+        return schedulers_list
 
 
 
+
+        return schedulers
+
+    @staticmethod
+    def load_schedulers_dict_from_json():
+        with open(data_dir + '/schedulers.json', 'r') as task_file:
+            schedulers = json.load(task_file)
+
+        return schedulers
+
+
+    @staticmethod
+    def save_scheduler_to_json(scheduler):
+        schedulers = DataStorage.load_schedulers_dict_from_json()
+
+        scheduler.task.start = date_to_str(scheduler.task.start)
+        scheduler.task.end = date_to_str(scheduler.task.end)
+        scheduler.task.reminder = time_to_str(scheduler.task.reminder)
+        scheduler.date = date_to_str(scheduler.date)
+
+        scheduler.task = scheduler.task.__dict__
+        scheduler = scheduler.__dict__
+        schedulers.append(scheduler)
+
+        with open(data_dir + '/schedulers.json', 'w') as file:
+            json.dump(schedulers, file, indent=2, ensure_ascii=True)
+
+
+    @staticmethod
+    def delete_scheduler_from_json(scheduler):
+        schedulers = DataStorage.load_schedulers_from_json()
+        counter = 0
+        for element in schedulers:
+            if element.sid == scheduler.sid:
+                break
+            counter+=1
+        del schedulers[counter]
+
+        changed_schedulers = list()
+        for element in schedulers:
+            element.date = date_to_str(element.date)
+            element.task.start = date_to_str(element.task.start)
+            element.task.end = date_to_str(element.task.end)
+            element.task.priority = str(element.task.priority.value)
+            element.task.reminder = time_to_str( element.task.reminder)
+
+            element.task = element.task.__dict__
+            element = element.__dict__
+            changed_schedulers.append(element)
+
+
+        with open(data_dir + '/schedulers.json', 'w') as file:
+            json.dump(changed_schedulers, file, indent=2, ensure_ascii=True)
 
 
 
