@@ -1,7 +1,9 @@
 import click
 import os
+import config
 
 import task_manager_library
+from utility import logging_utils
 
 
 @click.group(invoke_without_command=True)
@@ -9,7 +11,10 @@ def cli():
     """
     Entry point to CLI application
     """
+    task_manager_library.DataStorage.PATH = config.DATA_PATH
+    logging_utils.get_logging_config("DEBUG")
     task_manager_library.get_schedulers()
+
     click.clear()
 
 # region User actions

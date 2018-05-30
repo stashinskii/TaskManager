@@ -2,15 +2,17 @@ import json
 import os
 
 from .task_info import *
-from .utility import *
 
+from utility import utils
+from utility import serialization_utils
+from utility import logging_utils
 
-data_dir = os.environ['HOME']+'/tmandata'
-if not os.path.exists(data_dir):
-    os.makedirs(data_dir)
+from datetime import datetime
+
 
 
 class DataStorage:
+    PATH = None
     @staticmethod
     def load_tasks_from_json():
         """
@@ -18,25 +20,26 @@ class DataStorage:
         :param current: User object - current user (authorized)
         :return: tuple of collections(lists)
         """
-        users = DataStorage.load_users_from_json()
-        current = get_active_user(users)
 
-        with open(data_dir + '/trackedtasks.json', 'r') as task_file:
+        users = DataStorage.load_users_from_json()
+        current = utils.get_active_user(users)
+
+        with open(DataStorage.PATH + '/trackedtasks.json', 'r') as task_file:
             task_data = json.load(task_file)
         tasks = list()
         all_tasks = list()
         all_users_tasks = list()
         for task_dict in task_data:
             title = task_dict['title']
-            start = check_date(None, None, task_dict['start'])
-            end = check_date(None, None, task_dict['end'])
+            start = utils.check_date(None, None, task_dict['start'])
+            end = utils.check_date(None, None, task_dict['end'])
             desc = task_dict['description']
             tag = task_dict['tag']
             observers = task_dict['observers']
             executor = task_dict['executor']
             priority = Priority[Priority(int(task_dict['priority'])).name]
             author = task_dict['author']
-            reminder = check_time(None, None, task_dict['reminder'])
+            reminder = utils.check_time(None, None, task_dict['reminder'])
             is_completed = task_dict['is_completed']
             parent = task_dict['parent']
             tid = task_dict['tid']
@@ -64,19 +67,19 @@ class DataStorage:
         data = list()
         if task is not None:
             users = DataStorage.load_users_from_json()
-            current = get_active_user(users)
+            current = utils.get_active_user(users)
             DataStorage.add_user_task(current, task.tid)
         for task in all_tasks:
             if isinstance(task.start, datetime):
-                task.start = date_to_str(task.start)
+                task.start = serialization_utils.date_to_str(task.start)
             if isinstance(task.end, datetime):
-                task.end = date_to_str(task.end)
+                task.end = serialization_utils.date_to_str(task.end)
             if isinstance(task.reminder, datetime):
-                task.reminder = time_to_str(task.reminder)
+                task.reminder = serialization_utils.time_to_str(task.reminder)
             if isinstance(task.priority, Priority):
                 task.priority = str(task.priority.value)
             data.append(task.__dict__)
-        with open(data_dir + '/trackedtasks.json', 'w') as taskfile:
+        with open(DataStorage.PATH + '/trackedtasks.json', 'w') as taskfile:
             json.dump(data, taskfile, indent=2, ensure_ascii=False)
 
     @staticmethod
@@ -85,7 +88,7 @@ class DataStorage:
         Loading(deserializing) users's data from json file
         :return: list of User's objects
         """
-        with open(data_dir + '/users.json', 'r') as file:
+        with open(DataStorage.PATH + '/users.json', 'r') as file:
             data = json.load(file)
         users = list()
         for data_dict in data:
@@ -114,7 +117,7 @@ class DataStorage:
             logging.warning("Can't load json file")
         collection.append(task_object)
 
-        with open(data_dir + '/trackedtasks.json', 'w') as objfile:
+        with open(DataStorage.PATH + '/trackedtasks.json', 'w') as objfile:
             json.dump(collection, objfile, indent=2, ensure_ascii=False)
 
     @staticmethod
@@ -133,7 +136,7 @@ class DataStorage:
             logging.warning("Can't load json file")
         collection.append(user_object)
 
-        with open(data_dir + '/users.json', 'w') as objfile:
+        with open(DataStorage.PATH + '/users.json', 'w') as objfile:
             json.dump(collection, objfile, indent=2, ensure_ascii=False)
 
     @staticmethod
@@ -145,7 +148,7 @@ class DataStorage:
         :return:
         """
         users = DataStorage.load_users_from_json()
-        users.__delitem__(get_user_index(user, users))
+        users.__delitem__(utils.get_user_index(user, users))
         user.tasks.append(tid)
         users.append(user)
 
@@ -153,7 +156,7 @@ class DataStorage:
         for user in users:
             data.append(user.__dict__)
 
-        with open(data_dir + '/users.json', 'w') as userfile:
+        with open(DataStorage.PATH + '/users.json', 'w') as userfile:
             json.dump(data, userfile, indent=2, ensure_ascii=False)
 
     @staticmethod
@@ -162,7 +165,7 @@ class DataStorage:
         for user in users:
             data.append(user.__dict__)
 
-        with open(data_dir + '/users.json', 'w') as usersfile:
+        with open(DataStorage.PATH + '/users.json', 'w') as usersfile:
             json.dump(data, usersfile, indent=2, ensure_ascii=False)
 
     @staticmethod
@@ -186,17 +189,17 @@ class DataStorage:
         schedulers_list = list()
 
         for scheduler in schedulers:
-            date = check_date(None, None, scheduler['date'])
+            date = utils.check_date(None, None, scheduler['date'])
             title = scheduler['task']['title']
-            start = check_date(None, None, scheduler['task']['start'])
-            end = check_date(None, None, scheduler['task']['end'])
+            start = utils.check_date(None, None, scheduler['task']['start'])
+            end = utils.check_date(None, None, scheduler['task']['end'])
             desc = scheduler['task']['description']
             tag = scheduler['task']['tag']
             observers = scheduler['task']['observers']
             executor = scheduler['task']['executor']
             priority = Priority[Priority(int(scheduler['task']['priority'])).name]
             author = scheduler['task']['author']
-            reminder = check_time(None, None, scheduler['task']['reminder'])
+            reminder = utils.check_time(None, None, scheduler['task']['reminder'])
             is_completed = scheduler['task']['is_completed']
             parent = scheduler['task']['parent']
             tid = scheduler['task']['tid']
@@ -219,7 +222,7 @@ class DataStorage:
 
     @staticmethod
     def load_schedulers_dict_from_json():
-        with open(data_dir + '/schedulers.json', 'r') as task_file:
+        with open(DataStorage.PATH + '/schedulers.json', 'r') as task_file:
             schedulers = json.load(task_file)
 
         return schedulers
@@ -228,17 +231,16 @@ class DataStorage:
     @staticmethod
     def save_scheduler_to_json(scheduler):
         schedulers = DataStorage.load_schedulers_dict_from_json()
-
-        scheduler.task.start = date_to_str(scheduler.task.start)
-        scheduler.task.end = date_to_str(scheduler.task.end)
-        scheduler.task.reminder = time_to_str(scheduler.task.reminder)
-        scheduler.date = date_to_str(scheduler.date)
+        scheduler.task.start = serialization_utils.date_to_str(scheduler.task.start)
+        scheduler.task.end = serialization_utils.date_to_str(scheduler.task.end)
+        scheduler.task.reminder = serialization_utils.time_to_str(scheduler.task.reminder)
+        scheduler.date = serialization_utils.date_to_str(scheduler.date)
 
         scheduler.task = scheduler.task.__dict__
         scheduler = scheduler.__dict__
         schedulers.append(scheduler)
 
-        with open(data_dir + '/schedulers.json', 'w') as file:
+        with open(DataStorage.PATH + '/schedulers.json', 'w') as file:
             json.dump(schedulers, file, indent=2, ensure_ascii=True)
 
 
@@ -254,18 +256,18 @@ class DataStorage:
 
         changed_schedulers = list()
         for element in schedulers:
-            element.date = date_to_str(element.date)
-            element.task.start = date_to_str(element.task.start)
-            element.task.end = date_to_str(element.task.end)
+            element.date = serialization_utils.date_to_str(element.date)
+            element.task.start = serialization_utils.date_to_str(element.task.start)
+            element.task.end = serialization_utils.date_to_str(element.task.end)
             element.task.priority = str(element.task.priority.value)
-            element.task.reminder = time_to_str( element.task.reminder)
+            element.task.reminder = serialization_utils.time_to_str( element.task.reminder)
 
             element.task = element.task.__dict__
             element = element.__dict__
             changed_schedulers.append(element)
 
 
-        with open(data_dir + '/schedulers.json', 'w') as file:
+        with open(DataStorage.PATH + '/schedulers.json', 'w') as file:
             json.dump(changed_schedulers, file, indent=2, ensure_ascii=True)
 
 

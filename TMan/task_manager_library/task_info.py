@@ -1,8 +1,8 @@
 import enum
 
-#from .data_actions import *
-#from .user_actions import *
-from .utility import *
+from utility import utils
+from utility import serialization_utils
+from utility import logging_utils
 
 
 class Task:
@@ -30,7 +30,7 @@ class TrackedTask:
                  reminder, priority, changed, planned, parent=None, tid=None, subtasks=None, is_completed=None):
         self.title = title
         if tid is None:
-            self.tid = tid_gen()
+            self.tid = serialization_utils.tid_gen()
         else:
             self.tid = tid
         self.description = desc
@@ -123,7 +123,7 @@ class Scheduler():
         # param: task Task's object
         self.task = task
         if sid is None:
-            self.sid = tid_gen()
+            self.sid = serialization_utils.tid_gen()
         else:
             self.sid = sid
 

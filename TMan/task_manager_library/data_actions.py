@@ -2,13 +2,17 @@ import json
 import logging
 import os
 import uuid
+import config
 from datetime import datetime
 
+from utility import utils
+from utility import serialization_utils
+from utility import logging_utils
+
 from .data_storage import *
-from .logging_configuration import *
 from .task_info import *
 from .user_actions import *
-from .utility import *
+from utility.utils import *
 
 
 data_dir = os.environ['HOME']+'/tmandata'
@@ -16,6 +20,7 @@ if not os.path.exists(data_dir):
     os.makedirs(data_dir)
 
 
+@logging_utils.logger
 def add_tracked_task(title=None, desc=None, start=None, end=None,
                      tag=None, observers=None,
                      reminder=None, priority=None,
@@ -23,7 +28,7 @@ def add_tracked_task(title=None, desc=None, start=None, end=None,
     """Adding new task"""
     tasks, all, all_users_tasks = DataStorage.load_tasks_from_json()
     current = UserTools.get_current_user()
-    observers = split_str_to_list(observers, current)
+    observers = serialization_utils.split_str_to_list(observers, current)
     priority = Priority.convert_priority_to_str(priority)
     author = UserTools.get_current_user().uid
     task = TrackedTask(title, desc, start, end, tag, author, observers, executor,
@@ -33,6 +38,7 @@ def add_tracked_task(title=None, desc=None, start=None, end=None,
     DataStorage.resave_all_tasks_to_json(all_users_tasks, task)
 
 
+@logging_utils.logger
 def add_subtask(index, title=None, desc=None, start=None, end=None,
                 tag=None, observers=None,
                 reminder=None, priority=None,
@@ -40,7 +46,7 @@ def add_subtask(index, title=None, desc=None, start=None, end=None,
 
     """Adding new subtask task"""
     current = UserTools.get_current_user()
-    observers = split_str_to_list(observers, current)
+    observers = serialization_utils.split_str_to_list(observers, current)
     priority = Priority.convert_priority_to_str(priority)
     author = UserTools.get_current_user().uid
 
@@ -56,6 +62,7 @@ def add_subtask(index, title=None, desc=None, start=None, end=None,
     DataStorage.resave_all_tasks_to_json(all_users_tasks, task)
 
 
+@logging_utils.logger
 def edit_task(task_num, task_field):
     tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
     current = UserTools.get_current_user()
@@ -88,6 +95,7 @@ def edit_task(task_num, task_field):
     DataStorage.resave_all_tasks_to_json(all_users_tasks)
 
 
+@logging_utils.logger
 def show_tracked_task():
     tracked_tasks = DataStorage.load_tasks_from_json()[0]
     all_tasks = DataStorage.load_tasks_from_json()[1]
@@ -106,6 +114,7 @@ def show_tracked_task():
         yield (marker, str(tracked_tasks.index(task)+1),str(len(subtasks)), str(task.title))
 
 
+@logging_utils.logger
 def done_task(task):
     tracked_tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
     for subtask in all_tasks:
@@ -116,6 +125,7 @@ def done_task(task):
     DataStorage.resave_all_tasks_to_json(all_users_tasks)
 
 
+@logging_utils.logger
 def done_subtask(task_index, subtask_index):
     tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
     tid_subtasks = []
@@ -129,6 +139,7 @@ def done_subtask(task_index, subtask_index):
     DataStorage.resave_all_tasks_to_json(all_users_tasks)
 
 
+@logging_utils.logger
 def get_task(task_index):
     """
     Get task by index
@@ -140,12 +151,13 @@ def get_task(task_index):
     return task
 
 
+@logging_utils.logger
 def add_sheduler(title=None, description=None, date=None, enddate=None,
                  tag=None, observers=None,
                  reminder=None, priority=None,
                  changed=None, planned=None, executor=None):
     current = UserTools.get_current_user()
-    observers = split_str_to_list(observers, current)
+    observers = serialization_utils.split_str_to_list(observers, current)
     priority = Priority.convert_priority_to_str(priority)
     author = UserTools.get_current_user().uid
 
@@ -159,6 +171,7 @@ def add_sheduler(title=None, description=None, date=None, enddate=None,
     DataStorage.save_scheduler_to_json(scheduler)
 
 
+@logging_utils.logger
 def get_schedulers():
     schedulers = DataStorage.load_schedulers_from_json()
     for scheduler in schedulers:
@@ -169,6 +182,7 @@ def get_schedulers():
             all_tasks.append(scheduler.task)
             DataStorage.resave_all_tasks_to_json(all_tasks, scheduler.task)
             DataStorage.delete_scheduler_from_json(scheduler)
+
 
 
 
