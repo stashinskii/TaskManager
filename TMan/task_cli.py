@@ -1,48 +1,51 @@
 from console_lib import *
+import task_manager_library
 import os
-
-# Коллекции, хранящие задачи
-tracked_tasks = []
-calendar_events = []
-all_tasks = []
-all_users_tasks = []
-
-
-users = []
-current_user = None
 
 
 @click.group(invoke_without_command=True)
-@click.option('--chuser', type=str,
-              help='Смена пользователя')
-@click.option('--setuser', is_flag=True,
-              help='Добавить пользователя')
-@click.option('--current', is_flag=True,
-              help='Просмотеть текущего полльзователя')
-def cli(chuser, setuser, current):
+def cli():
     click.clear()
-    global tracked_tasks, calendar_events, current_user, users, all_tasks, all_users_tasks
-    try:
-        users = Console.import_users()
-        if (chuser):
-            users = Console.set_current(users, chuser)
-        elif (setuser):
-            Console.create_new_user(users)
-        elif (current):
-            Console.show_current(users)
-        else:
 
-            (current_user, tracked_tasks,
-             calendar_events, all_tasks, all_users_tasks) = Console.import_all_data(users)
-            (current_user, tracked_tasks, calendar_events, all_tasks, all_users_tasks) = Console.add_scheduler_task(
-                calendar_events, all_tasks, current_user, users)
-    except IOError as e:
-        pass
+# region User actions
+
+
+@cli.command()
+def current():
+    try:
+        current = task_manager_library.UserTools.get_current_user()
+        click.echo("Login: {}".format(current.login))
+        click.echo("Full name: {} {}".format(current.name, current.surname))
+        click.echo("UID: {}".format(current.uid))
     except Exception as e:
         print(e)
-        logging.warning("Some troubles while open app")
-        raise click.Abort()
 
+
+@cli.command()
+@click.option('--login', type=str, default=None,
+              help='Unique login of new user')
+@click.option('--name', type=str, default='UserName',
+              help='Name of new user')
+@click.option('--surname', type=str, default='UserName',
+              help='surname of new user')
+def add_user(login, name, surname):
+    task_manager_library.UserTools.add_user(login, name, surname)
+
+
+@cli.command()
+@click.option('--login', type=str,
+              help='Login to switch the users')
+def change_user(login):
+    """
+    Set user as current
+    :param login: str object
+    :return:
+    """
+    task_manager_library.UserTools.change_user(login)
+
+# endregion
+
+# region Task actions
 
 @cli.command()
 @click.option('--task', is_flag=True,
@@ -68,44 +71,27 @@ def cli(chuser, setuser, current):
 @click.option('-pr', type=str,
               help='Приоритет')
 def add(task, subtask, plan, sd, ed, tg, de, ti, re, ob, pr):
-    """Добавление задачи"""
-    global tracked_tasks, calendar_events, current_user, users, subtasks, all_users_tasks
     if task:
-        tracked_tasks = Console.add_task(sd, ed, tg, de, ti, re, ob, pr)
+        Console.add_task(sd, ed, tg, de, ti, re, ob, pr)
     elif subtask:
-        subtasks = Console.add_subtask(current_user, all_tasks, all_users_tasks, tracked_tasks, users, subtask,
+        Console.add_subtask(current_user, all_tasks, all_users_tasks, tracked_tasks, users, subtask,
                                        sd, ed, tg, de, ti, re, ob, pr)
     elif plan:
         Console.add_scheduler()
 
 
-
-@cli.command()
-@click.option('--week', is_flag=True,
-              help='Опция для просмотра задач')
-@click.option('--month', is_flag=True,
-              help='Опция для просмотра todo')
-def cal(week, month):
-    """Работа с календарем"""
-    global simple_tasks, tracked_tasks, calendar_events
-    if week:
-        Console.show_week(calendar_events)
-    elif month:
-        pass
-
-
 @cli.command()
 @click.option('--task', is_flag=True,
               help='Опция для просмотра задач')
-@click.option('--event', is_flag=True,
-              help='Опция для просмотра события в календаре')
-def list(task, event):
-    """Просмотр всех задач"""
-    global simple_tasks, tracked_tasks, calendar_events
+def list(task):
+
     if task:
-        Console.list_task(tracked_tasks, all_tasks)
-    elif event:
-        pass
+        import task_manager_library
+        task_gen = task_manager_library.show_tracked_task()
+        for task in task_gen:
+            click.echo("[" + task[0] + "] - " + task[1] + " - " + click.style(
+                "Subtasks: " + task[2], bold=True, fg='yellow')
+                + " - " + click.style(task[3], bold=True, bg='green'))
 
 
 @cli.command()
@@ -114,11 +100,12 @@ def list(task, event):
 @click.option('--subtask', type=int,
               help='Опция для выполнения подзадачи')
 def done(task, subtask):
-    """Выполнение задачи по номеру"""
     global simple_tasks, tracked_tasks, calendar_events, all_users_tasks, all_tasks
     try:
         if task:
-            Console.done_task(task, all_tasks, tracked_tasks, all_users_tasks)
+            import task_manager_library
+            task_manager_library.done_task(task)
+
         elif subtask:
             Console.done_subtask(subtask, all_tasks, tracked_tasks, all_users_tasks)
 
@@ -129,21 +116,10 @@ def done(task, subtask):
 
 @cli.command()
 @click.option('--task', type=int,
-              help='Опция для удаления задачи')
-def delete(task):
-    """Удаление задачи по номеру"""
-    global simple_tasks, tracked_tasks, calendar_events
-    if task:
-        pass
-
-
-@cli.command()
-@click.option('--task', type=int,
               help='Опция для просмотра задач')
 @click.option('--event', type=int,
               help='Опция для просмотра события в календаре')
 def info(task, event):
-    """Просмотра подробной информации"""
     global simple_tasks, tracked_tasks, calendar_events
     if task:
         pass
@@ -156,13 +132,14 @@ def info(task, event):
               help='Опция для редактирования задач')
 
 def edit(task):
-    """Просмотра подробной информации"""
     global simple_tasks, tracked_tasks, calendar_events, all_users_tasksm, current_user
     try:
         if task:
             task_num = task[0]
             task_field = task[1]
-            Console.edit_task(current_user, task_num, task_field, all_users_tasks, tracked_tasks, all_tasks)
+            import task_manager_library
+            task_manager_library.edit_task(task_num, task_field)
+            #Console.edit_task(current_user, task_num, task_field, all_users_tasks, tracked_tasks, all_tasks)
 
     except ValueError as e:
         print(e)
@@ -192,6 +169,21 @@ def showtools(tag, value):
               help='Формат логгирования')
 def logging(level, file, format):
     Console.set_logger(level, format, file)
+
+@cli.command()
+@click.option('--week', is_flag=True,
+              help='Опция для просмотра задач')
+@click.option('--month', is_flag=True,
+              help='Опция для просмотра todo')
+def cal(week, month):
+    """Работа с календарем"""
+    global simple_tasks, tracked_tasks, calendar_events
+    if week:
+        Console.show_week(calendar_events)
+    elif month:
+        pass
+
+# endregion
 
 
 if __name__ == '__main__':

@@ -1,60 +1,31 @@
+import calendar
 import click
+import configparser
 import logging
 import os
-import task_manager_library
 from datetime import datetime, timedelta, date
-import calendar
-import configparser
 
+import task_manager_library
 
 data_dir = os.environ['HOME']+'/tmandata/'
 
 
 class Console:
-
-
-    @staticmethod
-    def create_new_user(users):
-        login = input("Login: ")
-        if (task_manager_library.validate_login(users, login)):
-            name = input("Name: ")
-            surname = input("Surname: ")
-            task_manager_library.add_user(users, name, surname, login, {"simple": [], "task": [], "event": []})
-
-
-    @staticmethod
-    def import_users():
-
-        return task_manager_library.load_users_from_json()
-
-    @staticmethod
-    def set_current(users, chuser):
-        return task_manager_library.change_user(users, chuser)
-
-    @staticmethod
-    def show_current(users):
-
-        current_user = task_manager_library.set_current(users)
-        print("login: {}\nUID: {}".format(current_user.login, current_user.uid))
-
-    @staticmethod
-    def import_all_data(users):
-
-        current_user = task_manager_library.set_current(users)
-        tracked_tasks, all_tasks, all_users_tasks = task_manager_library.load_tasks_from_json(current_user)
-        events = task_manager_library.EventActions.to_event(tracked_tasks)
-        return (current_user, tracked_tasks, events, all_tasks, all_users_tasks)
-
-
     @staticmethod
     def add_task(sd, ed, tg, de, ti, re, ob, pr):
         try:
-            current_user = task_manager_library.get_current_user()
+            current_user = task_manager_library.UserTools.get_current_user()
             pr = str(task_manager_library.Priority[pr].value)
             if ob != "":
                 ob+=',{}'.format(current_user.login)
             else:
                 ob = current_user.login
+
+            if ob != "":
+                ob = ob.split(",")
+            else:
+                ob = []
+
             executor = None
             author = current_user.uid
             task_manager_library.add_tracked_task(ti, de, sd, ed, tg, author, ob, executor, re, pr)
@@ -62,9 +33,9 @@ class Console:
         except ValueError as e:
             print(e)
             logging.warning(e)
-        except Exception as e:
-            print(e)
-            logging.warning("Some troubles while adding task")
+        #except Exception as e:
+        #    print(e)
+        #    logging.warning("Some troubles while adding task")
 
     @staticmethod
     def add_subtask(current_user, all_tasks, all_users_tasks, tracked_tasks,  users, subtask,
@@ -94,113 +65,11 @@ class Console:
             logging.warning("Some unexpected troubles while adding subtask")
             print("Some unexpected troubles while adding subtask\n+{}".format(e))
 
-    @staticmethod
-    def preorder_traversal(task, all_tasks):
-        for subtasks in all_tasks:
-            click.echo("subtasks.node")
 
-    @staticmethod
-    def list_task(tracked_tasks, all_tasks):
-        task_gen = task_manager_library.show_tracked_task(tracked_tasks, all_tasks)
-        for task in task_gen:
-            click.echo("[" + task[0] + "] - " + task[1] + " - " + click.style(
-                "Subtasks: " + task[2], bold=True, fg='yellow') + " - " + click.style(task[3], bold=True, bg='green'))
-            # Тут можно сделать preorder traversal
-
-
-    @staticmethod
-    def done_todo(todo, simple_tasks):
-        try:
-            if (todo - 1) > len(simple_tasks):
-                raise IndexError("Out of range")
-            simple_tasks = task_manager_library.complete_simple_task(simple_tasks, todo)
-        except IndexError as e:
-            logging.warning("Out of range")
-            print(e)
-
-    @staticmethod
-    def open_nano(data, num):
-        os.system("echo \"{}\" >> {}".format(data[num], "/tmp/tman_tempdata.tmp"))
-        os.system("nano {}".format("/tmp/tman_tempdata.tmp"))
-        file = open("/tmp/tman_tempdata.tmp")
-        data[num] = file.read()[0:-1]
-        os.system("rm /tmp/tman_tempdata.tmp")
-        return data
-
-    @staticmethod
-    def edit_task(current, task_num, task_field, all_users_tasks,  tracked_tasks, all_tasks):
-        author_name = tracked_tasks[task_num-1].author
-        if author_name != current.uid:
-            raise ValueError("Access denied")
-            logging.warning("Trying to get access to other user's task")
-        try:
-            if (task_num - 1) > len(tracked_tasks):
-                raise IndexError("Out of range")
-            edit = tracked_tasks[task_num - 1]
-            # получаем индекс редактируемой задачи относительно коллекции всех задач
-
-            task_index = all_users_tasks.index(edit)
-            # или можно сделать из объекта dict и работать с ним прямо по названию task_field
-            data = []
-            data.append(edit.title)
-            data.append(edit.start.date())
-            data.append(edit.end.date())
-            data.append(edit.description)
-
-            if task_field == "title":
-                data = Console.open_nano(data, 0)
-            elif task_field == "start":
-                data = Console.open_nano(data, 1)
-            elif task_field == "end":
-                data = Console.open_nano(data, 2)
-            elif task_field == "description":
-                data = Console.open_nano(data, 3)
-            else:
-                raise ValueError("ERROR! Unsupported field!")
-
-            all_users_tasks[task_index].title = data[0]
-            all_users_tasks[task_index].start = task_manager_library.check_date(str(data[1]))
-            all_users_tasks[task_index].end = task_manager_library.check_date(str(data[2]))
-            all_users_tasks[task_index].description = data[3]
-            task_manager_library.resave_task_to_json(all_users_tasks)
-
-
-        except Exception as e:
-            logging.warning(e)
-            print(e)
-
-
-    @staticmethod
-    def delete_todo(todo, simple_tasks,tracked_tasks):
-        try:
-            if (todo - 1) > len(simple_tasks):
-                raise IndexError
-            simple_tasks = task_manager_library.delete_simple_task(simple_tasks, todo, tracked_tasks)
-        except IndexError as e:
-            logging.warning("Out of range while deleting. Index was: {}".format(todo))
-            print(e)
-        except Exception as e:
-            print(e)
-            logging.warning("Something done wrong while deleting. Index was: {}".format(todo))
-
-
-    #TODO - переделать на DataLib
-    @staticmethod
-    def done_task(task, all_tasks, tracked_tasks, all_users_tasks):
-        for subtask in all_tasks:
-            if subtask.parent == tracked_tasks[task-1].tid and subtask.is_completed == False:
-                raise Exception("You have undone subtasks! Done them all before you finish this one!")
-        global_index = all_users_tasks.index(tracked_tasks[task-1])
-        all_users_tasks[global_index].complete()
-        task_manager_library.resave_task_to_json(all_users_tasks)
 
     @staticmethod
     def done_subtask(task, all_tasks, tracked_tasks, all_users_tasks):
-        """
-        Тут не делим вывод с маркером, т.к. с GUI такой вывод не требуется ввиду обычного выделения подзадачи из списка
-        Cначала генерируем список с tid подзадач текущей задачи, затем генерируем список этих подзадач - т.е. связанных
 
-        """
         #список подзадач задачи
         tid_subtasks = []
 
@@ -208,8 +77,6 @@ class Console:
             if subtask.parent == tracked_tasks[task-1].tid:
                 tid_subtasks.append(subtask)
 
-        #connected_subtasks = [result for result in all_tasks if result.tid in tid_subtasks]
-        #получить информацию о завершенных и незавершенных подзадачах
         for subtask in tid_subtasks:
             if subtask.is_completed:
                 marker = "X"

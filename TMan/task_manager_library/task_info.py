@@ -6,9 +6,6 @@ from .utility import *
 
 
 class Task:
-    """
-    Базовый класс для задачи списка дел и события календаря
-"""
     def __init__(self, title, date, description, priority, tid):
         self.title = title
         self.date = date
@@ -18,7 +15,7 @@ class Task:
 
 
 class EventCalendar(Task):
-    """Сущность события календаря"""
+
     def __init__(self, title, date, description, priority, tid, planned):
         Task.__init__(self, title, date, description, priority, tid)
         self.planned = planned
@@ -28,7 +25,7 @@ class EventCalendar(Task):
 
 
 class TrackedTask:
-    """Базовый класс для сущности задачи и подзадачи трекинговой системы"""
+
     def __init__(self, title, desc, start, end, tag, author, observers, executor,
                  reminder, priority, changed, planned, tid=None, subtasks=None, is_completed=None, parent=None):
         self.title = title
@@ -69,13 +66,13 @@ class TrackedTask:
             self.is_completed = True
 
     def get_time(self):
-        """Получить дату и время создания в виде datetime объекта"""
+
         from .data_actions import uuid_to_datetime, str_to_uuid
         return uuid_to_datetime(str_to_uuid(self.tid))
 
 
 class Priority(enum.Enum):
-    """Перечеслитель важности/приоритета задачи: от 1 к 3 (3 - наивысший)"""
+
     high = 3
     medium = 2
     low = 1
@@ -92,25 +89,21 @@ class Priority(enum.Enum):
 
 
 class User:
-    """
-    Данный класс описывает сущность пользователя
-    Главная цель - хранение информации о доступных пользователю задачах
-    При загрузке файла users.json, ищем пользователя с current == True и список, доступных tid (task id)
-    Далее выборочно загружаем данные из json файлов задач по tid
-    tman user --chuser <login> - вход
-    tman user --setuser <login> - создание пользователя
-    """
-    def __init__(self, name, surname, uid, tasks, login, current):
+
+    def __init__(self, name, surname, uid, login, current, tasks=None):
         self.name = name
         self.surname = surname
         self.uid = uid
         self.current = current
         self.login = login
-        # tasks - это список, хранящий tid для task, списка, event, доступных пользователю
-        self.tasks = tasks
+        if tasks is None:
+            self.tasks = list()
+        else:
+            self.tasks = tasks
+
 
     def set_current(self):
-        """Сделать данного пользователя текущим"""
+
         self.current = True
 
     def add_simpletasks(self, tid):

@@ -2,6 +2,7 @@ import configparser
 import logging
 import os
 
+
 class loggingConfig:
     OFF = 0
     LOW_LEVEL = 1

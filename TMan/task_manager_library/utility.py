@@ -56,3 +56,82 @@ def check_time(ctx, param, my_time):
     time_format = "%H:%M"
     my_time = datetime.strptime(my_time, time_format)
     return my_time
+
+
+def date_to_str(date):
+    """
+    Converting datetime objects (Date) to str to serialize them into json
+    :param date: datetime object
+    :return: str object
+    """
+    str_date = str(date.year) + "-" + str(date.month) + "-" + str(date.day)
+    return str_date
+
+
+def time_to_str(time):
+    """
+    Converting datetime objects (Time) to str to serialize them into json
+    :param time: datetime object
+    :return: str object
+    """
+    str_time = str(time.hour) + ":" + str(time.minute)
+    return str_time
+
+
+def get_active_user(users):
+    """
+    Get current user (authorized)
+    :return: User's object
+    """
+    for user in users:
+        if user.current:
+            return user
+    raise Exception("There is no current user")
+
+
+def get_user_index(user, users):
+    """
+    Get user's index at json file
+    :param user: User's object
+    :return: int object
+    """
+
+    counter = 0
+    for x in users:
+        if user.uid == x.uid:
+            return counter
+        counter += 1
+    raise Exception("Trouble while adding task to user")
+
+
+def get_user(login, users):
+    """
+    Get Users's object by his login (str object)
+    :param login: str object - login
+    :return: User's object
+    """
+    for user in users:
+        if user.login == login:
+            return user
+    raise Exception("There is no such user")
+
+
+def get_login(uid, users):
+    for user in users:
+        if user.uid == uid:
+            return user.login
+    raise Exception("There is no such user")
+
+
+def open_nano(data, num):
+    os.system("echo \"{}\" >> {}".format(data[num], "/tmp/tman_tempdata.tmp"))
+    os.system("nano {}".format("/tmp/tman_tempdata.tmp"))
+    file = open("/tmp/tman_tempdata.tmp")
+    data[num] = file.read()[0:-1]
+    os.system("rm /tmp/tman_tempdata.tmp")
+    return data
+
+
+
+
+
