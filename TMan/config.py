@@ -4,3 +4,5 @@ LOG_CONFIG = {
 }
 ""
 DATA_PATH = "/home/herman/tmandata"
+
+CURRENT_USER_CONFIG = DATA_PATH + "/user.ini"

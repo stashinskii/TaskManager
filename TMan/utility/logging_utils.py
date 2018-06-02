@@ -6,11 +6,12 @@ LEVELS = ["DEBUG", "INFO", "OFF"]
 
 
 def logger(func):
-    def _log(*args, **kwargs):
+    def _log(*args):
         try:
-            logging.info("Function: {}".format(func.__name__))
+            get_logging_config("DEBUG")
+            logging.info("Function {0} in module {1}".format(func.__name__, func.__module__))
             logging.debug("\t\tFunction: {0}\n\t\tArguments: {1}".format(func.__name__, args))
-            result = func(*args, **kwargs)
+            result = func(*args)
             logging.debug("\t\t{0} return: {1}".format(func.__name__, result))
             return result
         except Exception as e:

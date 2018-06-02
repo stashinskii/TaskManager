@@ -1,27 +1,8 @@
 import enum
 
-from utility import utils
-from utility import serialization_utils
 from utility import logging_utils
-
-
-class Task:
-    def __init__(self, title, date, description, priority, tid):
-        self.title = title
-        self.date = date
-        self.description = description
-        self.priority = priority
-        self.tid = tid
-
-
-class EventCalendar(Task):
-
-    def __init__(self, title, date, description, priority, tid, planned):
-        Task.__init__(self, title, date, description, priority, tid)
-        self.planned = planned
-
-    def __str__(self):
-        return self.title
+from utility import serialization_utils
+from utility import utils
 
 
 class TrackedTask:
@@ -42,7 +23,7 @@ class TrackedTask:
         self.observers = observers
         self.executor = executor
         if is_completed is None:
-            self.is_completed = False
+            self.is_completed = Status.undone
         else:
             self.is_completed = is_completed
         self.reminder = reminder
@@ -58,12 +39,14 @@ class TrackedTask:
         self.planned = planned
         self.changed = changed
 
+    def undone(self):
+        self.is_completed = Status.undone
 
     def complete(self):
-        if self.is_completed:
-            self.is_completed = False
-        else:
-            self.is_completed = True
+        self.is_completed = Status.done
+
+    def begin(self):
+        self.is_completed = Status.process
 
     def get_time(self):
 
@@ -78,7 +61,7 @@ class Priority(enum.Enum):
     low = 1
 
     @classmethod
-    def from_name(cls, name):
+    def get_priority_from_name(cls, name):
         for priority, priority_name in Priority.items():
             if priority_name == name:
                 return priority
@@ -90,6 +73,28 @@ class Priority(enum.Enum):
     @staticmethod
     def convert_priority_to_str(priority):
         return str(Priority[priority].value)
+
+
+class Status(enum.Enum):
+    done = 3
+    process = 2
+    undone = 1
+
+    @classmethod
+    def get_status_from_name(cls, name):
+        for status, status_name in Status.items():
+            if status_name == name:
+                return status
+        raise ValueError('{} is not instance of Status'.format(name))
+
+    def to_name(self):
+        return Status[self.value]
+
+    @staticmethod
+    def convert_status_to_str(status):
+        return str(Status[status].value)
+
+
 
 
 class User:

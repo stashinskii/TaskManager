@@ -1,3 +1,4 @@
+import click
 import os
 import uuid
 from datetime import datetime
@@ -114,22 +115,6 @@ def get_login(uid, users):
         if user.uid == uid:
             return user.login
     raise Exception("There is no such user")
-
-
-def open_nano(data, num):
-    """
-    Open nano editor
-    :param data: list of task's title, startdate, enddate and description
-    :param num: position in list to be changed
-    :return: changed data
-    """
-    os.system("echo \"{}\" >> {}".format(data[num], "/tmp/tman_tempdata.tmp"))
-    os.system("nano {}".format("/tmp/tman_tempdata.tmp"))
-    file = open("/tmp/tman_tempdata.tmp")
-    data[num] = file.read()[0:-1]
-    os.system("rm /tmp/tman_tempdata.tmp")
-    return data
-
 
 
 

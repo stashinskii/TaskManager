@@ -1,18 +1,17 @@
 import json
 import os
-
-from .task_info import *
-
-from utility import utils
-from utility import serialization_utils
-from utility import logging_utils
-
 from datetime import datetime
 
+from utility import logging_utils
+from utility import serialization_utils
+from utility import utils
+from .task_info import *
 
 
 class DataStorage:
     PATH = None
+    CURRENT_USER = None
+
     @staticmethod
     def load_tasks_from_json():
         """
@@ -20,9 +19,8 @@ class DataStorage:
         :param current: User object - current user (authorized)
         :return: tuple of collections(lists)
         """
-
-        users = DataStorage.load_users_from_json()
-        current = utils.get_active_user(users)
+        # TODO check if CURRENT doesn't exist and None
+        current = DataStorage.CURRENT_USER
 
         with open(DataStorage.PATH + '/trackedtasks.json', 'r') as task_file:
             task_data = json.load(task_file)
@@ -40,7 +38,7 @@ class DataStorage:
             priority = Priority[Priority(int(task_dict['priority'])).name]
             author = task_dict['author']
             reminder = utils.check_time(None, None, task_dict['reminder'])
-            is_completed = task_dict['is_completed']
+            is_completed = Status[Status(int(task_dict['is_completed'])).name]
             parent = task_dict['parent']
             tid = task_dict['tid']
             subtasks = task_dict['subtasks']
@@ -66,8 +64,7 @@ class DataStorage:
     def resave_all_tasks_to_json(all_tasks, task=None):
         data = list()
         if task is not None:
-            users = DataStorage.load_users_from_json()
-            current = utils.get_active_user(users)
+            current = DataStorage.CURRENT_USER
             DataStorage.add_user_task(current, task.tid)
         for task in all_tasks:
             if isinstance(task.start, datetime):
@@ -78,6 +75,8 @@ class DataStorage:
                 task.reminder = serialization_utils.time_to_str(task.reminder)
             if isinstance(task.priority, Priority):
                 task.priority = str(task.priority.value)
+            if isinstance(task.is_completed, Status):
+                task.is_completed = str(task.is_completed.value)
             data.append(task.__dict__)
         with open(DataStorage.PATH + '/trackedtasks.json', 'w') as taskfile:
             json.dump(data, taskfile, indent=2, ensure_ascii=False)
@@ -109,7 +108,7 @@ class DataStorage:
         :param task_object: Task's object
         """
         try:
-            with open(data_dir + '/trackedtasks.json', 'r') as objfile:
+            with open(DataStorage.PATH + '/trackedtasks.json', 'r') as objfile:
                 collection = json.load(objfile)
 
         except FileNotFoundError:
@@ -128,7 +127,7 @@ class DataStorage:
         :return:
         """
         try:
-            with open(data_dir + '/users.json', 'r') as objfile:
+            with open(DataStorage.PATH + '/users.json', 'r') as objfile:
                 collection = json.load(objfile)
 
         except FileNotFoundError:
@@ -177,7 +176,7 @@ class DataStorage:
         :return:
         """
         users = DataStorage.load_users_from_json()
-        current = get_active_user(users)
+        current = DataStorage.CURRENT_USER
         for us in observers:
             if us != current.login:
                 user = get_user(us, users)
@@ -200,7 +199,7 @@ class DataStorage:
             priority = Priority[Priority(int(scheduler['task']['priority'])).name]
             author = scheduler['task']['author']
             reminder = utils.check_time(None, None, scheduler['task']['reminder'])
-            is_completed = scheduler['task']['is_completed']
+            is_completed = Status[Status(int(scheduler['task']['is_completed'])).name]
             parent = scheduler['task']['parent']
             tid = scheduler['task']['tid']
             subtasks = scheduler['task']['subtasks']
@@ -215,10 +214,6 @@ class DataStorage:
             schedulers_list.append(new_scheduler)
         return schedulers_list
 
-
-
-
-        return schedulers
 
     @staticmethod
     def load_schedulers_dict_from_json():
