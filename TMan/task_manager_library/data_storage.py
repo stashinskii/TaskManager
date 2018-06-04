@@ -5,12 +5,119 @@ from datetime import datetime
 from utility import logging_utils
 from utility import serialization_utils
 from utility import utils
+
+
 from .task_info import *
 
 
 class DataStorage:
     PATH = None
     CURRENT_USER = None
+
+    @staticmethod
+    def begin_task(task):
+        tracked_tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
+        global_index = all_users_tasks.index(tracked_tasks[task - 1])
+        all_users_tasks[global_index].begin()
+        DataStorage.resave_all_tasks_to_json(all_users_tasks)
+
+    @staticmethod
+    def done_task(task):
+        tracked_tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
+        for subtask in all_tasks:
+            if subtask.parent == tracked_tasks[task - 1].tid and subtask.is_completed == Status.undone:
+                raise Exception("You have undone subtasks! Done them all before you finish this one!")
+        global_index = all_users_tasks.index(tracked_tasks[task - 1])
+        all_users_tasks[global_index].complete()
+        DataStorage.resave_all_tasks_to_json(all_users_tasks)
+
+    @staticmethod
+    def undone_task(task):
+        tracked_tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
+        global_index = all_users_tasks.index(tracked_tasks[task - 1])
+        all_users_tasks[global_index].undone()
+        DataStorage.resave_all_tasks_to_json(all_users_tasks)
+
+    @staticmethod
+    def done_subtask(task_index, subtask_index):
+        tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
+        tid_subtasks = []
+
+        for subtask in all_tasks:
+            if subtask.parent == tasks[task_index - 1].tid:
+                tid_subtasks.append(subtask)
+
+        global_index = get_task_index(tid_subtasks[subtask_index - 1].tid, all_users_tasks)
+        all_users_tasks[global_index].complete()
+        DataStorage.resave_all_tasks_to_json(all_users_tasks)
+
+    @staticmethod
+    def begin_subtask(task_index, subtask_index):
+        tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
+        tid_subtasks = []
+
+        for subtask in all_tasks:
+            if subtask.parent == tasks[task_index - 1].tid:
+                tid_subtasks.append(subtask)
+
+        global_index = get_task_index(tid_subtasks[subtask_index - 1].tid, all_users_tasks)
+        all_users_tasks[global_index].begin()
+        DataStorage.resave_all_tasks_to_json(all_users_tasks)
+
+    @staticmethod
+    def undone_subtask(task_index, subtask_index):
+        tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
+        tid_subtasks = []
+
+        for subtask in all_tasks:
+            if subtask.parent == tasks[task_index - 1].tid:
+                tid_subtasks.append(subtask)
+
+        global_index = get_task_index(tid_subtasks[subtask_index - 1].tid, all_users_tasks)
+        all_users_tasks[global_index].undone()
+        DataStorage.resave_all_tasks_to_json(all_users_tasks)
+
+    @staticmethod
+    def add_task_to_json(task):
+        all_user_tasks = DataStorage.load_tasks_from_json()[2]
+        all_user_tasks.append(task)
+        current = DataStorage.CURRENT_USER
+        DataStorage.add_user_task(current, task.tid)
+        DataStorage.resave_all_tasks_to_json(all_user_tasks)
+
+    @staticmethod
+    def edit_task(task_num, task_field):
+        tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
+        current = DataStorage.CURRENT_USER
+        author_name = tasks[task_num - 1].author
+        if author_name != current.uid:
+            raise ValueError("Access denied")
+
+        if (task_num - 1) > len(tasks):
+            raise IndexError("Out of range")
+        edit = tasks[task_num - 1]
+        task_index = all_users_tasks.index(edit)
+        data = list()
+        data.extend((edit.title, edit.start.date(), edit.end.date(), edit.description))
+
+        #TODO перенесли open nano в UTILS
+        if task_field == "title":
+            data = DataStorage.open_nano(data, 0)
+        elif task_field == "start":
+            data = DataStorage.open_nano(data, 1)
+        elif task_field == "end":
+            data = DataStorage.open_nano(data, 2)
+        elif task_field == "description":
+            data = DataStorage.open_nano(data, 3)
+        else:
+            raise ValueError("ERROR! Unsupported field!")
+
+        all_users_tasks[task_index].title = data[0]
+        all_users_tasks[task_index].start = utils.check_date(None, None, str(data[1]))
+        all_users_tasks[task_index].end = utils.check_date(None, None, str(data[2]))
+        all_users_tasks[task_index].description = data[3]
+        DataStorage.resave_all_tasks_to_json(all_users_tasks)
+
 
     @staticmethod
     def load_tasks_from_json():
@@ -44,10 +151,12 @@ class DataStorage:
             subtasks = task_dict['subtasks']
             planned = task_dict['planned']
             changed = task_dict['changed']
+            connection = task_dict['connection']
 
-            new_task = TrackedTask(
+            new_task = Task(
                 title, desc, start, end, tag, author, observers, executor,
-                reminder, priority, changed, planned, parent, tid, subtasks, is_completed
+                reminder, priority, changed, planned, parent, tid, subtasks,
+                is_completed, connection
             )
             if task_dict['parent'] is None:
                 if task_dict['tid'] in current.tasks:
@@ -63,9 +172,6 @@ class DataStorage:
     @staticmethod
     def resave_all_tasks_to_json(all_tasks, task=None):
         data = list()
-        if task is not None:
-            current = DataStorage.CURRENT_USER
-            DataStorage.add_user_task(current, task.tid)
         for task in all_tasks:
             if isinstance(task.start, datetime):
                 task.start = serialization_utils.date_to_str(task.start)
@@ -206,7 +312,7 @@ class DataStorage:
             planned = scheduler['task']['planned']
             changed = scheduler['task']['changed']
             sid = scheduler['sid']
-            new_task = TrackedTask(
+            new_task = Task(
                 title, desc, start, end, tag, author, observers, executor,
                 reminder, priority, changed, planned, parent, tid, subtasks, is_completed
             )
@@ -265,5 +371,42 @@ class DataStorage:
         with open(DataStorage.PATH + '/schedulers.json', 'w') as file:
             json.dump(changed_schedulers, file, indent=2, ensure_ascii=True)
 
+    @staticmethod
+    def get_subtasks(index):
+        user_tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
+        tid = user_tasks[index - 1].tid
+        result_collection = list()
+        for tasks in all_tasks:
+            if tasks.parent == tid:
+                result_collection.append(tasks)
+        return result_collection
+
+    @staticmethod
+    def get_subtasks_parent(index):
+        user_tasks = DataStorage.load_tasks_from_json()[0]
+        title = user_tasks[index - 1].title
+        return title
 
 
+    @staticmethod
+    def get_task_from_id(tid):
+        tasks = DataStorage.load_tasks_from_json()[0]
+        for task in tasks:
+            if task.tid == tid:
+                return task
+        raise ValueError("Trouble while getting task by tid")
+
+    @staticmethod
+    def open_nano(data, num):
+        """
+        Open nano editor
+        :param data: list of task's title, startdate, enddate and description
+        :param num: position in list to be changed
+        :return: changed data
+        """
+        os.system("echo \"{}\" >> {}".format(data[num], "/tmp/tman_tempdata.tmp"))
+        os.system("nano {}".format("/tmp/tman_tempdata.tmp"))
+        file = open("/tmp/tman_tempdata.tmp")
+        data[num] = file.read()[0:-1]
+        os.system("rm /tmp/tman_tempdata.tmp")
+        return data

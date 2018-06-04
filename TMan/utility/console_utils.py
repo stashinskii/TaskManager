@@ -1,23 +1,13 @@
 import click
 import os
 
+
 from task_manager_library import task_info
+from task_manager_library import data_storage
 
 STATUS_NAMES = ['done','undone','process']
 
-def open_nano(data, num):
-    """
-    Open nano editor
-    :param data: list of task's title, startdate, enddate and description
-    :param num: position in list to be changed
-    :return: changed data
-    """
-    os.system("echo \"{}\" >> {}".format(data[num], "/tmp/tman_tempdata.tmp"))
-    os.system("nano {}".format("/tmp/tman_tempdata.tmp"))
-    file = open("/tmp/tman_tempdata.tmp")
-    data[num] = file.read()[0:-1]
-    os.system("rm /tmp/tman_tempdata.tmp")
-    return data
+
 
 
 def check_status_name(ctx, param, value):
@@ -25,7 +15,7 @@ def check_status_name(ctx, param, value):
         raise ValueError("Check status name to be changed")
 
 
-def format_print_list(tasks):
+def format_print_tasks(tasks):
     """
     Printing list of tasks
     :param tasks: tuple of Status, index, subtasks and title of task
@@ -45,3 +35,28 @@ def format_print_list(tasks):
         click.echo("[" + marker + "] - " + str(task[1]) + " - " + click.style(
                    "Subtasks: " + str(task[2]), bold=True, fg='yellow')
                    + " - " + click.style(str(task[3]), bold=True, bg='green'))
+
+
+def format_print_subtasks(tasks, index):
+    """
+    Printing list of subtasks
+    :param tasks: tuple of Status, index, subtasks and title of task
+    :return:
+    """
+    parent = data_storage.DataStorage.get_subtasks_parent(index)
+
+    click.secho("Parent of chosen task (index: {0}) is: {1}".format(index, parent), bg='green', fg='white', blink=True)
+
+    for task in tasks:
+        marker = ' '
+        if task[0] == task_info.Status.done:
+            marker = 'X'
+        elif task[0] == task_info.Status.undone:
+            marker = ' '
+        elif task[0] == task_info.Status.process:
+            marker = 'O'
+        else:
+            raise ValueError("Status is not status object")
+
+        click.echo("[" + marker + "] - " + str(task[1]) + " - "
+                   + " - " + click.style(str(task[2]), bold=True, bg='yellow', fg='white'))

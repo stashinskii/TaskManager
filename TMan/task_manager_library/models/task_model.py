@@ -55,7 +55,7 @@ class Task:
 
     def get_time(self):
 
-        from .actions import uuid_to_datetime, str_to_uuid
+        from .data_actions import uuid_to_datetime, str_to_uuid
         return uuid_to_datetime(str_to_uuid(self.tid))
 
 
@@ -98,46 +98,3 @@ class Status(enum.Enum):
     @staticmethod
     def convert_status_to_str(status):
         return str(Status[status].value)
-
-
-
-
-class User:
-
-    def __init__(self, name, surname, uid, login, current, tasks=None):
-        self.name = name
-        self.surname = surname
-        self.uid = uid
-        self.current = current
-        self.login = login
-        if tasks is None:
-            self.tasks = list()
-        else:
-            self.tasks = tasks
-
-
-    def set_current(self):
-
-        self.current = True
-
-    def add_simpletasks(self, tid):
-        self.tasks['simple'].append(tid)
-
-    def add_task(self, tid):
-        self.tasks['task'].append(tid)
-
-
-class Scheduler():
-    def __init__(self, date, task, sid=None):
-        self.date = date
-        # param: task Task's object
-        self.task = task
-        if sid is None:
-            self.sid = serialization_utils.tid_gen()
-        else:
-            self.sid = sid
-
-
-
-
-

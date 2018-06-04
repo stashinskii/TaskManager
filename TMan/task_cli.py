@@ -2,7 +2,7 @@ import click
 import os
 
 import config
-from task_manager_library import data_actions
+from task_manager_library import actions
 from task_manager_library import data_storage
 from task_manager_library import task_info
 from task_manager_library import user_actions
@@ -18,7 +18,7 @@ def cli():
     data_storage.DataStorage.PATH = config.DATA_PATH
     user_actions.UserTools.PATH = config.CURRENT_USER_CONFIG
     data_storage.DataStorage.CURRENT_USER = user_actions.UserTools.get_current_user()
-    data_actions.get_schedulers()
+    actions.get_schedulers()
     logging_utils.get_logging_config("DEBUG")
 
     click.clear()
@@ -103,8 +103,8 @@ def task():
 def add(startdate, enddate, tag, description,
         title, reminder, observers, priority):
     """Adding new task"""
-    data_actions.add_tracked_task(title, description, startdate, enddate,
-                                  tag, observers, reminder, priority)
+    actions.add_tracked_task(title, description, startdate, enddate,
+                             tag, observers, reminder, priority)
     return True
 
 
@@ -113,8 +113,8 @@ def list():
     """
     Showing list of current tasks
     """
-    tasks_list = data_actions.show_tasks_list()
-    console_utils.format_print_list(tasks_list)
+    tasks_list = actions.show_tasks_list()
+    console_utils.format_print_tasks(tasks_list)
 
 
 @task.command()
@@ -129,11 +129,11 @@ def status(index, status):
     try:
         status = task_info.Status[status]
         if status == task_info.Status.done:
-            data_actions.done_task(index)
+            actions.done_task(index)
         elif status == task_info.Status.process:
-            data_actions.begin_task(index)
+            actions.begin_task(index)
         elif status == task_info.Status.undone:
-            data_actions.undone_task(index)
+            actions.undone_task(index)
 
     except ValueError as e:
         print(e)
@@ -154,7 +154,7 @@ def edit(index, field):
         if task:
             task_num = index
             task_field = field
-            data_actions.edit_task(task_num, task_field)
+            actions.edit_task(task_num, task_field)
     except ValueError as e:
         print(e)
 
@@ -163,7 +163,7 @@ def edit(index, field):
 @click.option('--index', type=int,
               help='Index of task')
 def show(index):
-    task = data_actions.get_task(index)
+    task = actions.get_task(index)
     if task.is_completed == task_info.Status.done:
         status = "Done"
         color = 'green'
@@ -210,8 +210,8 @@ def subtask():
 def add(startdate, enddate, tag, description,
         title, reminder, observers, priority, index):
     """Adding new subtask"""
-    data_actions.add_subtask(index, title, description, startdate, enddate,
-                             tag, observers, reminder, priority)
+    actions.add_subtask(index, title, description, startdate, enddate,
+                        tag, observers, reminder, priority)
     return True
 
 
@@ -229,16 +229,24 @@ def status(task, index, status):
     try:
         status = task_info.Status[status]
         if status == task_info.Status.done:
-            data_actions.done_subtask(task, index)
+            actions.done_subtask(task, index)
         elif status == task_info.Status.process:
-            data_actions.begin_subtask(task, index)
+            actions.begin_subtask(task, index)
         elif status == task_info.Status.undone:
-            data_actions.undone_subtask(task, index)
+            actions.undone_subtask(task, index)
 
     except ValueError as e:
         print(e)
-    #except Exception as e:
-    #   print(e)
+    except Exception as e:
+       print(e)
+
+
+@subtask.command()
+@click.option('--index', type=int,
+              help='Index of task')
+def list(index):
+    tasks_list = actions.show_subtasks_list(index)
+    console_utils.format_print_subtasks(tasks_list, index)
 
 # endregion
 
@@ -273,8 +281,8 @@ def scheduler(startdate, enddate, tag, description,
     startdate = utils.check_date(None, None, startdate)
     enddate = utils.check_date(None, None, enddate)
     reminder = utils.check_time(None, None, reminder)
-    data_actions.add_sheduler(title, description, startdate, enddate,
-                              tag, observers, reminder, priority)
+    actions.add_sheduler(title, description, startdate, enddate,
+                         tag, observers, reminder, priority)
 
 
 # endregion

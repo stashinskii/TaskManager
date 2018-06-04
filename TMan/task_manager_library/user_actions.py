@@ -57,7 +57,7 @@ class UserTools():
 
     @staticmethod
     def add_user(login, name, surname, tasks=None):
-        UserTools.validate_login()
+        UserTools.validate_login(login)
         uid = serialization_utils.tid_gen()
         new_user = User(name, surname, uid, login, False, tasks)
         users = DataStorage.save_users_to_json(new_user.__dict__)
