@@ -2,23 +2,27 @@ import json
 import os
 from datetime import datetime
 
+from task_manager_library.models.scheduler_model import Scheduler
+from task_manager_library.models.task_model import Status, Task, Priority
 from utility import logging_utils
 from utility import serialization_utils
 from utility import utils
-
-
-from .task_info import *
+from user import User
 
 
 class DataStorage:
+    """Database class.Requires to initialize PATH and CURRENT_USER for correct usage of library """
     PATH = None
     CURRENT_USER = None
+
+    # region DB methods
 
     @staticmethod
     def begin_task(task):
         tracked_tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
         global_index = all_users_tasks.index(tracked_tasks[task - 1])
         all_users_tasks[global_index].begin()
+
         DataStorage.resave_all_tasks_to_json(all_users_tasks)
 
     @staticmethod
@@ -80,9 +84,13 @@ class DataStorage:
     @staticmethod
     def add_task_to_json(task):
         all_user_tasks = DataStorage.load_tasks_from_json()[2]
+        users = DataStorage.load_users_from_json()
         all_user_tasks.append(task)
         current = DataStorage.CURRENT_USER
         DataStorage.add_user_task(current, task.tid)
+        for observer in task.observers:
+            observer_object = utils.get_user(observer, users)
+            DataStorage.add_user_task(observer_object, task.tid)
         DataStorage.resave_all_tasks_to_json(all_user_tasks)
 
     @staticmethod
@@ -126,6 +134,7 @@ class DataStorage:
         :param current: User object - current user (authorized)
         :return: tuple of collections(lists)
         """
+        utils.check_json_files('/trackedtasks.json')
         # TODO check if CURRENT doesn't exist and None
         current = DataStorage.CURRENT_USER
 
@@ -170,7 +179,7 @@ class DataStorage:
 
 
     @staticmethod
-    def resave_all_tasks_to_json(all_tasks, task=None):
+    def resave_all_tasks_to_json(all_tasks):
         data = list()
         for task in all_tasks:
             if isinstance(task.start, datetime):
@@ -183,7 +192,9 @@ class DataStorage:
                 task.priority = str(task.priority.value)
             if isinstance(task.is_completed, Status):
                 task.is_completed = str(task.is_completed.value)
+
             data.append(task.__dict__)
+
         with open(DataStorage.PATH + '/trackedtasks.json', 'w') as taskfile:
             json.dump(data, taskfile, indent=2, ensure_ascii=False)
 
@@ -193,6 +204,7 @@ class DataStorage:
         Loading(deserializing) users's data from json file
         :return: list of User's objects
         """
+        utils.check_json_files('/users.json')
         with open(DataStorage.PATH + '/users.json', 'r') as file:
             data = json.load(file)
         users = list()
@@ -238,7 +250,6 @@ class DataStorage:
 
         except FileNotFoundError:
             collection = []
-            logging.warning("Can't load json file")
         collection.append(user_object)
 
         with open(DataStorage.PATH + '/users.json', 'w') as objfile:
@@ -290,6 +301,7 @@ class DataStorage:
 
     @staticmethod
     def load_schedulers_from_json():
+
         schedulers = DataStorage.load_schedulers_dict_from_json()
         schedulers_list = list()
 
@@ -316,6 +328,7 @@ class DataStorage:
                 title, desc, start, end, tag, author, observers, executor,
                 reminder, priority, changed, planned, parent, tid, subtasks, is_completed
             )
+
             new_scheduler = Scheduler(date, new_task, sid)
             schedulers_list.append(new_scheduler)
         return schedulers_list
@@ -323,6 +336,7 @@ class DataStorage:
 
     @staticmethod
     def load_schedulers_dict_from_json():
+        utils.check_json_files('/schedulers.json')
         with open(DataStorage.PATH + '/schedulers.json', 'r') as task_file:
             schedulers = json.load(task_file)
 
@@ -336,6 +350,7 @@ class DataStorage:
         scheduler.task.end = serialization_utils.date_to_str(scheduler.task.end)
         scheduler.task.reminder = serialization_utils.time_to_str(scheduler.task.reminder)
         scheduler.date = serialization_utils.date_to_str(scheduler.date)
+        scheduler.task.is_completed = str(scheduler.task.is_completed.value)
 
         scheduler.task = scheduler.task.__dict__
         scheduler = scheduler.__dict__
@@ -410,3 +425,5 @@ class DataStorage:
         data[num] = file.read()[0:-1]
         os.system("rm /tmp/tman_tempdata.tmp")
         return data
+
+    # endregion

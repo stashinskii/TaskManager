@@ -7,15 +7,15 @@ from datetime import datetime
 import config
 from task_manager_library.controllers.scheduler_controller import SchedulerController
 from task_manager_library.controllers.task_controller import TaskController
+from task_manager_library.models.scheduler_model import Scheduler
+from task_manager_library.models.task_model import Task
 from utility import console_utils as console
 from utility import logging_utils
 from utility import serialization_utils
 from utility import utils
 from utility.utils import *
 from .data_storage import *
-from task_manager_library.models.task_model import Task
-from task_manager_library.models.scheduler_model import Scheduler
-from .user_actions import *
+from user_actions import *
 
 
 # region Adding and editing tasks
@@ -60,9 +60,9 @@ def add_subtask(index, title=None, desc=None, start=None, end=None,
     check_date_range(start, end)
     TaskController.add(task)
 
-    @logging_utils.logger
-    def edit_task(task_num, task_field):
-        TaskController.edit(task_num, task_field)
+@logging_utils.logger
+def edit_task(task_num, task_field):
+    TaskController.edit(task_num, task_field)
 
 # endregion
 
@@ -131,10 +131,10 @@ def undone_subtask(task_index, subtask_index):
 
 
 @logging_utils.logger
-def add_sheduler(title=None, description=None, date=None, enddate=None,
-                 tag=None, observers=None,
-                 reminder=None, priority=None,
-                 changed=None, planned=None, executor=None):
+def add_scheduler(title=None, description=None, date=None, enddate=None,
+                  tag=None, observers=None,
+                  reminder=None, priority=None,
+                  changed=None, planned=None, executor=None):
     current = DataStorage.CURRENT_USER
     observers = serialization_utils.split_str_to_list(observers, current)
     priority = Priority.convert_priority_to_str(priority)

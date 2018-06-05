@@ -1,5 +1,6 @@
 import logging
 import config
+from .utils import check_json_files, check_log_files
 
 
 LEVELS = ["DEBUG", "INFO", "OFF"]
@@ -21,6 +22,7 @@ def logger(func):
 
 
 def get_logging_config(level_name):
+    check_log_files(config.LOG_CONFIG['file'])
     logging.basicConfig(
         filename=config.LOG_CONFIG['file'],
         level=level_name,

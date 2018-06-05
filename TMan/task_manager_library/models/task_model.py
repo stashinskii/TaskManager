@@ -6,7 +6,7 @@ from utility import utils
 
 
 class Task:
-
+    """Description of Task"""
     def __init__(self, title, desc, start, end, tag, author, observers, executor,
                  reminder, priority, changed, planned, parent=None, tid=None, subtasks=None,
                  is_completed=None, connection = None):
@@ -78,6 +78,13 @@ class Priority(enum.Enum):
     @staticmethod
     def convert_priority_to_str(priority):
         return str(Priority[priority].value)
+
+
+class Tag:
+    def __init__(self, name, description=None):
+        self.tag_name = name
+        self.descriptiom = None
+
 
 
 class Status(enum.Enum):

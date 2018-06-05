@@ -80,26 +80,6 @@ class Priority(enum.Enum):
         return str(Priority[priority].value)
 
 
-class Status(enum.Enum):
-    done = 3
-    process = 2
-    undone = 1
-
-    @classmethod
-    def get_status_from_name(cls, name):
-        for status, status_name in Status.items():
-            if status_name == name:
-                return status
-        raise ValueError('{} is not instance of Status'.format(name))
-
-    def to_name(self):
-        return Status[self.value]
-
-    @staticmethod
-    def convert_status_to_str(status):
-        return str(Status[status].value)
-
-
 
 
 class User:
@@ -114,18 +94,6 @@ class User:
             self.tasks = list()
         else:
             self.tasks = tasks
-
-
-    def set_current(self):
-
-        self.current = True
-
-    def add_simpletasks(self, tid):
-        self.tasks['simple'].append(tid)
-
-    def add_task(self, tid):
-        self.tasks['task'].append(tid)
-
 
 class Scheduler():
     def __init__(self, date, task, sid=None):

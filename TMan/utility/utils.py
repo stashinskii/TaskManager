@@ -1,6 +1,8 @@
 import click
 import os
 import uuid
+import config
+import json
 from datetime import datetime
 
 
@@ -75,6 +77,8 @@ def get_user_index(user, users):
     """
 
     counter = 0
+    #print(user.uid)
+    #user_uid = user.uid
     for x in users:
         if user.uid == x.uid:
             return counter
@@ -115,6 +119,26 @@ def get_login(uid, users):
         if user.uid == uid:
             return user.login
     raise Exception("There is no such user")
+
+
+def check_json_files(file):
+
+    check_dir()
+    if not os.path.exists(config.DATA_PATH+file):
+        with open(config.DATA_PATH + file, 'w') as objfile:
+            json.dump([], objfile, indent=2, ensure_ascii=False)
+
+def check_log_files(file):
+    check_dir()
+    if not os.path.exists(file):
+        with open(file, 'a+') as f:
+            f.write('Logfile created')
+
+
+def check_dir():
+    if not os.path.exists(config.DATA_PATH):
+        os.makedirs(config.DATA_PATH)
+
 
 
 

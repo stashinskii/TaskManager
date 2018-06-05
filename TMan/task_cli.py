@@ -4,23 +4,27 @@ import os
 import config
 from task_manager_library import actions
 from task_manager_library import data_storage
-from task_manager_library import task_info
-from task_manager_library import user_actions
+
+from task_manager_library.models.task_model import Status, Priority
+import user_actions
 from utility import console_utils
 from utility import logging_utils
 from utility import serialization_utils
 from utility import utils
 
 
+
 @click.group(invoke_without_command=True)
 def cli():
     """Task Manager (tman) application for managing tasks and events"""
-    data_storage.DataStorage.PATH = config.DATA_PATH
-    user_actions.UserTools.PATH = config.CURRENT_USER_CONFIG
-    data_storage.DataStorage.CURRENT_USER = user_actions.UserTools.get_current_user()
-    actions.get_schedulers()
-    logging_utils.get_logging_config("DEBUG")
-
+    try:
+        data_storage.DataStorage.PATH = config.DATA_PATH
+        user_actions.UserTools.PATH = config.CURRENT_USER_CONFIG
+        data_storage.DataStorage.CURRENT_USER = user_actions.UserTools.get_current_user()
+        actions.get_schedulers()
+        logging_utils.get_logging_config("DEBUG")
+    except Exception as e:
+        print(e)
     click.clear()
 
 # region User actions
@@ -127,12 +131,12 @@ def status(index, status):
     Done subtask or task by inputing index of task
     """
     try:
-        status = task_info.Status[status]
-        if status == task_info.Status.done:
+        status = Status[status]
+        if status == Status.done:
             actions.done_task(index)
-        elif status == task_info.Status.process:
+        elif status == Status.process:
             actions.begin_task(index)
-        elif status == task_info.Status.undone:
+        elif status == Status.undone:
             actions.undone_task(index)
 
     except ValueError as e:
@@ -164,13 +168,13 @@ def edit(index, field):
               help='Index of task')
 def show(index):
     task = actions.get_task(index)
-    if task.is_completed == task_info.Status.done:
+    if task.is_completed == Status.done:
         status = "Done"
         color = 'green'
-    elif task.is_completed == task_info.Status.undone:
+    elif task.is_completed == Status.undone:
         status = "Undone"
         color = 'red'
-    elif task.is_completed == task_info.Status.process:
+    elif task.is_completed == Status.process:
         status = "Process"
         color = 'blue'
     click.echo("Title: \t\t" + click.style(task.title, bold=True, fg='yellow'))
@@ -227,12 +231,12 @@ def status(task, index, status):
     Done subtask or task by inputing index of task
     """
     try:
-        status = task_info.Status[status]
-        if status == task_info.Status.done:
+        status = Status[status]
+        if status == Status.done:
             actions.done_subtask(task, index)
-        elif status == task_info.Status.process:
+        elif status == Status.process:
             actions.begin_subtask(task, index)
-        elif status == task_info.Status.undone:
+        elif status == Status.undone:
             actions.undone_subtask(task, index)
 
     except ValueError as e:
@@ -252,15 +256,15 @@ def list(index):
 
 # region Sheduler actions
 @cli.group()
-def utils():
+def util():
     """Utils actions and tools"""
     pass
 
 
-@utils.command()
-@click.option('-sd', '--startdate', type=str,
+@util.command()
+@click.option('-sd', '--startdate', type=str, callback=utils.check_date,
               help='Start date')
-@click.option('-ed', '--enddate', type=str,
+@click.option('-ed', '--enddate', type=str,callback=utils.check_date,
               help='End date')
 @click.option('-tg', '--tag', type=str,
               help='Tag')
@@ -268,21 +272,17 @@ def utils():
               help='Description')
 @click.option('-ti', '--title', type=str,
               help='Title')
-@click.option('-re', '--reminder', type=str,
+@click.option('-re', '--reminder', type=str,callback=utils.check_time,
               help='Reminder')
 @click.option('-ob', '--observers',  type=str, default='',
               help='Observers')
 @click.option('-pr', '--priority', type=str,
               help='Priority')
-@click.option('-i', '--index', type=int,
-              help='Index of task to add subtask')
 def scheduler(startdate, enddate, tag, description,
               title, reminder, observers, priority):
-    startdate = utils.check_date(None, None, startdate)
-    enddate = utils.check_date(None, None, enddate)
-    reminder = utils.check_time(None, None, reminder)
-    actions.add_sheduler(title, description, startdate, enddate,
-                         tag, observers, reminder, priority)
+
+    actions.add_scheduler(title, description, startdate, enddate,
+                          tag, observers, reminder, priority)
 
 
 # endregion

@@ -2,12 +2,10 @@ import click
 import os
 
 
-from task_manager_library import task_info
+from task_manager_library.models.task_model import Status, Task, Priority
 from task_manager_library import data_storage
 
 STATUS_NAMES = ['done','undone','process']
-
-
 
 
 def check_status_name(ctx, param, value):
@@ -23,11 +21,11 @@ def format_print_tasks(tasks):
     """
     for task in tasks:
         marker = ' '
-        if task[0] == task_info.Status.done:
+        if task[0] == Status.done:
             marker = 'X'
-        elif task[0] == task_info.Status.undone:
+        elif task[0] == Status.undone:
             marker = ' '
-        elif task[0] == task_info.Status.process:
+        elif task[0] == Status.process:
             marker = 'O'
         else:
             raise ValueError("Status is not status object")
@@ -49,11 +47,11 @@ def format_print_subtasks(tasks, index):
 
     for task in tasks:
         marker = ' '
-        if task[0] == task_info.Status.done:
+        if task[0] == Status.done:
             marker = 'X'
-        elif task[0] == task_info.Status.undone:
+        elif task[0] == Status.undone:
             marker = ' '
-        elif task[0] == task_info.Status.process:
+        elif task[0] == Status.process:
             marker = 'O'
         else:
             raise ValueError("Status is not status object")

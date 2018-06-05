@@ -2,17 +2,17 @@ from task_manager_library.data_storage import DataStorage
 
 
 class TaskController:
-    """Request send from actions"""
+    """Manager/controller of tasks. Requests sends from actions"""
     @staticmethod
     def add(task):
         DataStorage.add_task_to_json(task)
 
     @staticmethod
-    def edit():
-        DataStorage.edit_task(task_num, field)
+    def edit(task_num, task_field):
+        DataStorage.edit_task(task_num, task_field)
 
     @staticmethod
-    def get_by_index(index):
+    def get_by_index(task_index):
         tasks = DataStorage.load_tasks_from_json()[0]
         task = tasks[task_index - 1]
         return task
