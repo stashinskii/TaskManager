@@ -15,7 +15,6 @@ from utility import serialization_utils
 from utility import utils
 from utility.utils import *
 from .data_storage import *
-from user_actions import *
 
 
 # region Adding and editing tasks
@@ -26,10 +25,10 @@ def add_tracked_task(title=None, desc=None, start=None, end=None,
                      reminder=None, priority=None,
                      changed=None, planned=None, executor=None):
     """Adding new task"""
-    current = UserTools.get_current_user()
+    current = DataStorage.CURRENT_USER
     observers = serialization_utils.split_str_to_list(observers, current)
     priority = Priority[priority].value
-    author = UserTools.get_current_user().uid
+    author = current.uid
     task = Task(title, desc, start, end, tag, author, observers, executor,
                 reminder, priority, changed, planned)
     check_date_range(start, end)
@@ -44,10 +43,10 @@ def add_subtask(index, title=None, desc=None, start=None, end=None,
                 changed=None, planned=None, executor=None):
 
     """Adding new subtask task"""
-    current = UserTools.get_current_user()
+    current = DataStorage.CURRENT_USER
     observers = serialization_utils.split_str_to_list(observers, current)
     priority = Priority.convert_priority_to_str(priority)
-    author = UserTools.get_current_user().uid
+    author = current.uid
 
     tasks, all, all_users_tasks = DataStorage.load_tasks_from_json()
     parent_id = tasks[index - 1].tid
@@ -78,6 +77,9 @@ def show_tasks_list():
 def show_subtasks_list(index):
     return TaskController.get_users_subtasks(index)
 
+@logging_utils.logger
+def order_tasks(tag):
+    return TaskController.order_by(tag)
 
 @logging_utils.logger
 def get_task(task_index):
@@ -87,6 +89,16 @@ def get_task(task_index):
     :return:
     """
     task = TaskController.get_by_index(task_index)
+    return task
+
+@logging_utils.logger
+def get_subtask(task_index, subtask_index):
+    """
+    Get task by index
+    :param task_index: int object
+    :return:
+    """
+    task = TaskController.get_subtask(task_index, subtask_index)
     return task
 
 # endregion
@@ -127,25 +139,23 @@ def undone_subtask(task_index, subtask_index):
 
 # endregion
 
-# region Scheduler region
+# region Tools region
 
 
 @logging_utils.logger
 def add_scheduler(title=None, description=None, date=None, enddate=None,
                   tag=None, observers=None,
-                  reminder=None, priority=None,
+                  reminder=None, priority=None, interval=None,
                   changed=None, planned=None, executor=None):
     current = DataStorage.CURRENT_USER
     observers = serialization_utils.split_str_to_list(observers, current)
     priority = Priority.convert_priority_to_str(priority)
-    author = UserTools.get_current_user().uid
-
+    author = current.uid
+    tag = Tag(tag)
     task = Task(title, description, date, enddate, tag, author, observers, executor,
                 reminder, priority, changed, planned)
-
-
     check_date_range(date, enddate)
-    scheduler = Scheduler(date, task)
+    scheduler = Scheduler(datetime.now(), task, interval)
 
     SchedulerController.add(scheduler)
 
@@ -154,5 +164,14 @@ def add_scheduler(title=None, description=None, date=None, enddate=None,
 def get_schedulers():
     return SchedulerController.get()
 
+
+@logging_utils.logger
+def get_connected_tasks(tid):
+    return TaskController.get_connected_tasks(tid)
+
+
+@logging_utils.logger
+def make_link(task1, task2):
+    return TaskController.make_link(task1, task2)
 
 #endregion

@@ -58,3 +58,23 @@ def format_print_subtasks(tasks, index):
 
         click.echo("[" + marker + "] - " + str(task[1]) + " - "
                    + " - " + click.style(str(task[2]), bold=True, bg='yellow', fg='white'))
+
+
+def format_print_ordered(ordered_tasks):
+    tag = ordered_tasks[0].tag.tag_name
+    click.echo("Ordered by tag:"+click.style(tag, bg='red', fg='white'))
+    click.echo()
+    for task in ordered_tasks:
+        marker = ' '
+        if task.is_completed == Status.done:
+            marker = 'X'
+        elif task.is_completed == Status.undone:
+            marker = ' '
+        elif task.is_completed == Status.process:
+            marker = 'O'
+        else:
+            raise ValueError("Status is not status object")
+
+        click.echo("[" + marker + "] - "
+                   + click.style(task.title, bold=True, bg='yellow', fg='white'))
+

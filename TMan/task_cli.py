@@ -2,16 +2,14 @@ import click
 import os
 
 import config
+import user_actions
 from task_manager_library import actions
 from task_manager_library import data_storage
-
-from task_manager_library.models.task_model import Status, Priority
-import user_actions
+from task_manager_library.models.task_model import Status, Priority, Task, Tag
 from utility import console_utils
 from utility import logging_utils
 from utility import serialization_utils
 from utility import utils
-
 
 
 @click.group(invoke_without_command=True)
@@ -80,7 +78,6 @@ def current():
 
 # region Task actions
 
-
 @cli.group()
 def task():
     """Task actions and tools"""
@@ -107,6 +104,7 @@ def task():
 def add(startdate, enddate, tag, description,
         title, reminder, observers, priority):
     """Adding new task"""
+    tag = Tag(tag)
     actions.add_tracked_task(title, description, startdate, enddate,
                              tag, observers, reminder, priority)
     return True
@@ -182,10 +180,37 @@ def show(index):
     click.echo("Start date: \t" + click.style(str(task.start.date()), bold=True, fg='yellow'))
     click.echo("End date: \t" + click.style(str(task.end.date()), bold=True, fg='yellow'))
     click.echo("Status: \t" + click.style(status, bold=True, fg=color))
-    click.echo(click.style("#" + task.tag, bold=True, bg='red'))
+    click.echo("tid: \t\t" + click.style(task.tid, bold=True, fg='white'))
+    click.echo(click.style("#" + task.tag.tag_name, bold=True, bg='red'))
+    if task.connection is not None:
+        click.secho("\t\t\t\t\t\t\t\t", bold=True, bg='green', fg='white')
+        click.echo("Linked tasks:")
+        for tid in task.connection:
+            connected_task = actions.get_connected_tasks(tid)
+            click.secho(connected_task.title, bold=True, bg = 'green', fg='white')
 
+
+@task.command()
+@click.option('--tag', type=str,
+              help="Order by tag")
+def orderby(tag):
+    tag = Tag(tag)
+    ordered_tasks = actions.order_tasks(tag)
+    console_utils.format_print_ordered(ordered_tasks)
+
+@task.command()
+@click.option('--first', type=str,
+              help="First task's tid")
+@click.option('--second', type=str,
+              help="Second task's tid")
+def make_link(first, second):
+    actions.make_link(first, second)
+
+
+# endregion
 
 # region Subtask actions
+
 @cli.group()
 def subtask():
     """Subtask actions and tools"""
@@ -214,6 +239,7 @@ def subtask():
 def add(startdate, enddate, tag, description,
         title, reminder, observers, priority, index):
     """Adding new subtask"""
+    tag = Tag(tag)
     actions.add_subtask(index, title, description, startdate, enddate,
                         tag, observers, reminder, priority)
     return True
@@ -249,8 +275,49 @@ def status(task, index, status):
 @click.option('--index', type=int,
               help='Index of task')
 def list(index):
-    tasks_list = actions.show_subtasks_list(index)
-    console_utils.format_print_subtasks(tasks_list, index)
+    try:
+        if index is None:
+            raise ValueError("Select index")
+        tasks_list = actions.show_subtasks_list(index)
+        console_utils.format_print_subtasks(tasks_list, index)
+    except ValueError as e:
+        print (e)
+    except Exception as e:
+        print (e)
+
+
+
+@subtask.command()
+@click.option('--task', type=int,
+              help='Index of task')
+@click.option('--index', type=int,
+              help='Index of subtask')
+def show(task, index):
+    parent = data_storage.DataStorage.get_subtasks_parent(task)
+    click.secho("Parent task of chosen subtask is: {}".format(parent), bg='green', fg='white')
+    task = actions.get_subtask(task, index)
+    if task.is_completed == Status.done:
+        status = "Done"
+        color = 'green'
+    elif task.is_completed == Status.undone:
+        status = "Undone"
+        color = 'red'
+    elif task.is_completed == Status.process:
+        status = "Process"
+        color = 'blue'
+    click.echo("Title: \t\t" + click.style(task.title, bold=True, fg='yellow'))
+    click.echo("Description: \t" + click.style(task.description, bold=True, fg='yellow'))
+    click.echo("Start date: \t" + click.style(str(task.start.date()), bold=True, fg='yellow'))
+    click.echo("End date: \t" + click.style(str(task.end.date()), bold=True, fg='yellow'))
+    click.echo("Status: \t" + click.style(status, bold=True, fg=color))
+    click.echo("tid: \t\t" + click.style(task.tid, bold=True, fg='white'))
+    if task.connection is not None:
+        click.echo("Linked tasks:")
+        for task in task.connection:
+            connected_task = actions.get_connected_tasks(task)
+            click.secho(connected_task.title, bold=True, bg = 'green', fg='white')
+
+    click.echo(click.style("#" + task.tag.tag_name, bold=True, bg='red'))
 
 # endregion
 
@@ -262,6 +329,8 @@ def util():
 
 
 @util.command()
+@click.option('-in', '--interval', type=int,
+              help='Interval')
 @click.option('-sd', '--startdate', type=str, callback=utils.check_date,
               help='Start date')
 @click.option('-ed', '--enddate', type=str,callback=utils.check_date,
@@ -279,10 +348,12 @@ def util():
 @click.option('-pr', '--priority', type=str,
               help='Priority')
 def scheduler(startdate, enddate, tag, description,
-              title, reminder, observers, priority):
+              title, reminder, observers, priority, interval):
 
     actions.add_scheduler(title, description, startdate, enddate,
-                          tag, observers, reminder, priority)
+                          tag, observers, reminder, priority, interval)
+
+
 
 
 # endregion

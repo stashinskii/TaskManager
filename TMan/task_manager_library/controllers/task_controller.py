@@ -8,6 +8,10 @@ class TaskController:
         DataStorage.add_task_to_json(task)
 
     @staticmethod
+    def get_connected_tasks(tid):
+        return DataStorage.get_task_from_id(tid)
+
+    @staticmethod
     def edit(task_num, task_field):
         DataStorage.edit_task(task_num, task_field)
 
@@ -16,6 +20,15 @@ class TaskController:
         tasks = DataStorage.load_tasks_from_json()[0]
         task = tasks[task_index - 1]
         return task
+
+    @staticmethod
+    def make_link(task1, task2):
+        """Make connection between 2 tasks. Parameters are tid (str object)"""
+        return DataStorage.make_link(task1, task2)
+
+    @staticmethod
+    def order_by(tag):
+        return DataStorage.show_ordered_tasks(tag)
 
     @staticmethod
     def complete_task(task):
@@ -30,16 +43,16 @@ class TaskController:
         DataStorage.begin_task(task)
 
     @staticmethod
-    def complete_subtask(task):
-        DataStorage.done_subtask(task)
+    def complete_subtask(task_index, subtask_index):
+        DataStorage.done_subtask(task_index, subtask_index)
 
     @staticmethod
-    def uncomplete_subtask(task):
-        DataStorage.undone_subtask(task)
+    def uncomplete_subtask(task_index, subtask_index):
+        DataStorage.undone_subtask(task_index, subtask_index)
 
     @staticmethod
-    def begin_subtask(task):
-        DataStorage.begin_subtask(task)
+    def begin_subtask(task_index, subtask_index):
+        DataStorage.begin_subtask(task_index, subtask_index)
 
     @staticmethod
     def get_users_tasks():
@@ -62,4 +75,9 @@ class TaskController:
             raise TypeError("Task collection is not list")
         for task in subtasks:
             yield task.is_completed, subtasks.index(task) + 1, task.title
+
+    @staticmethod
+    def get_subtask(task_index, subtask_index):
+        subtasks = DataStorage.get_subtasks(task_index)
+        return subtasks[subtask_index-1]
 

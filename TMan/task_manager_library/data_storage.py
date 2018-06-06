@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 
 from task_manager_library.models.scheduler_model import Scheduler
-from task_manager_library.models.task_model import Status, Task, Priority
+from task_manager_library.models.task_model import Status, Task, Priority, Tag
 from utility import logging_utils
 from utility import serialization_utils
 from utility import utils
@@ -51,7 +51,7 @@ class DataStorage:
             if subtask.parent == tasks[task_index - 1].tid:
                 tid_subtasks.append(subtask)
 
-        global_index = get_task_index(tid_subtasks[subtask_index - 1].tid, all_users_tasks)
+        global_index = utils.get_task_index(tid_subtasks[subtask_index - 1].tid, all_users_tasks)
         all_users_tasks[global_index].complete()
         DataStorage.resave_all_tasks_to_json(all_users_tasks)
 
@@ -64,7 +64,7 @@ class DataStorage:
             if subtask.parent == tasks[task_index - 1].tid:
                 tid_subtasks.append(subtask)
 
-        global_index = get_task_index(tid_subtasks[subtask_index - 1].tid, all_users_tasks)
+        global_index = utils.get_task_index(tid_subtasks[subtask_index - 1].tid, all_users_tasks)
         all_users_tasks[global_index].begin()
         DataStorage.resave_all_tasks_to_json(all_users_tasks)
 
@@ -77,9 +77,21 @@ class DataStorage:
             if subtask.parent == tasks[task_index - 1].tid:
                 tid_subtasks.append(subtask)
 
-        global_index = get_task_index(tid_subtasks[subtask_index - 1].tid, all_users_tasks)
+        global_index = utils.get_task_index(tid_subtasks[subtask_index - 1].tid, all_users_tasks)
         all_users_tasks[global_index].undone()
         DataStorage.resave_all_tasks_to_json(all_users_tasks)
+
+    @staticmethod
+    def show_ordered_tasks(tag):
+        all_tasks = DataStorage.load_tasks_from_json()[1]
+        ordered_tasks = list()
+
+        for task in all_tasks:
+            if task.tag.tag_name == tag.tag_name:
+                ordered_tasks.append(task)
+
+        return ordered_tasks
+
 
     @staticmethod
     def add_task_to_json(task):
@@ -92,6 +104,18 @@ class DataStorage:
             observer_object = utils.get_user(observer, users)
             DataStorage.add_user_task(observer_object, task.tid)
         DataStorage.resave_all_tasks_to_json(all_user_tasks)
+
+
+    @staticmethod
+    def make_link(task1, task2):
+        all_tasks = DataStorage.load_tasks_from_json()[2]
+        first_index = utils.get_task_index(task1, all_tasks)
+        second_index = utils.get_task_index(task2, all_tasks)
+
+        all_tasks[first_index].connection.append(task2)
+        all_tasks[second_index].connection.append(task1)
+
+        DataStorage.resave_all_tasks_to_json(all_tasks)
 
     @staticmethod
     def edit_task(task_num, task_field):
@@ -149,6 +173,7 @@ class DataStorage:
             end = utils.check_date(None, None, task_dict['end'])
             desc = task_dict['description']
             tag = task_dict['tag']
+            tag = Tag(tag['tag_name'], tag['description'])
             observers = task_dict['observers']
             executor = task_dict['executor']
             priority = Priority[Priority(int(task_dict['priority'])).name]
@@ -192,6 +217,8 @@ class DataStorage:
                 task.priority = str(task.priority.value)
             if isinstance(task.is_completed, Status):
                 task.is_completed = str(task.is_completed.value)
+            if isinstance(task.tag, Tag):
+                task.tag = task.tag.__dict__
 
             data.append(task.__dict__)
 
@@ -306,12 +333,13 @@ class DataStorage:
         schedulers_list = list()
 
         for scheduler in schedulers:
-            date = utils.check_date(None, None, scheduler['date'])
+            last = utils.check_date(None, None, scheduler['last'])
             title = scheduler['task']['title']
             start = utils.check_date(None, None, scheduler['task']['start'])
             end = utils.check_date(None, None, scheduler['task']['end'])
             desc = scheduler['task']['description']
             tag = scheduler['task']['tag']
+            tag = Tag(tag)
             observers = scheduler['task']['observers']
             executor = scheduler['task']['executor']
             priority = Priority[Priority(int(scheduler['task']['priority'])).name]
@@ -324,12 +352,13 @@ class DataStorage:
             planned = scheduler['task']['planned']
             changed = scheduler['task']['changed']
             sid = scheduler['sid']
+            interval = scheduler['interval']
             new_task = Task(
                 title, desc, start, end, tag, author, observers, executor,
                 reminder, priority, changed, planned, parent, tid, subtasks, is_completed
             )
 
-            new_scheduler = Scheduler(date, new_task, sid)
+            new_scheduler = Scheduler(last, new_task, interval, sid)
             schedulers_list.append(new_scheduler)
         return schedulers_list
 
@@ -349,16 +378,18 @@ class DataStorage:
         scheduler.task.start = serialization_utils.date_to_str(scheduler.task.start)
         scheduler.task.end = serialization_utils.date_to_str(scheduler.task.end)
         scheduler.task.reminder = serialization_utils.time_to_str(scheduler.task.reminder)
-        scheduler.date = serialization_utils.date_to_str(scheduler.date)
+        scheduler.last = serialization_utils.date_to_str(scheduler.last)
         scheduler.task.is_completed = str(scheduler.task.is_completed.value)
-
+        if isinstance(scheduler.task.priority, Priority):
+            scheduler.task.priority = str(scheduler.task.priority.value)
+        scheduler.task.tag = scheduler.task.tag.__dict__
         scheduler.task = scheduler.task.__dict__
         scheduler = scheduler.__dict__
         schedulers.append(scheduler)
-
+        print ("fd")
         with open(DataStorage.PATH + '/schedulers.json', 'w') as file:
             json.dump(schedulers, file, indent=2, ensure_ascii=True)
-
+        print ("fd")
 
     @staticmethod
     def delete_scheduler_from_json(scheduler):

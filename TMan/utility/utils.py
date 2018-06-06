@@ -86,16 +86,16 @@ def get_user_index(user, users):
     raise Exception("Trouble while adding task to user")
 
 
-def get_task_index(task, tasks):
+def get_task_index(task, all_tasks):
     """
-    Get task's index at json file
-    :param task: Task's object
+    Get task's index at json file from tid
+    :param task: tid
     :param tasks: list of Task's objects
     :return: int object
     """
 
     counter = 0
-    for x in tasks:
+    for x in all_tasks:
         if task == x.tid:
             return counter
         counter += 1
@@ -127,6 +127,7 @@ def check_json_files(file):
     if not os.path.exists(config.DATA_PATH+file):
         with open(config.DATA_PATH + file, 'w') as objfile:
             json.dump([], objfile, indent=2, ensure_ascii=False)
+
 
 def check_log_files(file):
     check_dir()

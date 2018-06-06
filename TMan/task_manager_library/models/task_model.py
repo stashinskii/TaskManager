@@ -42,7 +42,7 @@ class Task:
         if connection is not None:
             self.connection = connection
         else:
-            self.connection = None
+            self.connection = []
 
     def undone(self):
         self.is_completed = Status.undone
@@ -83,7 +83,7 @@ class Priority(enum.Enum):
 class Tag:
     def __init__(self, name, description=None):
         self.tag_name = name
-        self.descriptiom = None
+        self.description = description
 
 
 

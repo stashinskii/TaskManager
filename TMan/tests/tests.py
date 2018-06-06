@@ -15,6 +15,7 @@ task_manager_library.DataStorage.CURRENT_USER = task_manager_library.UserTools.g
 task_manager_library.get_schedulers()
 utility.logging_utils.get_logging_config("DEBUG")
 
+
 class MyTest(unittest.TestCase):
     class MyOutput(object):
         def __init__(self):
@@ -25,7 +26,6 @@ class MyTest(unittest.TestCase):
 
         def __str__(self):
             return "".join(self.data)
-
 
     def test_validateLogin(self):
         task_manager_library.DataStorage.PATH = config.DATA_PATH
