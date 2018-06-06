@@ -174,4 +174,8 @@ def get_connected_tasks(tid):
 def make_link(task1, task2):
     return TaskController.make_link(task1, task2)
 
+@logging_utils.logger
+def show_archieve():
+    return TaskController.archieve()
+
 #endregion

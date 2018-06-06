@@ -1,11 +1,12 @@
 from task_manager_library.data_storage import DataStorage
+from task_manager_library.models.task_model import Status
 
 
 class TaskController:
     """Manager/controller of tasks. Requests sends from actions"""
     @staticmethod
     def add(task):
-        DataStorage.add_task_to_json(task)
+        return DataStorage.add_task_to_json(task)
 
     @staticmethod
     def get_connected_tasks(tid):
@@ -14,6 +15,16 @@ class TaskController:
     @staticmethod
     def edit(task_num, task_field):
         DataStorage.edit_task(task_num, task_field)
+
+    @staticmethod
+    def archieve():
+        tasks = DataStorage.load_tasks_from_json()[1]
+        archieved_tasks = list()
+        for task in tasks:
+            if task.is_completed == Status.done:
+                archieved_tasks.append(task)
+        return archieved_tasks
+
 
     @staticmethod
     def get_by_index(task_index):

@@ -44,7 +44,7 @@ def change_user(login):
     try:
         user_actions.UserTools.set_current_user(login)
     except Exception as e:
-        click.secho(e, fg="red")
+        print(e)
 
 
 @user.command()
@@ -198,13 +198,33 @@ def orderby(tag):
     ordered_tasks = actions.order_tasks(tag)
     console_utils.format_print_ordered(ordered_tasks)
 
+
 @task.command()
 @click.option('--first', type=str,
               help="First task's tid")
 @click.option('--second', type=str,
               help="Second task's tid")
 def make_link(first, second):
+    print("fdfdfd")
     actions.make_link(first, second)
+
+
+@task.command()
+def archieve():
+    tasks = actions.show_archieve()
+    if tasks is None:
+        click.secho("Archieve is empty", bg='red', fg='white')
+    click.secho("Archieved tasks:", bg='red', fg='white')
+
+    for task in tasks:
+        if task.parent is None:
+            click.secho(task.title, bg='green', fg='white')
+        else:
+            click.echo(click.style(task.title, bg='green', fg='white')
+                       + click.style(" ◑ subtask ◑", bg='blue', fg='white'))
+
+
+
 
 
 # endregion

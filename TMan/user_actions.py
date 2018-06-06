@@ -83,6 +83,8 @@ class UserTools():
         with open(UserTools.PATH, 'w+') as f:
             config.write(f)
 
+        return True
+
 
 
 
