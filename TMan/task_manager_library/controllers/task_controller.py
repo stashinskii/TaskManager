@@ -23,8 +23,8 @@ class TaskController:
         for task in tasks:
             if task.is_completed == Status.done:
                 archieved_tasks.append(task)
-        return archieved_tasks
 
+        return archieved_tasks
 
     @staticmethod
     def get_by_index(task_index):

@@ -37,10 +37,8 @@ def user():
 @user.command()
 @click.option('--login', type=str,
               help='Login to switch the users')
-def change_user(login):
-    """
-    Set user as current
-    """
+def change(login):
+    """Set user as current (Sign In)"""
     try:
         user_actions.UserTools.set_current_user(login)
     except Exception as e:
@@ -55,17 +53,13 @@ def change_user(login):
 @click.option('--surname', type=str, default='UserName',
               help='surname of new user')
 def add_user(login, name, surname):
-    """
-    Adding new user
-    """
+    """Add new user"""
     user_actions.UserTools.add_user(login, name, surname)
 
 
 @user.command()
 def current():
-    """
-    Set current user
-    """
+    """Showing current user"""
     try:
         current = user_actions.UserTools.get_current_user()
         click.echo("Login: {}".format(current.login))
@@ -112,9 +106,7 @@ def add(startdate, enddate, tag, description,
 
 @task.command()
 def list():
-    """
-    Showing list of current tasks
-    """
+    """Showing list of user's tasks"""
     tasks_list = actions.show_tasks_list()
     console_utils.format_print_tasks(tasks_list)
 
@@ -125,9 +117,7 @@ def list():
 @click.option('--status', type=click.Choice(['done', 'undone', 'process']),
               help='Choose task and s')
 def status(index, status):
-    """
-    Done subtask or task by inputing index of task
-    """
+    """Done by inputing index of task"""
     try:
         status = Status[status]
         if status == Status.done:
@@ -149,9 +139,7 @@ def status(index, status):
 @click.option('--field', type=click.Choice(['title', 'start', 'end', 'desc']),
               help='Choose task and s')
 def edit(index, field):
-    """
-    Editing tasks
-    """
+    """Editing tasks. Choose index and field"""
     try:
         if task:
             task_num = index
@@ -165,38 +153,51 @@ def edit(index, field):
 @click.option('--index', type=int,
               help='Index of task')
 def show(index):
-    task = actions.get_task(index)
-    if task.is_completed == Status.done:
-        status = "Done"
-        color = 'green'
-    elif task.is_completed == Status.undone:
-        status = "Undone"
-        color = 'red'
-    elif task.is_completed == Status.process:
-        status = "Process"
-        color = 'blue'
-    click.echo("Title: \t\t" + click.style(task.title, bold=True, fg='yellow'))
-    click.echo("Description: \t" + click.style(task.description, bold=True, fg='yellow'))
-    click.echo("Start date: \t" + click.style(str(task.start.date()), bold=True, fg='yellow'))
-    click.echo("End date: \t" + click.style(str(task.end.date()), bold=True, fg='yellow'))
-    click.echo("Status: \t" + click.style(status, bold=True, fg=color))
-    click.echo("tid: \t\t" + click.style(task.tid, bold=True, fg='white'))
-    click.echo(click.style("#" + task.tag.tag_name, bold=True, bg='red'))
-    if task.connection is not None:
-        click.secho("\t\t\t\t\t\t\t\t", bold=True, bg='green', fg='white')
-        click.echo("Linked tasks:")
-        for tid in task.connection:
-            connected_task = actions.get_connected_tasks(tid)
-            click.secho(connected_task.title, bold=True, bg = 'green', fg='white')
+    """Showing full info about task"""
+    try:
+        task = actions.get_task(index)
+        if task.is_completed == Status.done:
+            status = "Done"
+            color = 'green'
+        elif task.is_completed == Status.undone:
+            status = "Undone"
+            color = 'red'
+        elif task.is_completed == Status.process:
+            status = "Process"
+            color = 'blue'
+        click.echo("Title: \t\t" + click.style(task.title, bold=True, fg='yellow'))
+        click.echo("Description: \t" + click.style(task.description, bold=True, fg='yellow'))
+        click.echo("Start date: \t" + click.style(str(task.start.date()), bold=True, fg='yellow'))
+        click.echo("End date: \t" + click.style(str(task.end.date()), bold=True, fg='yellow'))
+        click.echo("Status: \t" + click.style(status, bold=True, fg=color))
+        click.echo("tid: \t\t" + click.style(task.tid, bold=True, fg='white'))
+        click.echo(click.style("#" + task.tag.tag_name, bold=True, bg='red'))
+        if task.connection is not None:
+            click.secho("\t\t\t\t\t\t\t\t", bold=True, bg='green', fg='white')
+            click.echo("Linked tasks:")
+            for tid in task.connection:
+                connected_task = actions.get_connected_tasks(tid)
+                click.secho(connected_task.title, bold=True, bg='green', fg='white')
+    except IndexError as e:
+        click.echo(e)
+    except Exception as e:
+        click.echo("Something went wrong: {}".format(e))
 
 
 @task.command()
 @click.option('--tag', type=str,
               help="Order by tag")
 def orderby(tag):
-    tag = Tag(tag)
-    ordered_tasks = actions.order_tasks(tag)
-    console_utils.format_print_ordered(ordered_tasks)
+    """Order tasks by tag"""
+    try:
+        tag = Tag(tag)
+        ordered_tasks = actions.order_tasks(tag)
+        console_utils.format_print_ordered(ordered_tasks)
+    except IndexError as e:
+        click.echo(e)
+    except Exception as e:
+        click.echo(e)
+
 
 
 @task.command()
@@ -205,12 +206,13 @@ def orderby(tag):
 @click.option('--second', type=str,
               help="Second task's tid")
 def make_link(first, second):
-    print("fdfdfd")
+    """Make link between 2 tasks """
     actions.make_link(first, second)
 
 
 @task.command()
 def archieve():
+    """Show list of completed tasks"""
     tasks = actions.show_archieve()
     if tasks is None:
         click.secho("Archieve is empty", bg='red', fg='white')
@@ -222,9 +224,6 @@ def archieve():
         else:
             click.echo(click.style(task.title, bg='green', fg='white')
                        + click.style(" ◑ subtask ◑", bg='blue', fg='white'))
-
-
-
 
 
 # endregion
@@ -273,9 +272,7 @@ def add(startdate, enddate, tag, description,
 @click.option('--status', type=click.Choice(['done', 'undone', 'process']),
               help='Choose task and s')
 def status(task, index, status):
-    """
-    Done subtask or task by inputing index of task
-    """
+    """Done subtask or task by inputing index of task"""
     try:
         status = Status[status]
         if status == Status.done:
@@ -295,6 +292,7 @@ def status(task, index, status):
 @click.option('--index', type=int,
               help='Index of task')
 def list(index):
+    """Show list of subtasks of chosen task"""
     try:
         if index is None:
             raise ValueError("Select index")
@@ -313,6 +311,7 @@ def list(index):
 @click.option('--index', type=int,
               help='Index of subtask')
 def show(task, index):
+    """Showing full info"""
     parent = data_storage.DataStorage.get_subtasks_parent(task)
     click.secho("Parent task of chosen subtask is: {}".format(parent), bg='green', fg='white')
     task = actions.get_subtask(task, index)
@@ -372,8 +371,6 @@ def scheduler(startdate, enddate, tag, description,
 
     actions.add_scheduler(title, description, startdate, enddate,
                           tag, observers, reminder, priority, interval)
-
-
 
 
 # endregion

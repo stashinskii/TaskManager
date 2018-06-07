@@ -89,7 +89,8 @@ class DataStorage:
         for task in all_tasks:
             if task.tag.tag_name == tag.tag_name:
                 ordered_tasks.append(task)
-
+        if len(ordered_tasks) == 0:
+            raise IndexError("There is no such tasks with this tag {}".format(tag.tag_name))
         return ordered_tasks
 
 
@@ -172,8 +173,7 @@ class DataStorage:
             start = utils.check_date(None, None, task_dict['start'])
             end = utils.check_date(None, None, task_dict['end'])
             desc = task_dict['description']
-            tag = task_dict['tag']
-            tag = Tag(tag['tag_name'], tag['description'])
+            tag = Tag(task_dict['tag']['tag_name'], task_dict['tag']['description'])
             observers = task_dict['observers']
             executor = task_dict['executor']
             priority = Priority[Priority(int(task_dict['priority'])).name]

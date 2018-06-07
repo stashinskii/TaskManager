@@ -1,9 +1,8 @@
 import click
 import os
 
-
-from task_manager_library.models.task_model import Status, Task, Priority
 from task_manager_library import data_storage
+from task_manager_library.models.task_model import Status, Task, Priority
 
 STATUS_NAMES = ['done','undone','process']
 
@@ -61,6 +60,7 @@ def format_print_subtasks(tasks, index):
 
 
 def format_print_ordered(ordered_tasks):
+    """Showing full info of orderedn tasks"""
     tag = ordered_tasks[0].tag.tag_name
     click.echo("Ordered by tag:"+click.style(tag, bg='red', fg='white'))
     click.echo()
