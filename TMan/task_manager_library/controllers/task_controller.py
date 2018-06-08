@@ -9,6 +9,7 @@ from task_manager_library.models.task_model import Status
 
 class TaskController:
     """Manager/controller of tasks. Requests sends from actions"""
+
     @staticmethod
     def add(task):
         return DataStorage.add_task_to_json(task)
@@ -19,9 +20,9 @@ class TaskController:
         return DataStorage.get_task_from_id(tid)
 
     @staticmethod
-    def edit(task_num, task_field):
+    def edit(tid, task_field):
         """Editing task by its index and fieldname(title, start date, etc.)"""
-        DataStorage.edit_task(task_num, task_field)
+        DataStorage.edit_task(tid, task_field)
 
     @staticmethod
     def delete(tid):
@@ -40,6 +41,10 @@ class TaskController:
         return archieved_tasks
 
     @staticmethod
+    def order_by_priority(priority):
+        return DataStorage.show_ordered_tasks_priority(priority)
+
+    @staticmethod
     def get_by_index(task_index):
         """Get task by its index"""
         tasks = DataStorage.load_tasks_from_json()[0]
@@ -54,38 +59,30 @@ class TaskController:
     @staticmethod
     def order_by(tag):
         """Order tasks (tasks+subtasks) by its tag"""
-        return DataStorage.show_ordered_tasks(tag)
+        return DataStorage.show_ordered_tasks_tag(tag)
 
     @staticmethod
-    def complete_task(task):
+    def complete_task(tid):
         """Complete chosen task"""
-        DataStorage.done_task(task)
+        DataStorage.done_task(tid)
 
     @staticmethod
-    def uncomplete_task(task):
+    def get_subtasks(tid):
+        return DataStorage.get_subtasks_of_parent(tid)
+
+    @staticmethod
+    def uncomplete_task(tid):
         """Uncomplete chosen task"""
-        DataStorage.undone_task(task)
+        DataStorage.undone_task(tid)
 
     @staticmethod
-    def begin_task(task):
+    def get_task_from_id(tid):
+        return DataStorage.get_task_from_id(tid)
+
+    @staticmethod
+    def begin_task(tid):
         """Begin chosen task"""
-        DataStorage.begin_task(task)
-
-    @staticmethod
-    def complete_subtask(task_index, subtask_index):
-        DataStorage.done_subtask(task_index, subtask_index)
-
-    @staticmethod
-    def uncomplete_subtask(task_index, subtask_index):
-        DataStorage.undone_subtask(task_index, subtask_index)
-
-    @staticmethod
-    def edit_subtask(task_num, subtask_num, task_field):
-        DataStorage.edit_subtask(task_num, subtask_num, task_field)
-
-    @staticmethod
-    def begin_subtask(task_index, subtask_index):
-        DataStorage.begin_subtask(task_index, subtask_index)
+        DataStorage.begin_task(tid)
 
     @staticmethod
     def get_users_tasks():
@@ -115,5 +112,4 @@ class TaskController:
     def get_subtask(task_index, subtask_index):
         """Get subtask of chosen task"""
         subtasks = DataStorage.get_subtasks(task_index)
-        return subtasks[subtask_index-1]
-
+        return subtasks[subtask_index - 1]

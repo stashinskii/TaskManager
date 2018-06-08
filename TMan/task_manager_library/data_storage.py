@@ -10,6 +10,7 @@ from datetime import datetime
 
 from task_manager_library.models.scheduler_model import Scheduler
 from task_manager_library.models.task_model import Status, Task, Priority, Tag
+from task_manager_library.models.notifications_model import Notifications
 from utility import logging_utils
 from utility import serialization_utils
 from utility import utils
@@ -24,71 +25,47 @@ class DataStorage:
     # region DB methods
 
     @staticmethod
-    def begin_task(task):
-        tracked_tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
-        global_index = all_users_tasks.index(tracked_tasks[task - 1])
-        all_users_tasks[global_index].begin()
+    def begin_task(tid):
 
+        tracked_tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
+        index = utils.get_task_index(tid, all_users_tasks)
+        all_users_tasks[index].begin()
         DataStorage.resave_all_tasks_to_json(all_users_tasks)
 
     @staticmethod
-    def done_task(task):
+    def done_task(tid):
         tracked_tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
+        index = utils.get_task_index(tid, all_users_tasks)
+
         for subtask in all_tasks:
-            if subtask.parent == tracked_tasks[task - 1].tid and subtask.is_completed == Status.undone:
+            if subtask.parent == all_users_tasks[index].tid and subtask.is_completed == Status.undone:
                 raise Exception("You have undone subtasks! Done them all before you finish this one!")
-        global_index = all_users_tasks.index(tracked_tasks[task - 1])
-        all_users_tasks[global_index].complete()
+
+        all_users_tasks[index].complete()
         DataStorage.resave_all_tasks_to_json(all_users_tasks)
 
     @staticmethod
-    def undone_task(task):
+    def undone_task(tid):
         tracked_tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
-        global_index = all_users_tasks.index(tracked_tasks[task - 1])
-        all_users_tasks[global_index].undone()
+        index = utils.get_task_index(tid, all_users_tasks)
+        all_users_tasks[index].undone()
         DataStorage.resave_all_tasks_to_json(all_users_tasks)
 
     @staticmethod
-    def done_subtask(task_index, subtask_index):
-        tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
-        tid_subtasks = []
+    def show_ordered_tasks_priority(priority):
+        all_tasks = DataStorage.load_tasks_from_json()[1]
+        ordered_tasks = list()
 
-        for subtask in all_tasks:
-            if subtask.parent == tasks[task_index - 1].tid:
-                tid_subtasks.append(subtask)
-
-        global_index = utils.get_task_index(tid_subtasks[subtask_index - 1].tid, all_users_tasks)
-        all_users_tasks[global_index].complete()
-        DataStorage.resave_all_tasks_to_json(all_users_tasks)
-
-    @staticmethod
-    def begin_subtask(task_index, subtask_index):
-        tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
-        tid_subtasks = []
-
-        for subtask in all_tasks:
-            if subtask.parent == tasks[task_index - 1].tid:
-                tid_subtasks.append(subtask)
-
-        global_index = utils.get_task_index(tid_subtasks[subtask_index - 1].tid, all_users_tasks)
-        all_users_tasks[global_index].begin()
-        DataStorage.resave_all_tasks_to_json(all_users_tasks)
+        for task in all_tasks:
+            if task.priority == priority:
+                ordered_tasks.append(task)
+        if len(ordered_tasks) == 0:
+            raise IndexError("There is no such tasks with this {}".format(priority))
+        return ordered_tasks
 
     @staticmethod
-    def undone_subtask(task_index, subtask_index):
-        tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
-        tid_subtasks = []
-
-        for subtask in all_tasks:
-            if subtask.parent == tasks[task_index - 1].tid:
-                tid_subtasks.append(subtask)
-
-        global_index = utils.get_task_index(tid_subtasks[subtask_index - 1].tid, all_users_tasks)
-        all_users_tasks[global_index].undone()
-        DataStorage.resave_all_tasks_to_json(all_users_tasks)
-
-    @staticmethod
-    def show_ordered_tasks(tag):
+    def show_ordered_tasks_tag(tag):
+        """Sort tasks by their tag"""
         all_tasks = DataStorage.load_tasks_from_json()[1]
         ordered_tasks = list()
 
@@ -99,9 +76,9 @@ class DataStorage:
             raise IndexError("There is no such tasks with this tag {}".format(tag.tag_name))
         return ordered_tasks
 
-
     @staticmethod
     def add_task_to_json(task):
+        """Add new task to json"""
         all_user_tasks = DataStorage.load_tasks_from_json()[2]
         users = DataStorage.load_users_from_json()
         all_user_tasks.append(task)
@@ -112,9 +89,9 @@ class DataStorage:
             DataStorage.add_user_task(observer_object, task.tid)
         DataStorage.resave_all_tasks_to_json(all_user_tasks)
 
-
     @staticmethod
     def make_link(task1, task2):
+        """Make link/connection between two tasks(including subtasks) by their TID"""
         all_tasks = DataStorage.load_tasks_from_json()[2]
         first_index = utils.get_task_index(task1, all_tasks)
         second_index = utils.get_task_index(task2, all_tasks)
@@ -125,17 +102,19 @@ class DataStorage:
         DataStorage.resave_all_tasks_to_json(all_tasks)
 
     @staticmethod
-    def edit_task(task_num, task_field):
+    def edit_task(tid, task_field):
+        """Editing task by its index and field name to be edit"""
         tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
         current = DataStorage.CURRENT_USER
-        author_name = tasks[task_num - 1].author
+
+        task_index = utils.get_task_index(tid, all_users_tasks)
+
+        author_name = all_users_tasks[task_index].author
         if author_name != current.uid:
             raise ValueError("Access denied")
 
-        if (task_num - 1) > len(tasks):
-            raise IndexError("Out of range")
-        edit = tasks[task_num - 1]
-        task_index = all_users_tasks.index(edit)
+        edit = all_users_tasks[task_index]
+
         data = list()
         data.extend((edit.title, edit.start.date(), edit.end.date(), edit.description))
 
@@ -154,48 +133,6 @@ class DataStorage:
         all_users_tasks[task_index].start = utils.check_date(None, None, str(data[1]))
         all_users_tasks[task_index].end = utils.check_date(None, None, str(data[2]))
         all_users_tasks[task_index].description = data[3]
-        DataStorage.resave_all_tasks_to_json(all_users_tasks)
-
-    @staticmethod
-    def edit_subtask(task_num, subtask_num, task_field):
-        tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
-        current = DataStorage.CURRENT_USER
-        tid_subtasks = list()
-        for subtask in all_tasks:
-            if subtask.parent == tasks[task_num - 1].tid:
-                tid_subtasks.append(subtask.tid)
-
-        tid_subtask = tid_subtasks[subtask_num-1]
-        global_index = utils.get_task_index(tid_subtask, all_users_tasks)
-
-        chosen_subtask = all_users_tasks[global_index]
-
-        author_name = chosen_subtask.author
-
-        if author_name != current.uid:
-            raise ValueError("Access denied")
-
-        if (task_num - 1) > len(tasks):
-            raise IndexError("Out of range")
-
-        data = list()
-        data.extend((chosen_subtask.title, chosen_subtask.start.date(), chosen_subtask.end.date(), chosen_subtask.description))
-
-        if task_field == "title":
-            data = DataStorage.open_nano(data, 0)
-        elif task_field == "start":
-            data = DataStorage.open_nano(data, 1)
-        elif task_field == "end":
-            data = DataStorage.open_nano(data, 2)
-        elif task_field == "description":
-            data = DataStorage.open_nano(data, 3)
-        else:
-            raise ValueError("ERROR! Unsupported field!")
-
-        all_users_tasks[global_index].title = data[0]
-        all_users_tasks[global_index].start = utils.check_date(None, None, str(data[1]))
-        all_users_tasks[global_index].end = utils.check_date(None, None, str(data[2]))
-        all_users_tasks[global_index].description = data[3]
         DataStorage.resave_all_tasks_to_json(all_users_tasks)
 
     @staticmethod
@@ -248,9 +185,9 @@ class DataStorage:
                 all_users_tasks.append(new_task)
         return tasks, all_tasks, all_users_tasks
 
-
     @staticmethod
     def resave_all_tasks_to_json(all_tasks):
+        """Resaving all_tasks (including tasks of other users) to json"""
         data = list()
         for task in all_tasks:
             if isinstance(task.start, datetime):
@@ -350,6 +287,7 @@ class DataStorage:
 
     @staticmethod
     def resave_users_json(users):
+        """Resave users list aster changing"""
         data = []
         for user in users:
             data.append(user.__dict__)
@@ -374,7 +312,7 @@ class DataStorage:
 
     @staticmethod
     def load_schedulers_from_json():
-
+        """Load scheduler from from json by converting dict of schedulers to objects"""
         schedulers = DataStorage.load_schedulers_dict_from_json()
         schedulers_list = list()
 
@@ -408,18 +346,18 @@ class DataStorage:
             schedulers_list.append(new_scheduler)
         return schedulers_list
 
-
     @staticmethod
     def load_schedulers_dict_from_json():
+        """Load schedulers from json without converting to needed types"""
         utils.check_json_files('/schedulers.json')
         with open(DataStorage.PATH + '/schedulers.json', 'r') as task_file:
             schedulers = json.load(task_file)
 
         return schedulers
 
-
     @staticmethod
     def save_scheduler_to_json(scheduler):
+        """Save scheduler object to json"""
         schedulers = DataStorage.load_schedulers_dict_from_json()
         scheduler.task.start = serialization_utils.date_to_str(scheduler.task.start)
         scheduler.task.end = serialization_utils.date_to_str(scheduler.task.end)
@@ -435,9 +373,9 @@ class DataStorage:
         with open(DataStorage.PATH + '/schedulers.json', 'w') as file:
             json.dump(schedulers, file, indent=2, ensure_ascii=True)
 
-
     @staticmethod
     def delete_task(tid):
+        """Delete task by its tid"""
         all_tasks = DataStorage.load_tasks_from_json()[2]
         global_index = utils.get_task_index(tid, all_tasks)
         del all_tasks[global_index]
@@ -445,12 +383,13 @@ class DataStorage:
 
     @staticmethod
     def delete_scheduler_from_json(scheduler):
+        """Deleting sceduler for resaving"""
         schedulers = DataStorage.load_schedulers_from_json()
         counter = 0
         for element in schedulers:
             if element.sid == scheduler.sid:
                 break
-            counter+=1
+            counter += 1
         del schedulers[counter]
 
         changed_schedulers = list()
@@ -466,13 +405,17 @@ class DataStorage:
             element = element.__dict__
             changed_schedulers.append(element)
 
-
         with open(DataStorage.PATH + '/schedulers.json', 'w') as file:
             json.dump(changed_schedulers, file, indent=2, ensure_ascii=True)
 
     @staticmethod
     def get_subtasks(index):
+        """Get subtasks by index of ..."""
         user_tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
+        len_of_tasks = len(user_tasks)
+        if index > len_of_tasks:
+            raise IndexError("You dont have subtasks with such index {}!".format(index))
+
         tid = user_tasks[index - 1].tid
         result_collection = list()
         for tasks in all_tasks:
@@ -481,15 +424,29 @@ class DataStorage:
         return result_collection
 
     @staticmethod
-    def get_subtasks_parent(index):
-        user_tasks = DataStorage.load_tasks_from_json()[0]
-        title = user_tasks[index - 1].title
-        return title
+    def get_subtasks_parent(tid):
+        """Get parent of subtask"""
+        all_user_tasks = DataStorage.load_tasks_from_json()[2]
+        index = utils.get_task_index(tid, all_user_tasks)
+        parent_tid = all_user_tasks[index]
+        return DataStorage.get_task_from_id(parent_tid).title
 
+    @staticmethod
+    def get_subtasks_of_parent(tid):
+        all_user_tasks = DataStorage.load_tasks_from_json()[2]
+
+        subtasks = list()
+
+        for task in all_user_tasks:
+            if task.parent == tid:
+                subtasks.append(task)
+
+        return subtasks
 
     @staticmethod
     def get_task_from_id(tid):
-        tasks = DataStorage.load_tasks_from_json()[0]
+        """Get task from task's tid"""
+        tasks = DataStorage.load_tasks_from_json()[2]
         for task in tasks:
             if task.tid == tid:
                 return task
@@ -511,3 +468,101 @@ class DataStorage:
         return data
 
     # endregion
+
+    # region Notifications
+
+    @staticmethod
+    def add_notification(notification):
+        all_notifications = DataStorage.load_notifications_from_json()
+        result_notifications = list()
+        for notify in all_notifications:
+            notify.date = serialization_utils.date_to_str(notify.date)
+            notify.reminder = serialization_utils.time_to_str(notify.reminder)
+            notify = notify.__dict__
+            result_notifications.append(notify)
+
+        notification.date = serialization_utils.date_to_str(notification.date)
+        notification.reminder = serialization_utils.time_to_str(notification.reminder)
+        notification = notification.__dict__
+        result_notifications.append(notification)
+
+        with open(DataStorage.PATH + '/notifications.json', 'w') as file:
+            json.dump(result_notifications, file, indent=2, ensure_ascii=True)
+
+    @staticmethod
+    def load_notifications_from_json():
+        utils.check_json_files('/notifications.json')
+        with open(DataStorage.PATH + '/notifications.json', 'r') as task_file:
+            notifications = json.load(task_file)
+
+        notifications_list = list()
+        for notificaion in notifications:
+            notifications_list.append(
+                Notifications(
+                    notificaion['task_id'],
+                    utils.check_time(None, None, notificaion['reminder']),
+                    utils.check_date(None, None, notificaion['date']),
+                    notificaion['title'],
+                    notificaion['rid']))
+        return notifications_list
+
+    @staticmethod
+    def delete_notification(rid):
+        notifications = DataStorage.load_notifications_from_json()
+
+        prepared_notifications = list()
+
+        for notification in notifications:
+            if notification.rid == rid:
+                continue
+            notification.date = serialization_utils.date_to_str(notification.date)
+            notification.reminder = serialization_utils.time_to_str(notification.reminder)
+            notification = notification.__dict__
+            prepared_notifications.append(notification)
+
+        with open(DataStorage.PATH + '/notifications.json', 'w') as file:
+            json.dump(prepared_notifications, file, indent=2, ensure_ascii=True)
+
+    # endregion
+
+
+"""
+@staticmethod
+    def done_subtask(task_index, subtask_index):
+        tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
+        tid_subtasks = []
+
+        for subtask in all_tasks:
+            if subtask.parent == tasks[task_index - 1].tid:
+                tid_subtasks.append(subtask)
+
+        global_index = utils.get_task_index(tid_subtasks[subtask_index - 1].tid, all_users_tasks)
+        all_users_tasks[global_index].complete()
+        DataStorage.resave_all_tasks_to_json(all_users_tasks)
+
+    @staticmethod
+    def begin_subtask(task_index, subtask_index):
+        tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
+        tid_subtasks = []
+
+        for subtask in all_tasks:
+            if subtask.parent == tasks[task_index - 1].tid:
+                tid_subtasks.append(subtask)
+
+        global_index = utils.get_task_index(tid_subtasks[subtask_index - 1].tid, all_users_tasks)
+        all_users_tasks[global_index].begin()
+        DataStorage.resave_all_tasks_to_json(all_users_tasks)
+
+    @staticmethod
+    def undone_subtask(task_index, subtask_index):
+        tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
+        tid_subtasks = []
+
+        for subtask in all_tasks:
+            if subtask.parent == tasks[task_index - 1].tid:
+                tid_subtasks.append(subtask)
+
+        global_index = utils.get_task_index(tid_subtasks[subtask_index - 1].tid, all_users_tasks)
+        all_users_tasks[global_index].undone()
+        DataStorage.resave_all_tasks_to_json(all_users_tasks)
+"""

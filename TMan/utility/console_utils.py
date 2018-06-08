@@ -4,7 +4,7 @@ import os
 from task_manager_library import data_storage
 from task_manager_library.models.task_model import Status, Task, Priority
 
-STATUS_NAMES = ['done','undone','process']
+STATUS_NAMES = ['done', 'undone', 'process']
 
 
 def check_status_name(ctx, param, value):
@@ -30,7 +30,7 @@ def format_print_tasks(tasks):
             raise ValueError("Status is not status object")
 
         click.echo("[" + marker + "] - " + str(task[1]) + " - " + click.style(
-                   "Subtasks: " + str(task[2]), bold=True, fg='yellow')
+            "Subtasks: " + str(task[2]), bold=True, fg='yellow')
                    + " - " + click.style(str(task[3]), bold=True, bg='green'))
 
 
@@ -61,9 +61,7 @@ def format_print_subtasks(tasks, index):
 
 def format_print_ordered(ordered_tasks):
     """Showing full info of orderedn tasks"""
-    tag = ordered_tasks[0].tag.tag_name
-    click.echo("Ordered by tag:"+click.style(tag, bg='red', fg='white'))
-    click.echo()
+
     for task in ordered_tasks:
         marker = ' '
         if task.is_completed == Status.done:
@@ -78,3 +76,9 @@ def format_print_ordered(ordered_tasks):
         click.echo("[" + marker + "] - "
                    + click.style(task.title, bold=True, bg='yellow', fg='white'))
 
+
+def print_notifications(notifications):
+    click.secho("You have {} reminders for today:".format(len(notifications)),
+                bg='yellow', bold=True, fg='white')
+    for notify in notifications:
+        click.secho(notify.title, bg='green', bold=True, fg='white')

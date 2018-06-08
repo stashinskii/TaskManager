@@ -14,6 +14,8 @@ import uuid
 from datetime import datetime
 
 import config
+from task_manager_library.models.notifications_model import Notifications
+from task_manager_library.controllers.notification_controller import NotificationController
 from task_manager_library.controllers.scheduler_controller import SchedulerController
 from task_manager_library.controllers.task_controller import TaskController
 from task_manager_library.models.scheduler_model import Scheduler
@@ -31,15 +33,23 @@ from .data_storage import *
 @logging_utils.logger
 def add_tracked_task(title=None, desc=None, start=None, end=None,
                      tag=None, observers=None,
-                     reminder=None, priority=None,
-                     changed=None, planned=None, executor=None):
+                     reminder=None, priority=None,parent=None,
+                     changed=None, planned=None,  executor=None):
     """Adding new task"""
     current = DataStorage.CURRENT_USER
     observers = serialization_utils.split_str_to_list(observers, current)
-    priority = Priority[priority].value
+    if priority is not None:
+        priority = Priority[priority].value
+    else:
+        priority = Priority.low
+    if tag is not None:
+        tag = Tag(tag)
+    else:
+        tag = Tag("default")
+
     author = current.uid
     task = Task(title, desc, start, end, tag, author, observers, executor,
-                reminder, priority, changed, planned)
+                reminder, priority, changed, planned, parent)
     check_date_range(start, end)
     TaskController.add(task)
     return task
@@ -70,8 +80,8 @@ def add_subtask(index, title=None, desc=None, start=None, end=None,
 
 
 @logging_utils.logger
-def edit_task(task_num, task_field):
-    TaskController.edit(task_num, task_field)
+def edit_task(tid, task_field):
+    TaskController.edit(tid, task_field)
 
 
 @logging_utils.logger
@@ -88,9 +98,17 @@ def delete_task(tid):
 # region Show tasks
 
 @logging_utils.logger
+def get_subtasks(tid):
+    return TaskController.get_subtasks(tid)
+
+
+@logging_utils.logger
 def show_tasks_list():
     return TaskController.get_users_tasks()
 
+@logging_utils.logger
+def get_task_from_id(tid):
+    return TaskController.get_task_from_id(tid)
 
 
 @logging_utils.logger
@@ -100,6 +118,10 @@ def show_subtasks_list(index):
 @logging_utils.logger
 def order_tasks(tag):
     return TaskController.order_by(tag)
+
+@logging_utils.logger
+def order_by_priority(priority):
+    return TaskController.order_by_priority(priority)
 
 @logging_utils.logger
 def get_task(task_index):
@@ -126,8 +148,8 @@ def get_subtask(task_index, subtask_index):
 # region Change status of task
 
 @logging_utils.logger
-def begin_task(task):
-    TaskController.begin_task(task)
+def begin_task(tid):
+    TaskController.begin_task(tid)
 
 
 @logging_utils.logger
@@ -185,8 +207,6 @@ def get_schedulers():
     return SchedulerController.get()
 
 
-
-
 @logging_utils.logger
 def get_connected_tasks(tid):
     return TaskController.get_connected_tasks(tid)
@@ -199,5 +219,13 @@ def make_link(task1, task2):
 @logging_utils.logger
 def show_archieve():
     return TaskController.archieve()
+
+@logging_utils.logger
+def add_notification(date, tid, title=None):
+    return NotificationController.add(date, tid, title)
+
+@logging_utils.logger
+def get_notification():
+    return NotificationController.get()
 
 #endregion

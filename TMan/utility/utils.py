@@ -36,10 +36,10 @@ def check_date(ctx, param, date):
     :return: datetime bject
     """
     time_format_one = "%Y-%m-%d"
-    if (date is None):
-        raise ValueError
 
     try:
+        if (date is None):
+            raise ValueError
         date = datetime.strptime(date, time_format_one)
     except ValueError:
         date = datetime.now()

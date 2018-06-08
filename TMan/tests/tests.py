@@ -7,18 +7,19 @@ from faker import Faker
 import config
 from task_manager_library import DataStorage
 from task_manager_library import actions
+from task_manager_library.controllers.notification_controller import NotificationController
 from task_manager_library.controllers.scheduler_controller import SchedulerController
 from task_manager_library.controllers.task_controller import TaskController
+from task_manager_library.models.notifications_model import Notifications
 from task_manager_library.models.scheduler_model import Scheduler
 from task_manager_library.models.task_model import Tag, Task, Status, Priority
-from user_actions import UserTools
 from user import User
+from user_actions import UserTools
 from utility import utils, logging_utils, console_utils, serialization_utils
 
 DataStorage.PATH = config.DATA_PATH
 UserTools.PATH = config.CURRENT_USER_CONFIG
 DataStorage.CURRENT_USER = UserTools.get_current_user()
-
 
 # TODO create class with Faker, signing in and other stuff
 
@@ -27,8 +28,6 @@ task = Task("Test_task", "Test_description", datetime.strptime("2018-05-12", "%Y
             datetime.strptime("2018-06-12", "%Y-%m-%d"), Tag("tag_test"), DataStorage.CURRENT_USER.login,
             [], None, datetime.strptime("12:00", "%H:%M"), Priority.high, None, None)
 
-
-#DataStorage.CURRENT_USER = UserTools.set_current_user("herman")
 
 class MyTest(unittest.TestCase):
 
@@ -71,20 +70,19 @@ class MyTest(unittest.TestCase):
         date = serialization_utils.time_to_str(datetime.now())
         self.assertIsInstance(date, str)
 
-
     # endregion
 
     # region Task controller test
 
     def test_linking_tasks(self):
         task_1 = Task("LINK2", "Test_description", datetime.strptime("2018-05-12", "%Y-%m-%d"),
-                     datetime.strptime("2018-06-12", "%Y-%m-%d"), Tag("tag_test"), DataStorage.CURRENT_USER.login,
-                     [], None, datetime.strptime("12:00", "%H:%M"), Priority.high, None, None, None,
-                     serialization_utils.tid_gen())
+                      datetime.strptime("2018-06-12", "%Y-%m-%d"), Tag("tag_test"), DataStorage.CURRENT_USER.login,
+                      [], None, datetime.strptime("12:00", "%H:%M"), Priority.high, None, None, None,
+                      serialization_utils.tid_gen())
         task_2 = Task("LINK1", "Test_description", datetime.strptime("2018-05-12", "%Y-%m-%d"),
-                     datetime.strptime("2018-06-12", "%Y-%m-%d"), Tag("tag_test"), DataStorage.CURRENT_USER.login,
-                     [], None, datetime.strptime("12:00", "%H:%M"), Priority.high, None, None, None,
-                     serialization_utils.tid_gen())
+                      datetime.strptime("2018-06-12", "%Y-%m-%d"), Tag("tag_test"), DataStorage.CURRENT_USER.login,
+                      [], None, datetime.strptime("12:00", "%H:%M"), Priority.high, None, None, None,
+                      serialization_utils.tid_gen())
 
         TaskController.add(task_1)
         TaskController.add(task_2)
@@ -102,6 +100,11 @@ class MyTest(unittest.TestCase):
 
         self.assertEquals(count_before + 1, count_after)
 
+    def test_get_by_tid(self):
+        TaskController.add(task)
+        result = DataStorage.get_task_from_id(task.tid)
+        self.assertEqual(result.tid, task.tid)
+
     def test_get_by_index(self):
         TaskController.add(task)
         last_element = len(DataStorage.load_tasks_from_json()[0]) - 1
@@ -109,28 +112,55 @@ class MyTest(unittest.TestCase):
         self.assertEquals(new_task.title, task.title)
 
     def test_progress(self):
-        last_element = len(DataStorage.load_tasks_from_json()[0]) - 1
-        TaskController.begin_task(last_element)
-        task_new = TaskController.get_by_index(last_element)
+        last_element = len(DataStorage.load_tasks_from_json()[2])
+        last = DataStorage.load_tasks_from_json()[2][last_element - 1].tid
+        TaskController.begin_task(last)
+        task_new = DataStorage.get_task_from_id(last)
         self.assertEquals(Status.process, task_new.is_completed)
 
     def test_done(self):
-        last_element = len(DataStorage.load_tasks_from_json()[0]) - 1
-        if last_element >= 0:
-            TaskController.complete_task(last_element)
-            task_new = TaskController.get_by_index(last_element)
-            self.assertEquals(Status.done, task_new.is_completed)
+        last_element = len(DataStorage.load_tasks_from_json()[2])
+        last = DataStorage.load_tasks_from_json()[2][last_element - 1].tid
+        TaskController.complete_task(last)
+        task_new = DataStorage.get_task_from_id(last)
+        self.assertEquals(Status.done, task_new.is_completed)
 
     def test_undone(self):
-        last_element = len(DataStorage.load_tasks_from_json()[0]) - 1
-        TaskController.uncomplete_task(last_element)
-        task_new = TaskController.get_by_index(last_element)
+        last_element = len(DataStorage.load_tasks_from_json()[2])
+        last = DataStorage.load_tasks_from_json()[2][last_element - 1].tid
+        TaskController.uncomplete_task(last)
+        task_new = DataStorage.get_task_from_id(last)
         self.assertEquals(Status.undone, task_new.is_completed)
+
+    def test_order_by_priority(self):
+
+        new_task = Task("Test_task", "Test_description", datetime.strptime("2018-05-12", "%Y-%m-%d"),
+                        datetime.strptime("2018-06-12", "%Y-%m-%d"), Tag("tag_test"), DataStorage.CURRENT_USER.login,
+                        [], None, datetime.strptime("12:00", "%H:%M"), Priority.low, None, None)
+        TaskController.add(new_task)
+        before = len(TaskController.order_by_priority(Priority.low))
+        TaskController.add(new_task)
+        after = len(TaskController.order_by_priority(Priority.low))
+
+        self.assertEqual(before + 1, after)
+
+    def test_order_by_tag(self):
+        new_task = Task("Test_task", "Test_description", datetime.strptime("2018-05-12", "%Y-%m-%d"),
+                        datetime.strptime("2018-06-12", "%Y-%m-%d"), Tag("tag_test"), DataStorage.CURRENT_USER.login,
+                        [], None, datetime.strptime("12:00", "%H:%M"), Priority.low, None, None)
+        tag_name = new_task.tag.tag_name
+        tag = Tag(tag_name)
+        TaskController.add(new_task)
+        before = len(TaskController.order_by(tag))
+        TaskController.add(new_task)
+        after = len(TaskController.order_by(tag))
+
+        self.assertEqual(before + 1, after)
 
     def test_deletion(self):
         new_task = Task("Test_task", "Test_description", datetime.strptime("2018-05-12", "%Y-%m-%d"),
-            datetime.strptime("2018-06-12", "%Y-%m-%d"), Tag("tag_test"), DataStorage.CURRENT_USER.login,
-            [], None, datetime.strptime("12:00", "%H:%M"), Priority.high, None, None)
+                        datetime.strptime("2018-06-12", "%Y-%m-%d"), Tag("tag_test"), DataStorage.CURRENT_USER.login,
+                        [], None, datetime.strptime("12:00", "%H:%M"), Priority.high, None, None)
 
         TaskController.add(new_task)
         before_deleting = len(DataStorage.load_tasks_from_json()[0])
@@ -138,8 +168,6 @@ class MyTest(unittest.TestCase):
 
         after_deleting = len(DataStorage.load_tasks_from_json()[0])
         self.assertEqual(after_deleting + 1, before_deleting)
-
-
 
     # endregion
 
@@ -164,7 +192,6 @@ class MyTest(unittest.TestCase):
         SchedulerController.get()
         len_of_tasks_after = len(DataStorage.load_tasks_from_json()[0])
         self.assertEquals(len_of_tasks_before + 1, len_of_tasks_after)
-
 
     # endregion
 
@@ -191,6 +218,10 @@ class MyTest(unittest.TestCase):
                         True)
         self.assertIsInstance(new_user, User)
 
+    def test_get_current_user(self):
+        user = UserTools.get_current_user()
+        self.assertIsInstance(user, User)
+
     # endregion
 
     # region Wrong data tests
@@ -201,9 +232,11 @@ class MyTest(unittest.TestCase):
         self.assertRaises(Exception, UserTools.set_current_user, new_login)
 
     def test_empty_edit_field(self):
-        len_data = len(DataStorage.load_tasks_from_json()[0])
-        self.assertRaises(IndexError, TaskController.edit, len_data + 1, "title")
+        self.assertRaises(Exception, TaskController.edit, "df", "title")
 
+    def test_wrong_index_request(self):
+        len_data = len(DataStorage.load_tasks_from_json()[0])
+        self.assertRaises(IndexError, DataStorage.get_subtasks, len_data + 1)
 
     # endregion
 
@@ -211,7 +244,7 @@ class MyTest(unittest.TestCase):
     def test_task_adding(self):
         self.assertIsInstance(task, Task)
 
-    def test_tag_adding(self, name="tag name", description = "tag desc"):
+    def test_tag_adding(self, name="tag name", description="tag desc"):
         new_tag = Tag(name, description)
         self.assertIsInstance(new_tag, Tag)
         self.assertEquals(new_tag.tag_name, name)
@@ -268,11 +301,25 @@ class MyTest(unittest.TestCase):
 
     # endregion
 
+    # region Notifications tests
+
+    def test_adding_notification(self):
+        len_before = len(DataStorage.load_notifications_from_json())
+
+        new_task = Task("Test_task", "Test_description", datetime.strptime("2018-05-12", "%Y-%m-%d"),
+                        datetime.strptime("2018-06-12", "%Y-%m-%d"), Tag("tag_test"), DataStorage.CURRENT_USER.login,
+                        [], None, datetime.strptime("12:00", "%H:%M"), Priority.high, None, None)
+
+        TaskController.add(new_task)
+        NotificationController.add(datetime.now(), new_task.tid, new_task.title)
+        len_after = len(DataStorage.load_notifications_from_json())
+        self.assertEqual(len_before + 1, len_after)
+
+    # endregion
+
     def get_by_tid(self, tid):
         tasks = DataStorage.load_tasks_from_json()[1]
         for task in tasks:
             if task.tid == tid:
                 return task
         raise Exception("There is no such task")
-
-
