@@ -1,3 +1,12 @@
+"""
+Actions module represents connection between CLI and Controllers of Tasks, Schedulers, etc.
+
+Primarily it prepares data to be used as objects and sends to controllers classes.
+
+It was divided to logical regions for more comfort.
+"""
+
+
 import json
 import logging
 import os
@@ -59,9 +68,20 @@ def add_subtask(index, title=None, desc=None, start=None, end=None,
     check_date_range(start, end)
     TaskController.add(task)
 
+
 @logging_utils.logger
 def edit_task(task_num, task_field):
     TaskController.edit(task_num, task_field)
+
+
+@logging_utils.logger
+def edit_subtask(task_num, subtask_num, task_field):
+    TaskController.edit_subtask(task_num, subtask_num, task_field)
+
+
+@logging_utils.logger
+def delete_task(tid):
+    return TaskController.delete(tid)
 
 # endregion
 
@@ -163,6 +183,8 @@ def add_scheduler(title=None, description=None, date=None, enddate=None,
 @logging_utils.logger
 def get_schedulers():
     return SchedulerController.get()
+
+
 
 
 @logging_utils.logger

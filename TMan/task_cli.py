@@ -1,10 +1,20 @@
+"""
+This module is entry point of console application.
+
+It collects data and prepare for future usage by using actions module.
+
+This app using click module for developing CLI interface. Whole app divided into categories (groups)
+for better understanding.
+
+For more information of app usage use help: tman [options] [commands] ... [options] --help
+"""
 import click
 import os
 
 import config
-import user_actions
+from user_actions import UserTools
 from task_manager_library import actions
-from task_manager_library import data_storage
+from task_manager_library.data_storage import DataStorage
 from task_manager_library.models.task_model import Status, Priority, Task, Tag
 from utility import console_utils
 from utility import logging_utils
@@ -16,9 +26,9 @@ from utility import utils
 def cli():
     """Task Manager (tman) application for managing tasks and events"""
     try:
-        data_storage.DataStorage.PATH = config.DATA_PATH
-        user_actions.UserTools.PATH = config.CURRENT_USER_CONFIG
-        data_storage.DataStorage.CURRENT_USER = user_actions.UserTools.get_current_user()
+        DataStorage.PATH = config.DATA_PATH
+        UserTools.PATH = config.CURRENT_USER_CONFIG
+        DataStorage.CURRENT_USER = UserTools.get_current_user()
         actions.get_schedulers()
         logging_utils.get_logging_config("DEBUG")
     except Exception as e:
@@ -40,7 +50,7 @@ def user():
 def change(login):
     """Set user as current (Sign In)"""
     try:
-        user_actions.UserTools.set_current_user(login)
+        UserTools.set_current_user(login)
     except Exception as e:
         print(e)
 
@@ -54,14 +64,14 @@ def change(login):
               help='surname of new user')
 def add_user(login, name, surname):
     """Add new user"""
-    user_actions.UserTools.add_user(login, name, surname)
+    UserTools.add_user(login, name, surname)
 
 
 @user.command()
 def current():
     """Showing current user"""
     try:
-        current = user_actions.UserTools.get_current_user()
+        current = UserTools.get_current_user()
         click.echo("Login: {}".format(current.login))
         click.echo("Full name: {} {}".format(current.name, current.surname))
         click.echo("UID: {}".format(current.uid))
@@ -199,6 +209,12 @@ def orderby(tag):
         click.echo(e)
 
 
+@task.command()
+@click.option('--tid', type=str,
+              help='Task ID of deleting task')
+def delete_task(tid):
+    actions.delete_task(tid)
+
 
 @task.command()
 @click.option('--first', type=str,
@@ -269,6 +285,24 @@ def add(startdate, enddate, tag, description,
               help='Index of parent task')
 @click.option('--index', type=int,
               help='Option to done task. Input index of task')
+@click.option('--field', type=click.Choice(['title', 'start', 'end', 'desc']),
+              help='Choose task title, etc.')
+def edit(task, index, field):
+    """Editing tasks. Choose index and field"""
+    try:
+        if task:
+            task_num = task
+            subtask_num = index
+            task_field = field
+            actions.edit_subtask(task_num, subtask_num, task_field)
+    except ValueError as e:
+        print(e)
+
+@subtask.command()
+@click.option('--task', type=int,
+              help='Index of parent task')
+@click.option('--index', type=int,
+              help='Option to done task. Input index of task')
 @click.option('--status', type=click.Choice(['done', 'undone', 'process']),
               help='Choose task and s')
 def status(task, index, status):
@@ -312,7 +346,7 @@ def list(index):
               help='Index of subtask')
 def show(task, index):
     """Showing full info"""
-    parent = data_storage.DataStorage.get_subtasks_parent(task)
+    parent = DataStorage.get_subtasks_parent(task)
     click.secho("Parent task of chosen subtask is: {}".format(parent), bg='green', fg='white')
     task = actions.get_subtask(task, index)
     if task.is_completed == Status.done:

@@ -86,17 +86,17 @@ def get_user_index(user, users):
     raise Exception("Trouble while adding task to user")
 
 
-def get_task_index(task, all_tasks):
+def get_task_index(tid, all_tasks):
     """
     Get task's index at json file from tid
-    :param task: tid
+    :param tid: tid
     :param tasks: list of Task's objects
     :return: int object
     """
 
     counter = 0
     for x in all_tasks:
-        if task == x.tid:
+        if tid == x.tid:
             return counter
         counter += 1
     raise Exception("Trouble while adding task to user")

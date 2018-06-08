@@ -1,3 +1,9 @@
+"""
+This module represents DataStorage class which is contains methods to manage tasks, schedulers,
+users and store them in their json files.
+
+To use DataStorage, primarily user need to set up PATH and CURRENT_USER for current work of application.
+"""
 import json
 import os
 from datetime import datetime
@@ -133,7 +139,6 @@ class DataStorage:
         data = list()
         data.extend((edit.title, edit.start.date(), edit.end.date(), edit.description))
 
-        #TODO перенесли open nano в UTILS
         if task_field == "title":
             data = DataStorage.open_nano(data, 0)
         elif task_field == "start":
@@ -151,6 +156,47 @@ class DataStorage:
         all_users_tasks[task_index].description = data[3]
         DataStorage.resave_all_tasks_to_json(all_users_tasks)
 
+    @staticmethod
+    def edit_subtask(task_num, subtask_num, task_field):
+        tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
+        current = DataStorage.CURRENT_USER
+        tid_subtasks = list()
+        for subtask in all_tasks:
+            if subtask.parent == tasks[task_num - 1].tid:
+                tid_subtasks.append(subtask.tid)
+
+        tid_subtask = tid_subtasks[subtask_num-1]
+        global_index = utils.get_task_index(tid_subtask, all_users_tasks)
+
+        chosen_subtask = all_users_tasks[global_index]
+
+        author_name = chosen_subtask.author
+
+        if author_name != current.uid:
+            raise ValueError("Access denied")
+
+        if (task_num - 1) > len(tasks):
+            raise IndexError("Out of range")
+
+        data = list()
+        data.extend((chosen_subtask.title, chosen_subtask.start.date(), chosen_subtask.end.date(), chosen_subtask.description))
+
+        if task_field == "title":
+            data = DataStorage.open_nano(data, 0)
+        elif task_field == "start":
+            data = DataStorage.open_nano(data, 1)
+        elif task_field == "end":
+            data = DataStorage.open_nano(data, 2)
+        elif task_field == "description":
+            data = DataStorage.open_nano(data, 3)
+        else:
+            raise ValueError("ERROR! Unsupported field!")
+
+        all_users_tasks[global_index].title = data[0]
+        all_users_tasks[global_index].start = utils.check_date(None, None, str(data[1]))
+        all_users_tasks[global_index].end = utils.check_date(None, None, str(data[2]))
+        all_users_tasks[global_index].description = data[3]
+        DataStorage.resave_all_tasks_to_json(all_users_tasks)
 
     @staticmethod
     def load_tasks_from_json():
@@ -386,10 +432,16 @@ class DataStorage:
         scheduler.task = scheduler.task.__dict__
         scheduler = scheduler.__dict__
         schedulers.append(scheduler)
-        print ("fd")
         with open(DataStorage.PATH + '/schedulers.json', 'w') as file:
             json.dump(schedulers, file, indent=2, ensure_ascii=True)
-        print ("fd")
+
+
+    @staticmethod
+    def delete_task(tid):
+        all_tasks = DataStorage.load_tasks_from_json()[2]
+        global_index = utils.get_task_index(tid, all_tasks)
+        del all_tasks[global_index]
+        DataStorage.resave_all_tasks_to_json(all_tasks)
 
     @staticmethod
     def delete_scheduler_from_json(scheduler):
@@ -403,12 +455,13 @@ class DataStorage:
 
         changed_schedulers = list()
         for element in schedulers:
-            element.date = serialization_utils.date_to_str(element.date)
+            element.last = serialization_utils.date_to_str(element.last)
             element.task.start = serialization_utils.date_to_str(element.task.start)
             element.task.end = serialization_utils.date_to_str(element.task.end)
             element.task.priority = str(element.task.priority.value)
-            element.task.reminder = serialization_utils.time_to_str( element.task.reminder)
-
+            element.task.reminder = serialization_utils.time_to_str(element.task.reminder)
+            element.task.tag = element.task.tag.__dict__
+            element.task.is_completed = str(element.task.is_completed.value)
             element.task = element.task.__dict__
             element = element.__dict__
             changed_schedulers.append(element)

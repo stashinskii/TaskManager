@@ -1,7 +1,7 @@
 import re
 import sys
 import unittest
-from datetime import datetime
+from datetime import datetime, timedelta
 from faker import Faker
 
 import config
@@ -67,6 +67,9 @@ class MyTest(unittest.TestCase):
         date = serialization_utils.date_to_str(datetime.now())
         self.assertIsInstance(date, str)
 
+    def test_time_serialization(self):
+        date = serialization_utils.time_to_str(datetime.now())
+        self.assertIsInstance(date, str)
 
 
     # endregion
@@ -124,17 +127,44 @@ class MyTest(unittest.TestCase):
         task_new = TaskController.get_by_index(last_element)
         self.assertEquals(Status.undone, task_new.is_completed)
 
+    def test_deletion(self):
+        new_task = Task("Test_task", "Test_description", datetime.strptime("2018-05-12", "%Y-%m-%d"),
+            datetime.strptime("2018-06-12", "%Y-%m-%d"), Tag("tag_test"), DataStorage.CURRENT_USER.login,
+            [], None, datetime.strptime("12:00", "%H:%M"), Priority.high, None, None)
+
+        TaskController.add(new_task)
+        before_deleting = len(DataStorage.load_tasks_from_json()[0])
+        TaskController.delete(new_task.tid)
+
+        after_deleting = len(DataStorage.load_tasks_from_json()[0])
+        self.assertEqual(after_deleting + 1, before_deleting)
+
+
+
     # endregion
 
     # region Test scheduler region
 
     def test_create_scheduler(self):
         len_before = len(DataStorage.load_schedulers_from_json())
+
         scheduler = Scheduler(datetime.now(), task, 12)
-        print(type(scheduler.task.start))
         SchedulerController.add(scheduler)
         len_after = len(DataStorage.load_schedulers_from_json())
         self.assertEquals(len_before + 1, len_after)
+
+    def test_get_scheduler(self):
+        new_task = Task("Test_task", "Test_description", datetime.strptime("2018-05-12", "%Y-%m-%d"),
+                        datetime.strptime("2018-06-12", "%Y-%m-%d"), Tag("tag_test"), DataStorage.CURRENT_USER.login,
+                        [], None, datetime.strptime("12:00", "%H:%M"), Priority.high, None, None)
+
+        len_of_tasks_before = len(DataStorage.load_tasks_from_json()[0])
+        scheduler = Scheduler(datetime.now() - timedelta(days=1), new_task, 0)
+        SchedulerController.add(scheduler)
+        SchedulerController.get()
+        len_of_tasks_after = len(DataStorage.load_tasks_from_json()[0])
+        self.assertEquals(len_of_tasks_before + 1, len_of_tasks_after)
+
 
     # endregion
 
@@ -195,6 +225,10 @@ class MyTest(unittest.TestCase):
         status = Status.done
         self.assertIsInstance(status, Status)
 
+    def test_scheduler_creating(self):
+        scheduler = Scheduler(datetime.now(), task, 12)
+        self.assertIsInstance(scheduler, Scheduler)
+
     # endregion
 
     # region Data Storage test
@@ -214,12 +248,23 @@ class MyTest(unittest.TestCase):
             self.assertEquals(fake_tag, order_task.tag.tag_name)
 
     def test_archieve(self):
-
         archieved_tasks = TaskController.archieve()
         tasks_count = len(DataStorage.load_tasks_from_json()[1])
         if tasks_count != 0:
             for task in archieved_tasks:
                 self.assertEquals(task.is_completed, Status.done)
+
+    def test_usage_of_empty_path(self):
+        DataStorage.PATH = None
+        # Check any method of DataStorage. They should raise exception, cause of empty PATH
+        self.assertRaises(Exception, DataStorage.load_tasks_from_json)
+        DataStorage.PATH = config.DATA_PATH
+
+    def test_usage_of_empty_user(self):
+        DataStorage.CURRENT_USER = None
+        # Check any method of DataStorage. They should raise exception, cause of empty CURRENT USER
+        self.assertRaises(Exception, DataStorage.load_tasks_from_json)
+        DataStorage.CURRENT_USER = UserTools.get_current_user()
 
     # endregion
 
@@ -230,65 +275,4 @@ class MyTest(unittest.TestCase):
                 return task
         raise Exception("There is no such task")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    '''
-
-
-    def test_wrong_adding_task(self):
-        task_manager_library.DataStorage.PATH = config.DATA_PATH
-        self.assertRaises(Exception, task_cli.add, (True, False, False, "2018-02-03", "2012-02-03", "jero", "dfkldf",
-        "fdfddf", "12:00", "herman1", "low", None))
-
-    def test_add_task(self):
-        task_manager_library.DataStorage.PATH = config.DATA_PATH
-        start_date = datetime.strptime("2018-02-05", "%Y-%m-%d")
-        end_date = datetime.strptime("2019-02-05", "%Y-%m-%d")
-        my_time = datetime.strptime("12:00", "%H:%M")
-        task = task_manager_library.add_tracked_task("fddffd", "fdfdfd", start_date, end_date,
-                     "tag", "testlogin",
-                     my_time, "low",
-                     False, False, None)
-        self.assertEquals(task_manager_library.Task, type(task))
-
-    def test_wrong_login(self):
-        task_manager_library.DataStorage.PATH = config.DATA_PATH
-        self.assertRaises(Exception, task_manager_library.UserTools.set_current_user, "dfdffddfdffddf")
-
-    def test_wrong_edit_field(self):
-        task_manager_library.UserTools.set_current_user("herman")
-        self.assertRaises(ValueError, task_manager_library.edit_task, 2,"sdgh")
-
-    def test_empty_edit_field(self):
-        new_login = utility.serialization_utils.tid_gen()
-        task_manager_library.UserTools.add_user(new_login, "testname", "testsurname")
-        task_manager_library.UserTools.set_current_user(new_login)
-        self.assertRaises(IndexError, task_manager_library.edit_task, 50,"title")
-
-    def test_task_object_creation(self):
-        start_date = datetime.strptime("2018-02-05", "%Y-%m-%d")
-        end_date = datetime.strptime("2019-02-05", "%Y-%m-%d")
-        my_time = datetime.strptime("12:00", "%H:%M")
-        task = task_manager_library.add_tracked_task("fddffd", "fdfdfd", start_date, end_date,
-                                                     "tag", "testlogin",
-                                                     my_time, "low",
-                                                     False, False, None)
-        self.assertEquals(task.is_completed,task_manager_library.Status.undone)
-        '''
 
