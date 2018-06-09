@@ -16,7 +16,7 @@ from task_manager_library.models.scheduler_model import Scheduler
 from task_manager_library.models.task_model import Status, Task, Priority, Tag
 from task_manager_library.models.notifications_model import Notifications
 from task_manager_library.utility import logging_utils, utils, serialization_utils
-from user import User
+from console.user import User
 
 
 

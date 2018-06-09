@@ -8,7 +8,7 @@ import uuid
 
 from task_manager_library.data_storage import DataStorage
 from task_manager_library.utility import logging_utils, utils, serialization_utils
-from user import User
+from console.user import User
 
 
 class UserTools():
@@ -44,6 +44,7 @@ class UserTools():
     def get_current_user():
         """Get object of current user"""
         config = configparser.ConfigParser()
+        utils.check_json_files('/users.json')
         if UserTools.PATH is None:
             raise TypeError("You didn't set UserTools PATH's value")
         if not os.path.exists(UserTools.PATH):

@@ -22,7 +22,7 @@ from task_manager_library.controllers.task_controller import TaskController
 from task_manager_library.models.notifications_model import Notifications
 from task_manager_library.models.scheduler_model import Scheduler
 from task_manager_library.models.task_model import Task
-from user_actions import UserTools
+from console.user_actions import UserTools
 from task_manager_library.utility import console_utils as console, utils, logging_utils, serialization_utils
 from .data_storage import *
 

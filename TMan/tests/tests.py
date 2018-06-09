@@ -13,8 +13,8 @@ from task_manager_library.controllers.task_controller import TaskController
 from task_manager_library.models.notifications_model import Notifications
 from task_manager_library.models.scheduler_model import Scheduler
 from task_manager_library.models.task_model import Tag, Task, Status, Priority
-from user import User
-from user_actions import UserTools
+from console.user import User
+from console.user_actions import UserTools
 from task_manager_library.utility import utils, logging_utils, console_utils, serialization_utils
 
 DataStorage.PATH = config.DATA_PATH

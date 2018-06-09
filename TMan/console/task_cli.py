@@ -15,7 +15,7 @@ import config
 from task_manager_library import actions
 from task_manager_library.data_storage import DataStorage
 from task_manager_library.models.task_model import Status, Priority, Task, Tag
-from user_actions import UserTools
+from console.user_actions import UserTools
 from task_manager_library.utility import console_utils, utils, logging_utils, serialization_utils
 
 
@@ -99,7 +99,7 @@ def task():
               help='End date. Format YYYY-MM-DD')
 @click.option('-tg', '--tag', type=str,
               help='Tag')
-@click.option('-de', '--description', type=str,
+@click.option('-de', '--description', type=str,default="",
               help='Description')
 @click.option('-ti', '--title', type=str,
               help='Title')
@@ -254,7 +254,7 @@ def tag(name):
 
 
 @orderby.command()
-@click.argument('name')
+@click.argument('name', default="high")
 def priority(name):
     """Ordering task by priority"""
     try:
@@ -305,7 +305,6 @@ def archieve():
 
 # endregion
 
-
 # region Sheduler actions
 @cli.group()
 def util():
@@ -316,17 +315,17 @@ def util():
 @util.command()
 @click.option('-in', '--interval', type=int,
               help='Interval')
-@click.option('-sd', '--startdate', type=str, callback=utils.check_date,
+@click.option('-sd', '--startdate', type=str, callback=utils.check_date, default="None",
               help='Start date')
-@click.option('-ed', '--enddate', type=str, callback=utils.check_date,
+@click.option('-ed', '--enddate', type=str, callback=utils.check_date, default="None",
               help='End date')
 @click.option('-tg', '--tag', type=str,
               help='Tag')
-@click.option('-de', '--description', type=str,
+@click.option('-de', '--description', type=str, default="",
               help='Description')
 @click.option('-ti', '--title', type=str,
               help='Title')
-@click.option('-re', '--reminder', type=str, callback=utils.check_time,
+@click.option('-re', '--reminder', type=str, callback=utils.check_time, default="12:00",
               help='Reminder')
 @click.option('-ob', '--observers', type=str, default='',
               help='Observers')
