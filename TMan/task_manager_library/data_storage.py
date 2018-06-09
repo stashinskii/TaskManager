@@ -11,10 +11,9 @@ from datetime import datetime
 from task_manager_library.models.scheduler_model import Scheduler
 from task_manager_library.models.task_model import Status, Task, Priority, Tag
 from task_manager_library.models.notifications_model import Notifications
-from utility import logging_utils
-from utility import serialization_utils
-from utility import utils
+from task_manager_library.utility import logging_utils, utils, serialization_utils
 from user import User
+
 
 
 class DataStorage:
@@ -26,6 +25,7 @@ class DataStorage:
 
     @staticmethod
     def begin_task(tid):
+        """Change status of task to PROCESS/ Begin task"""
 
         tracked_tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
         index = utils.get_task_index(tid, all_users_tasks)
@@ -34,6 +34,7 @@ class DataStorage:
 
     @staticmethod
     def done_task(tid):
+        """Change status of task to DONE/ Complete task"""
         tracked_tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
         index = utils.get_task_index(tid, all_users_tasks)
 
@@ -46,6 +47,7 @@ class DataStorage:
 
     @staticmethod
     def undone_task(tid):
+        """Change status of task to UNDONE/ Uncomplete task"""
         tracked_tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
         index = utils.get_task_index(tid, all_users_tasks)
         all_users_tasks[index].undone()
@@ -53,6 +55,7 @@ class DataStorage:
 
     @staticmethod
     def show_ordered_tasks_priority(priority):
+        """Order task by priority and return list of them"""
         all_tasks = DataStorage.load_tasks_from_json()[1]
         ordered_tasks = list()
 
@@ -65,7 +68,7 @@ class DataStorage:
 
     @staticmethod
     def show_ordered_tasks_tag(tag):
-        """Sort tasks by their tag"""
+        """Order task by tag and return list of them"""
         all_tasks = DataStorage.load_tasks_from_json()[1]
         ordered_tasks = list()
 
@@ -78,7 +81,7 @@ class DataStorage:
 
     @staticmethod
     def add_task_to_json(task):
-        """Add new task to json"""
+        """Add new task to json file using serialization"""
         all_user_tasks = DataStorage.load_tasks_from_json()[2]
         users = DataStorage.load_users_from_json()
         all_user_tasks.append(task)
@@ -137,13 +140,8 @@ class DataStorage:
 
     @staticmethod
     def load_tasks_from_json():
-        """
-        Loading (deserializing) tasks's data from json files
-        :param current: User object - current user (authorized)
-        :return: tuple of collections(lists)
-        """
+        """Loading (deserializing) tasks's data from json files"""
         utils.check_json_files('/trackedtasks.json')
-        # TODO check if CURRENT doesn't exist and None
         current = DataStorage.CURRENT_USER
 
         with open(DataStorage.PATH + '/trackedtasks.json', 'r') as task_file:
@@ -187,7 +185,9 @@ class DataStorage:
 
     @staticmethod
     def resave_all_tasks_to_json(all_tasks):
+
         """Resaving all_tasks (including tasks of other users) to json"""
+
         data = list()
         for task in all_tasks:
             if isinstance(task.start, datetime):
@@ -210,10 +210,9 @@ class DataStorage:
 
     @staticmethod
     def load_users_from_json():
-        """
-        Loading(deserializing) users's data from json file
-        :return: list of User's objects
-        """
+
+        """Loading(deserializing) users's data from json file"""
+
         utils.check_json_files('/users.json')
         with open(DataStorage.PATH + '/users.json', 'r') as file:
             data = json.load(file)
@@ -249,11 +248,8 @@ class DataStorage:
 
     @staticmethod
     def save_users_to_json(user_object):
-        """
-        Save new user to json file
-        :param user_object: User's object
-        :return:
-        """
+
+        """Save new user to json file"""
         try:
             with open(DataStorage.PATH + '/users.json', 'r') as objfile:
                 collection = json.load(objfile)
@@ -267,12 +263,7 @@ class DataStorage:
 
     @staticmethod
     def add_user_task(user, tid):
-        """
-        Add task tid to user at users json file
-        :param user: User's object
-        :param tid: str object
-        :return:
-        """
+        """Add task tid to user at users json file"""
         users = DataStorage.load_users_from_json()
         users.__delitem__(utils.get_user_index(user, users))
         user.tasks.append(tid)
@@ -297,17 +288,14 @@ class DataStorage:
 
     @staticmethod
     def give_task_permission(observers, tid):
-        """
-        Give permission to observers
-        :param observers: list on User's objects
-        :param tid: str object
-        :return:
-        """
+        """Give permission of task (tid to observers (list of logins)"""
         users = DataStorage.load_users_from_json()
+
         current = DataStorage.CURRENT_USER
+
         for us in observers:
             if us != current.login:
-                user = get_user(us, users)
+                user = utils.get_user(us, users)
                 DataStorage.add_user_task(user, tid)
 
     @staticmethod
@@ -322,7 +310,7 @@ class DataStorage:
             start = utils.check_date(None, None, scheduler['task']['start'])
             end = utils.check_date(None, None, scheduler['task']['end'])
             desc = scheduler['task']['description']
-            tag = scheduler['task']['tag']
+            tag = scheduler['task']['tag']['tag_name']
             tag = Tag(tag)
             observers = scheduler['task']['observers']
             executor = scheduler['task']['executor']
@@ -410,7 +398,7 @@ class DataStorage:
 
     @staticmethod
     def get_subtasks(index):
-        """Get subtasks by index of ..."""
+        """Get subtasks by index"""
         user_tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
         len_of_tasks = len(user_tasks)
         if index > len_of_tasks:
@@ -433,6 +421,7 @@ class DataStorage:
 
     @staticmethod
     def get_subtasks_of_parent(tid):
+        """Get subtasks of parent"""
         all_user_tasks = DataStorage.load_tasks_from_json()[2]
 
         subtasks = list()
@@ -454,12 +443,7 @@ class DataStorage:
 
     @staticmethod
     def open_nano(data, num):
-        """
-        Open nano editor
-        :param data: list of task's title, startdate, enddate and description
-        :param num: position in list to be changed
-        :return: changed data
-        """
+        """Open nano editor"""
         os.system("echo \"{}\" >> {}".format(data[num], "/tmp/tman_tempdata.tmp"))
         os.system("nano {}".format("/tmp/tman_tempdata.tmp"))
         file = open("/tmp/tman_tempdata.tmp")
@@ -473,6 +457,7 @@ class DataStorage:
 
     @staticmethod
     def add_notification(notification):
+        """Create new notification"""
         all_notifications = DataStorage.load_notifications_from_json()
         result_notifications = list()
         for notify in all_notifications:
@@ -491,6 +476,7 @@ class DataStorage:
 
     @staticmethod
     def load_notifications_from_json():
+        """Load/Deserialize notifications from json file"""
         utils.check_json_files('/notifications.json')
         with open(DataStorage.PATH + '/notifications.json', 'r') as task_file:
             notifications = json.load(task_file)
@@ -508,6 +494,7 @@ class DataStorage:
 
     @staticmethod
     def delete_notification(rid):
+        """Delete notification from its Reminder ID"""
         notifications = DataStorage.load_notifications_from_json()
 
         prepared_notifications = list()

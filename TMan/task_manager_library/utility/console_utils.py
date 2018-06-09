@@ -1,3 +1,7 @@
+"""
+Module represents methods required for inputing and outputing data to console interface
+"""
+
 import click
 import os
 
@@ -8,16 +12,13 @@ STATUS_NAMES = ['done', 'undone', 'process']
 
 
 def check_status_name(ctx, param, value):
+    """Checking inputing values of status(done, undone, process)"""
     if value[1] not in STATUS_NAMES:
         raise ValueError("Check status name to be changed")
 
 
 def format_print_tasks(tasks):
-    """
-    Printing list of tasks
-    :param tasks: tuple of Status, index, subtasks and title of task
-    :return:
-    """
+    """Printing list of tasks"""
     for task in tasks:
         marker = ' '
         if task[0] == Status.done:
@@ -32,31 +33,6 @@ def format_print_tasks(tasks):
         click.echo("[" + marker + "] - " + str(task[1]) + " - " + click.style(
             "Subtasks: " + str(task[2]), bold=True, fg='yellow')
                    + " - " + click.style(str(task[3]), bold=True, bg='green'))
-
-
-def format_print_subtasks(tasks, index):
-    """
-    Printing list of subtasks
-    :param tasks: tuple of Status, index, subtasks and title of task
-    :return:
-    """
-    parent = data_storage.DataStorage.get_subtasks_parent(index)
-
-    click.secho("Parent of chosen task (index: {0}) is: {1}".format(index, parent), bg='green', fg='white', blink=True)
-
-    for task in tasks:
-        marker = ' '
-        if task[0] == Status.done:
-            marker = 'X'
-        elif task[0] == Status.undone:
-            marker = ' '
-        elif task[0] == Status.process:
-            marker = 'O'
-        else:
-            raise ValueError("Status is not status object")
-
-        click.echo("[" + marker + "] - " + str(task[1]) + " - "
-                   + " - " + click.style(str(task[2]), bold=True, bg='yellow', fg='white'))
 
 
 def format_print_ordered(ordered_tasks):
@@ -78,6 +54,7 @@ def format_print_ordered(ordered_tasks):
 
 
 def print_notifications(notifications):
+    """Ptint current notification"""
     click.secho("You have {} reminders for today:".format(len(notifications)),
                 bg='yellow', bold=True, fg='white')
     for notify in notifications:

@@ -1,8 +1,10 @@
+"""
+This module represents User class which is used for manage division of tasks between users in CLI app
+"""
+
 import enum
 
-from utility import logging_utils
-from utility import serialization_utils
-from utility import utils
+from task_manager_library.utility import logging_utils, utils, serialization_utils
 
 
 class User:

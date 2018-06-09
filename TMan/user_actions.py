@@ -1,13 +1,13 @@
+"""This module represents class UserTools for managing users actions in CLI app"""
+
 import configparser
 import json
 import logging
 import os
 import uuid
 
-from utility import logging_utils
-from utility import serialization_utils
-from utility import utils
 from task_manager_library.data_storage import DataStorage
+from task_manager_library.utility import logging_utils, utils, serialization_utils
 from user import User
 
 
@@ -19,11 +19,7 @@ class UserTools():
 
     @staticmethod
     def validate_login(login):
-        """
-        :param login:
-        :return: if False then login was used before
-        """
-        #TODO DO GLOBAL PATH_USERS, PATH_TASKS
+        """Check login if it exists"""
         if not os.path.exists(DataStorage.PATH+'/users.json'):
             return True
         users = DataStorage.load_users_from_json()
@@ -32,17 +28,10 @@ class UserTools():
                 return False
         return True
 
-    @staticmethod
-    def set_current():
-        users = DataStorage.load_users_from_json()
-        for user in users:
-            if user.current:
-                return user
-        raise Exception("There is no current user")
-
 
     @staticmethod
     def add_user(login, name, surname, tasks=None):
+        """Adding new user/ Sign Up"""
         if not UserTools.validate_login(login):
             raise ValueError("Current user exist!")
         uid = serialization_utils.tid_gen()
@@ -53,6 +42,7 @@ class UserTools():
 
     @staticmethod
     def get_current_user():
+        """Get object of current user"""
         config = configparser.ConfigParser()
         if UserTools.PATH is None:
             raise TypeError("You didn't set UserTools PATH's value")
@@ -66,6 +56,7 @@ class UserTools():
 
     @staticmethod
     def set_current_user(login):
+        """Sign In"""
         # if login doesn't exit then user was not sign up
         if UserTools.validate_login(login):
             raise Exception("Check login. User doesn't exist")

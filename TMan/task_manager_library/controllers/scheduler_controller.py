@@ -3,14 +3,15 @@ This module represents controller of scheduler which were created for managing p
 given interval and give full access to schedulers to Command Line Interface
 """
 
-from task_manager_library.data_storage import DataStorage
-from datetime import datetime, timedelta
 import copy
+from datetime import datetime, timedelta
+
+from task_manager_library.data_storage import DataStorage
 
 
 class SchedulerController():
-
     """Scheduler for creating planned tasks"""
+
     @staticmethod
     def add(scheduler):
         """Adding new scheduler"""
@@ -29,7 +30,6 @@ class SchedulerController():
                 scheduler.last = datetime.now()
                 DataStorage.save_scheduler_to_json(scheduler)
         return schedulers
-
 
     @staticmethod
     def delete_scheduler(scheduler):

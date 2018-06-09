@@ -4,13 +4,15 @@ This module represents controller for manging notificatons
 
 from task_manager_library.data_storage import DataStorage
 from task_manager_library.models.notifications_model import Notifications
-from utility import utils
+from task_manager_library.utility import utils
 from datetime import datetime, time
 
 
 class NotificationController:
+    """Class contains static methods for managing notification"""
     @staticmethod
     def add(date, tid, title):
+        """Static method for creating new notification"""
         task = DataStorage.get_task_from_id(tid)
 
         notification = Notifications(task.tid, task.reminder, date, title)
@@ -18,6 +20,7 @@ class NotificationController:
 
     @staticmethod
     def get():
+        """Static method for getting new notification"""
         notifications = DataStorage.load_notifications_from_json()
         notifications_list = list()
         for notification in notifications:

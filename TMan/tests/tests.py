@@ -15,7 +15,7 @@ from task_manager_library.models.scheduler_model import Scheduler
 from task_manager_library.models.task_model import Tag, Task, Status, Priority
 from user import User
 from user_actions import UserTools
-from utility import utils, logging_utils, console_utils, serialization_utils
+from task_manager_library.utility import utils, logging_utils, console_utils, serialization_utils
 
 DataStorage.PATH = config.DATA_PATH
 UserTools.PATH = config.CURRENT_USER_CONFIG
@@ -151,9 +151,9 @@ class MyTest(unittest.TestCase):
         tag_name = new_task.tag.tag_name
         tag = Tag(tag_name)
         TaskController.add(new_task)
-        before = len(TaskController.order_by(tag))
+        before = len(TaskController.order_by_tag(tag))
         TaskController.add(new_task)
-        after = len(TaskController.order_by(tag))
+        after = len(TaskController.order_by_tag(tag))
 
         self.assertEqual(before + 1, after)
 
@@ -276,7 +276,7 @@ class MyTest(unittest.TestCase):
         task.tag = Tag(fake_tag)
         TaskController.add(task)
         task.tag = Tag(fake_tag)
-        ordered_tasks = TaskController.order_by(task.tag)
+        ordered_tasks = TaskController.order_by_tag(task.tag)
         for order_task in ordered_tasks:
             self.assertEquals(fake_tag, order_task.tag.tag_name)
 

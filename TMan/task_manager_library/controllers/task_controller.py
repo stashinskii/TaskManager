@@ -15,9 +15,13 @@ class TaskController:
         return DataStorage.add_task_to_json(task)
 
     @staticmethod
-    def get_connected_tasks(tid):
-        """Get connected task of chosen task"""
-        return DataStorage.get_task_from_id(tid)
+    def delete(tid):
+        """Deleting task by its task ID"""
+        DataStorage.delete_task(tid)
+
+    @staticmethod
+    def share(observers, tid):
+        return DataStorage.give_task_permission(observers, tid)
 
     @staticmethod
     def edit(tid, task_field):
@@ -25,9 +29,33 @@ class TaskController:
         DataStorage.edit_task(tid, task_field)
 
     @staticmethod
-    def delete(tid):
-        """Deleting task by its task ID"""
-        DataStorage.delete_task(tid)
+    def complete_task(tid):
+        """Complete chosen task"""
+        DataStorage.done_task(tid)
+
+    @staticmethod
+    def uncomplete_task(tid):
+        """Uncomplete chosen task"""
+        DataStorage.undone_task(tid)
+
+    @staticmethod
+    def begin_task(tid):
+        """Begin chosen task"""
+        DataStorage.begin_task(tid)
+
+    @staticmethod
+    def order_by_priority(priority):
+        return DataStorage.show_ordered_tasks_priority(priority)
+
+    @staticmethod
+    def order_by_tag(tag):
+        """Order tasks (tasks+subtasks) by its tag"""
+        return DataStorage.show_ordered_tasks_tag(tag)
+
+    @staticmethod
+    def get_connected_tasks(tid):
+        """Get connected task of chosen task"""
+        return DataStorage.get_task_from_id(tid)
 
     @staticmethod
     def archieve():
@@ -39,10 +67,6 @@ class TaskController:
                 archieved_tasks.append(task)
 
         return archieved_tasks
-
-    @staticmethod
-    def order_by_priority(priority):
-        return DataStorage.show_ordered_tasks_priority(priority)
 
     @staticmethod
     def get_by_index(task_index):
@@ -57,32 +81,12 @@ class TaskController:
         return DataStorage.make_link(task1, task2)
 
     @staticmethod
-    def order_by(tag):
-        """Order tasks (tasks+subtasks) by its tag"""
-        return DataStorage.show_ordered_tasks_tag(tag)
-
-    @staticmethod
-    def complete_task(tid):
-        """Complete chosen task"""
-        DataStorage.done_task(tid)
-
-    @staticmethod
     def get_subtasks(tid):
         return DataStorage.get_subtasks_of_parent(tid)
 
     @staticmethod
-    def uncomplete_task(tid):
-        """Uncomplete chosen task"""
-        DataStorage.undone_task(tid)
-
-    @staticmethod
     def get_task_from_id(tid):
         return DataStorage.get_task_from_id(tid)
-
-    @staticmethod
-    def begin_task(tid):
-        """Begin chosen task"""
-        DataStorage.begin_task(tid)
 
     @staticmethod
     def get_users_tasks():
