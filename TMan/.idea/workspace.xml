@@ -14,8 +14,8 @@
       <file leaf-file-name="data_storage.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/task_manager_library/data_storage.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="7902">
-              <caret line="439" column="31" selection-start-line="439" selection-start-column="31" selection-end-line="439" selection-end-column="31" />
+            <state relative-caret-position="144">
+              <caret line="8" column="67" selection-start-line="8" selection-start-column="67" selection-end-line="8" selection-end-column="67" />
               <folding>
                 <element signature="e#252#263#0" expanded="true" />
               </folding>
@@ -65,11 +65,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="notification_controller.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="notification_controller.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/task_manager_library/controllers/notification_controller.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="54">
-              <caret line="3" selection-end-line="3" />
+            <state relative-caret-position="36">
+              <caret line="2" lean-forward="true" selection-start-line="2" selection-end-line="2" />
               <folding>
                 <element signature="e#68#125#0" expanded="true" />
               </folding>
@@ -92,8 +92,8 @@
       <file leaf-file-name="actions.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/task_manager_library/actions.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3564">
-              <caret line="198" column="24" selection-start-line="198" selection-start-column="24" selection-end-line="198" selection-end-column="24" />
+            <state relative-caret-position="126">
+              <caret line="7" selection-start-line="7" selection-end-line="7" />
               <folding>
                 <element signature="e#239#250#0" expanded="true" />
               </folding>
@@ -113,11 +113,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="user.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="user.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/user.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="18">
-              <caret line="1" column="101" selection-start-line="1" selection-start-column="101" selection-end-line="1" selection-end-column="101" />
+            <state relative-caret-position="54">
+              <caret line="3" selection-start-line="3" selection-end-line="3" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -194,14 +194,14 @@
         <option value="$PROJECT_DIR$/task_manager_library/controllers/task_controller.py" />
         <option value="$PROJECT_DIR$/task_manager_library/controllers/scheduler_controller.py" />
         <option value="$PROJECT_DIR$/task_manager_library/models/task_model.py" />
-        <option value="$PROJECT_DIR$/task_manager_library/data_storage.py" />
         <option value="$PROJECT_DIR$/task_manager_library/models/scheduler_model.py" />
         <option value="$PROJECT_DIR$/setup.py" />
         <option value="$PROJECT_DIR$/task_cli.py" />
-        <option value="$PROJECT_DIR$/task_manager_library/controllers/notification_controller.py" />
-        <option value="$PROJECT_DIR$/task_manager_library/actions.py" />
         <option value="$PROJECT_DIR$/user_actions.py" />
+        <option value="$PROJECT_DIR$/task_manager_library/data_storage.py" />
+        <option value="$PROJECT_DIR$/task_manager_library/actions.py" />
         <option value="$PROJECT_DIR$/user.py" />
+        <option value="$PROJECT_DIR$/task_manager_library/controllers/notification_controller.py" />
       </list>
     </option>
   </component>
@@ -486,13 +486,20 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/task_manager_library/actions.py">
+    <entry file="file://$PROJECT_DIR$/user_actions.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3564">
-          <caret line="198" column="24" selection-start-line="198" selection-start-column="24" selection-end-line="198" selection-end-column="24" />
+        <state>
+          <caret column="79" selection-start-column="79" selection-end-column="79" />
           <folding>
-            <element signature="e#239#250#0" expanded="true" />
+            <element signature="e#0#19#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="10" lean-forward="true" selection-start-line="10" selection-end-line="10" />
         </state>
       </provider>
     </entry>
@@ -506,40 +513,23 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/task_manager_library/controllers/notification_controller.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="54">
-          <caret line="3" selection-end-line="3" />
-          <folding>
-            <element signature="e#68#125#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/user_actions.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="79" selection-start-column="79" selection-end-column="79" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/task_manager_library/data_storage.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="7902">
-          <caret line="439" column="31" selection-start-line="439" selection-start-column="31" selection-end-line="439" selection-end-column="31" />
+        <state relative-caret-position="144">
+          <caret line="8" column="67" selection-start-line="8" selection-start-column="67" selection-end-line="8" selection-end-column="67" />
           <folding>
             <element signature="e#252#263#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/config.py">
+    <entry file="file://$PROJECT_DIR$/task_manager_library/actions.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="10" lean-forward="true" selection-start-line="10" selection-end-line="10" />
+        <state relative-caret-position="126">
+          <caret line="7" selection-start-line="7" selection-end-line="7" />
+          <folding>
+            <element signature="e#239#250#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -562,10 +552,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/user.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="18">
-          <caret line="1" column="101" selection-start-line="1" selection-start-column="101" selection-end-line="1" selection-end-column="101" />
+        <state relative-caret-position="54">
+          <caret line="3" selection-start-line="3" selection-end-line="3" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/task_manager_library/controllers/notification_controller.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="36">
+          <caret line="2" lean-forward="true" selection-start-line="2" selection-end-line="2" />
+          <folding>
+            <element signature="e#68#125#0" expanded="true" />
           </folding>
         </state>
       </provider>

@@ -1,5 +1,6 @@
 """
-This module represents controller for manging notificatons
+This module represents controller for managing notifications
+
 """
 
 from task_manager_library.data_storage import DataStorage

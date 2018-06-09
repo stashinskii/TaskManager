@@ -1,5 +1,7 @@
 """
 This module represents User class which is used for manage division of tasks between users in CLI app
+
+
 """
 
 import enum

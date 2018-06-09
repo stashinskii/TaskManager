@@ -3,6 +3,10 @@ This module represents DataStorage class which is contains methods to manage tas
 users and store them in their json files.
 
 To use DataStorage, primarily user need to set up PATH and CURRENT_USER for current work of application.
+
+All methods in DataStorage are static
+
+All methods describes logic of resaving and loading files from JSON
 """
 import json
 import os
