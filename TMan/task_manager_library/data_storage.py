@@ -19,6 +19,147 @@ from task_manager_library.utility import logging_utils, utils, serialization_uti
 from console.user import User
 
 
+class Storage:
+    def __init__(self, configuration=None, external_user=None):
+        if configuration is not None and configuration.get('storage_path') is not None:
+            self.path = configuration.get('storage_path')
+        else:
+            os.path.dirname(__file__) + "/tmandata/"
+
+        if external_user is not None:
+            self.current_uid = external_user
+        else:
+            try:
+                utils.check_json_files(self.path, '/users.json')
+                config = configparser.ConfigParser()
+                config.read(UserTools.PATH)
+                section = "USER"
+                uid = config.get(section, "uid")
+                self.current_uid = User(uid, login, name)
+            except Exception:
+                self.current_uid = None
+        self.tasks = []
+        self.user_tasks = []
+
+    # region Loading data
+
+    @staticmethod
+    def load_users_from_json():
+        utils.check_json_files('/users.json')
+        with open(DataStorage.PATH + '/users.json', 'r') as file:
+            data = json.load(file)
+        users = list()
+        for data_dict in data:
+            user = serialization_utils.dict_to_user(data_dict)
+            users.append(user)
+        return users
+
+    def load_user(self):
+        users = Storage.load_users_from_json()
+        for user in users:
+            if user.uid == self.current_uid:
+                return user
+
+    def load_tasks_from_json(self):
+        utils.check_json_files('/tasks.json')
+
+        with open(DataStorage.PATH + 'tasks.json', 'r') as task_file:
+            task_data = json.load(task_file)
+
+        for task_dict in task_data:
+            loaded_task = serialization_utils.dict_to_task(task_dict)
+            self.tasks.append(loaded_task)
+
+        return tasks
+
+    def load_user_tasks(self):
+
+        current_user = self.load_user()
+
+        for task in self.tasks:
+            if task.tid in current_user.tasks:
+                self.user_tasks.append(task)
+
+
+    # endregion
+
+    # region Tasks actions
+    def add_task(self, task):
+        self.tasks.append(task)
+        self.resave()
+
+    def resave(self):
+        data = []
+        for task in self.tasks:
+            task = task_to_dict(task)
+            data.append(task.__dict__)
+
+        with open(DataStorage.PATH + '/trackedtasks.json', 'w') as taskfile:
+            json.dump(data, taskfile, indent=2, ensure_ascii=False)
+
+    def delete(self, tid):
+        index = utils.get_index(tid, self)
+        del self.tasks[index]
+        self.resave()
+
+    def edit(self, tid, **kwargs):
+        index = utils.get_index(tid, self)
+
+        title = kwargs.get('title')
+        if title is not None:
+            task[index].title = title
+
+        description = kwargs.get('description')
+        if description is not None:
+            task[index].description = description
+
+        priority = kwargs.get('priority')
+        if priority is not None:
+            task[index].priority = priority
+
+        end = kwargs.get('end')
+        if end is not None:
+            task[index].end = end
+
+        self.resave()
+
+    # endregion
+
+    # region Changing status
+    def complete(self, tid):
+        index = utils.get_task_index(tid, self)
+        self.task[index].complete()
+        self.resave()
+
+    def uncomplete(self, tid):
+        index = utils.get_task_index(tid, self)
+        self.task[index].uncomplete()
+        self.resave()
+
+    def begin(self, tid):
+        index = utils.get_task_index(tid, self)
+        self.task[index].begin()
+        self.resave()
+    # endregion
+
+    # region Notifications actions
+    pass
+    # endregion
+
+    # region Scheduler actions
+    pass
+    # endregion
+
+
+
+
+
+
+
+
+
+
+# region DELETE
 
 class DataStorage:
     """Database class.Requires to initialize PATH and CURRENT_USER for correct usage of library """
@@ -517,43 +658,5 @@ class DataStorage:
     # endregion
 
 
-"""
-@staticmethod
-    def done_subtask(task_index, subtask_index):
-        tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
-        tid_subtasks = []
 
-        for subtask in all_tasks:
-            if subtask.parent == tasks[task_index - 1].tid:
-                tid_subtasks.append(subtask)
-
-        global_index = utils.get_task_index(tid_subtasks[subtask_index - 1].tid, all_users_tasks)
-        all_users_tasks[global_index].complete()
-        DataStorage.resave_all_tasks_to_json(all_users_tasks)
-
-    @staticmethod
-    def begin_subtask(task_index, subtask_index):
-        tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
-        tid_subtasks = []
-
-        for subtask in all_tasks:
-            if subtask.parent == tasks[task_index - 1].tid:
-                tid_subtasks.append(subtask)
-
-        global_index = utils.get_task_index(tid_subtasks[subtask_index - 1].tid, all_users_tasks)
-        all_users_tasks[global_index].begin()
-        DataStorage.resave_all_tasks_to_json(all_users_tasks)
-
-    @staticmethod
-    def undone_subtask(task_index, subtask_index):
-        tasks, all_tasks, all_users_tasks = DataStorage.load_tasks_from_json()
-        tid_subtasks = []
-
-        for subtask in all_tasks:
-            if subtask.parent == tasks[task_index - 1].tid:
-                tid_subtasks.append(subtask)
-
-        global_index = utils.get_task_index(tid_subtasks[subtask_index - 1].tid, all_users_tasks)
-        all_users_tasks[global_index].undone()
-        DataStorage.resave_all_tasks_to_json(all_users_tasks)
-"""
+# endregion
