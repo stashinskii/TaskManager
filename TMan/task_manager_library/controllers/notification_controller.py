@@ -1,6 +1,7 @@
 """
 This module represents controller for managing notifications
 
+Contains 2 methods describing getting and adding new notifications
 """
 
 from task_manager_library.data_storage import DataStorage

@@ -1,13 +1,15 @@
+"""
+This module implements methods to get logger configuration and create decorator for callbacks
+"""
+
 import logging
 import config
 from .utils import check_json_files, check_log_files
 
 
-LEVELS = ["DEBUG", "INFO", "OFF"]
-
-
 def logger(func):
     def _log(*args):
+
         try:
             get_logging_config("DEBUG")
             logging.info("Function {0} in module {1}".format(func.__name__, func.__module__))
@@ -18,6 +20,7 @@ def logger(func):
         except Exception as e:
             logging.error(e)
             raise e
+
     return _log
 
 

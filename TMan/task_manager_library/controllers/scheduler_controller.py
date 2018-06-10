@@ -1,6 +1,7 @@
 """
 This module represents controller of scheduler which were created for managing planned tasks by
 given interval and give full access to schedulers to Command Line Interface
+
 """
 
 import copy

@@ -1,4 +1,12 @@
-"""This module represents class UserTools for managing users actions in CLI app"""
+"""
+
+This module represents class UserTools for managing users actions in CLI app
+
+All methods are static
+
+PATH variable should be intitialized before using UserTools class
+
+"""
 
 import configparser
 import json
