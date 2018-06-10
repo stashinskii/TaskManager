@@ -17,7 +17,7 @@ class Actions:
     """
 
     def __init__(self, logging_config=None):
-        # region config of logger
+        # region Configuraion of logger
 
         # TODO MAKE LOGGER CINFIGURATION HERE
 
