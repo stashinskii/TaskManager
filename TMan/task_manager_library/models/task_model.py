@@ -1,26 +1,24 @@
 import enum
-
-from task_manager_library.utility import logging_utils, utils, serialization_utils
+import uuid
 
 
 class Task:
     """Description of Task"""
-    def __init__(self, title, desc, start, end, tag, author, observers, executor,
-                 reminder, priority, changed, planned, parent=None, tid=None, subtasks=None,
-                 is_completed=None, connection = None):
+    def __init__(self, title, start, end, tag, author, observers,
+                 reminder, priority, changed=None, description=None, parent=None, tid=None, subtasks=None,
+                 is_completed=None, connection=None):
         self.title = title
         if tid is None:
-            self.tid = serialization_utils.tid_gen()
+            self.tid = str(uuid.uuid1())
         else:
             self.tid = tid
-        self.description = desc
+        self.description = description
         self.priority = priority
         self.start = start
         self.end = end
         self.author = author
         self.tag = tag
         self.observers = observers
-        self.executor = executor
         if is_completed is None:
             self.is_completed = Status.undone
         else:
@@ -35,7 +33,6 @@ class Task:
             self.subtasks = list()
         else:
             self.subtasks = subtasks
-        self.planned = planned
         self.changed = changed
         if connection is not None:
             self.connection = connection

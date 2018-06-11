@@ -2,8 +2,6 @@
 This module represents model of Scheduler which is describes full information of
 """
 
-from task_manager_library.utility import serialization_utils
-
 
 class Scheduler():
     """Description of scheduler of planned tasks"""

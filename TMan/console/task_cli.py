@@ -10,37 +10,21 @@ For more information of app usage use help: tman [options] [commands] ... [optio
 """
 import click
 import os
+from datetime import datetime
 
 import config
-from task_manager_library import actions
-from task_manager_library.data_storage import DataStorage
+from console import console_utils
+from task_manager_library.actions import Actions
 from task_manager_library.models.task_model import Status, Priority, Task, Tag
-from console.user_actions import UserTools
-from task_manager_library.utility import console_utils, utils, logging_utils, serialization_utils
 
 
 @click.group(invoke_without_command=True)
 def cli():
     """Task Manager (tman) application for managing tasks and events"""
-    # click.clear()
-    try:
-        DataStorage.PATH = config.DATA_PATH
-        UserTools.PATH = config.CURRENT_USER_CONFIG
-        DataStorage.CURRENT_USER = UserTools.get_current_user()
-        actions.get_schedulers()
-        notifications = actions.get_notification()
-
-        if notifications is not None:
-            console_utils.print_notifications(notifications)
-
-        logging_utils.get_logging_config("DEBUG")
-    except ValueError as e:
-        print(e)
+    manager = Actions()
 
 
 # region User actions
-
-
 @cli.group()
 def user():
     """User actions and tools"""
@@ -67,7 +51,8 @@ def change(login):
               help='Surname of new user')
 def add_user(login, name, surname):
     """Add new user"""
-    UserTools.add_user(login, name, surname)
+    manager = Actions()
+    manager.add_new_user(login, name, surname)
 
 
 @user.command()
@@ -93,9 +78,9 @@ def task():
 
 
 @task.command()
-@click.option('-sd', '--startdate', type=str, callback=utils.check_date, default=None,
+@click.option('-sd', '--startdate', type=str,  default=None,
               help='Start date. Format YYYY-MM-DD')
-@click.option('-ed', '--enddate', type=str, callback=utils.check_date, default=None,
+@click.option('-ed', '--enddate', type=str, default=None,
               help='End date. Format YYYY-MM-DD')
 @click.option('-tg', '--tag', type=str,
               help='Tag')
@@ -103,56 +88,69 @@ def task():
               help='Description')
 @click.option('-ti', '--title', type=str,
               help='Title')
-@click.option('-re', '--reminder', type=str, callback=utils.check_time, default='12:00',
+@click.option('-re', '--reminder', type=str,  default='12: 00',
               help='Reminder. Format "HH:MM"')
 @click.option('-ob', '--observers', type=str, default='',
               help='Observers')
-@click.option('-pr', '--priority', type=str,
-              help='Priority (high, low, medium)')
+@click.option('-pr', '--priority', type=click.Choice(['high', 'low', 'meduim']), default='high',
+              help='Priority')
 @click.option('-pa', '--parent', type=str, default=None,
               help='Parent tid for creating subtask')
 def add(startdate, enddate, tag, description,
         title, reminder, observers, priority, parent):
     """Adding new task"""
     try:
-
-        if startdate is None or enddate is None:
-            raise ValueError("Inpute date")
-        actions.add_tracked_task(title, description, startdate, enddate,
-                                 tag, observers, reminder, priority, parent)
+        observers = console_utils.split_str_to_list(observers)
+        priority = Priority[priority]
+        tag = Tag(tag)
+        manager = Actions()
+        manager.add_task(title,
+                         datetime.strptime(startdate, "%Y-%m-%d"),
+                         datetime.strptime(enddate, "%Y-%m-%d"),
+                         tag=tag,
+                         description=description,
+                         observers=observers,
+                         reminder=datetime.strptime(reminder, "%H:%M"),
+                         priority=priority,
+                         parent=parent)
     except ValueError as e:
-        click.echo(e)
-    # except Exception as e:
-    #    click.echo(e)
+        click.secho("ValueError:"+str(e), bg='red', fg='white')
+
+    except Exception as e:
+        click.secho("Exception:" + str(e), bg='red', fg='white')
 
 
 @task.command()
 def list():
     """Showing list of user's tasks"""
-    tasks_list = actions.show_tasks_list()
+    manager = Actions()
+    tasks_list = manager.get_tasks_list()
     console_utils.format_print_tasks(tasks_list)
 
 
 @task.command()
 @click.option('--tid', type=str,
-              help='TID (task ID) of chosen task')
+              help='TID (task ID) of task to be changed')
 @click.option('--status', type=click.Choice(['done', 'undone', 'process']),
-              help='Status (done, undone, process)')
+              help='Status of task to be changed')
 def status(tid, status):
-    """Done by inputing index of task"""
+    """Change status of task: done, undone, process. Required data: TID, status name"""
     try:
+        manager = Actions()
         status = Status[status]
+
         if status == Status.done:
-            actions.done_task(tid)
+            manager.complete_task(tid)
         elif status == Status.process:
-            actions.begin_task(tid)
+            manager.begin_task(tid)
         elif status == Status.undone:
-            actions.undone_task(tid)
+            manager.uncomplete_task(tid)
 
     except ValueError as e:
         print(e)
     except Exception as e:
         print(e)
+
 
 @task.command()
 @click.option('--observers', type=str,
@@ -167,38 +165,48 @@ def share(observers, tid):
         click.echo(e)
 
 
-
 @task.command()
-@click.option('--tid', type=str,
+@click.option('--tid', type=str, default=None,
               help='TID (task ID) of chosen task')
-@click.option('--field', type=click.Choice(['title', 'start', 'end', 'desc']),
-              help='Field to be edit')
-def edit(tid, field):
+@click.option('--description', type=str, default=None,
+              help='Description')
+@click.option('--tag', type=str, default=None,
+              help='tag')
+@click.option('--title', type=str, default=None,
+              help='Title')
+@click.option('--priority', type=str, default=None,
+              help='Priority')
+@click.option('--end', type=str, default=None,
+              help='End date')
+def edit(tid, tag, description, title, priority, end):
     """Editing tasks. Choose index and field"""
     try:
-        if task:
-            task_tid = tid
-            task_field = field
-            actions.edit_task(task_tid, task_field)
+        manager = Actions()
+        if tid is None:
+            raise ValueError("Input tid!")
+        manager.edit_task(tid,
+                          title=title,
+                          tag=tag,
+                          priority=priority,
+                          description=description,
+                          end=end)
+
     except ValueError as e:
-        print(e)
+        click.echo(e)
+    #except Exception as e:
+    #    click.echo(e)
 
 
 @task.command()
-@click.option('--index', type=int,
-              help='Index of task')
 @click.option('--tid', type=str,
               help='TID (task ID) of task')
-def show(index, tid):
+def show(tid):
     """Showing full info about task: choose INDEX or TID"""
 
-    if index:
-        task = actions.get_task(index)
-    if tid:
-        task = actions.get_task_from_id(tid)
-
     try:
-        subtasks = actions.get_subtasks(task.tid)
+        manager = Actions()
+        task = manager.get_task_by_tid(tid)
+        #subtasks = actions.get_subtasks(task.tid)
         if task.is_completed == Status.done:
             status = "Done"
             color = 'green'
@@ -208,8 +216,8 @@ def show(index, tid):
         elif task.is_completed == Status.process:
             status = "Process"
             color = 'blue'
-        click.echo("Title: \t\t" + click.style(task.title, bold=True, fg='yellow'))
-        click.echo("Description: \t" + click.style(task.description, bold=True, fg='yellow'))
+        click.echo("Title: \t\t" + click.style(str(task.title), bold=True, fg='yellow'))
+        click.echo("Description: \t" + click.style(str(task.description), bold=True, fg='yellow'))
         click.echo("Start date: \t" + click.style(str(task.start.date()), bold=True, fg='yellow'))
         click.echo("End date: \t" + click.style(str(task.end.date()), bold=True, fg='yellow'))
         click.echo("Status: \t" + click.style(status, bold=True, fg=color))
@@ -218,6 +226,7 @@ def show(index, tid):
         if task.connection:
             click.secho("\t\t\t\t\t\t\t\t", bold=True, bg='green', fg='white')
             click.echo("Linked tasks:")
+            """
             for tid in task.connection:
                 connected_task = actions.get_connected_tasks(tid)
                 click.secho(connected_task.title, bold=True, bg='green', fg='white')
@@ -225,6 +234,7 @@ def show(index, tid):
             click.echo("Subtasks:")
         for subtask in subtasks:
             click.secho(subtask.title + ' - ' + subtask.tid, fg='white', bold=True, bg='red')
+            """
     except IndexError as e:
         click.echo(e)
     #except Exception as e:
@@ -242,15 +252,15 @@ def orderby():
 def tag(name):
     """Ordering task by tag"""
     try:
-        tag = Tag(name)
-        ordered_tasks = actions.order_tasks(tag)
-        click.echo("Ordered by tag:" + click.style(tag.tag_name, bg='red', fg='white'))
+        manager = Actions()
+        ordered_tasks = manager.order_by_tag(name)
+        click.echo("Ordered by tag:" + name)
         click.echo()
         console_utils.format_print_ordered(ordered_tasks)
     except IndexError as e:
         click.echo(e)
-    except Exception as e:
-        click.echo(e)
+    #except Exception as e:
+    #    click.echo(e)
 
 
 @orderby.command()
@@ -274,7 +284,8 @@ def priority(name):
               help='Task ID of chosen task')
 def delete_task(tid):
     """Deleting task"""
-    actions.delete_task(tid)
+    manager = Actions()
+    manager.delete_task(tid)
 
 
 @task.command()
@@ -315,9 +326,9 @@ def util():
 @util.command()
 @click.option('-in', '--interval', type=int,
               help='Interval')
-@click.option('-sd', '--startdate', type=str, callback=utils.check_date, default="None",
+@click.option('-sd', '--startdate', type=str,  default="None",
               help='Start date')
-@click.option('-ed', '--enddate', type=str, callback=utils.check_date, default="None",
+@click.option('-ed', '--enddate', type=str, default="None",
               help='End date')
 @click.option('-tg', '--tag', type=str,
               help='Tag')
@@ -325,7 +336,7 @@ def util():
               help='Description')
 @click.option('-ti', '--title', type=str,
               help='Title')
-@click.option('-re', '--reminder', type=str, callback=utils.check_time, default="12:00",
+@click.option('-re', '--reminder', type=str,  default="12:00",
               help='Reminder')
 @click.option('-ob', '--observers', type=str, default='',
               help='Observers')
@@ -339,7 +350,7 @@ def scheduler(startdate, enddate, tag, description,
 
 
 @util.command()
-@click.option('--date', type=str, callback=utils.check_date,
+@click.option('--date', type=str,
               help='Date')
 @click.option('--tid', type=str,
               help='TID of task')

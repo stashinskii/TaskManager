@@ -1,5 +1,5 @@
 from .actions import *
-from console.user import *
+from task_manager_library.models.user_model import *
 from console.user_actions import *
 from .actions import *
 

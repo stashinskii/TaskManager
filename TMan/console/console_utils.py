@@ -5,34 +5,33 @@ Module represents methods required for inputing and outputing data to console in
 import click
 import os
 
-from task_manager_library import data_storage
 from task_manager_library.models.task_model import Status, Task, Priority
-
-STATUS_NAMES = ['done', 'undone', 'process']
-
-
-def check_status_name(ctx, param, value):
-    """Checking inputing values of status(done, undone, process)"""
-    if value[1] not in STATUS_NAMES:
-        raise ValueError("Check status name to be changed")
 
 
 def format_print_tasks(tasks):
     """Printing list of tasks"""
+    click.secho("User tasks:", bg='green', fg='white')
     for task in tasks:
-        marker = ' '
-        if task[0] == Status.done:
+        if task.is_completed == Status.done:
             marker = 'X'
-        elif task[0] == Status.undone:
+        elif task.is_completed == Status.undone:
             marker = ' '
-        elif task[0] == Status.process:
+        elif task.is_completed == Status.process:
             marker = 'O'
         else:
             raise ValueError("Status is not status object")
+        click.echo("[" + marker + "] - " + "TID:" +str(task.tid) + " - "+str(task.title))
 
-        click.echo("[" + marker + "] - " + str(task[1]) + " - " + click.style(
-            "Subtasks: " + str(task[2]), bold=True, fg='yellow')
-                   + " - " + click.style(str(task[3]), bold=True, bg='green'))
+
+def split_str_to_list(splitter):
+    """
+    Split string separated by ',' and convert it to list
+    """
+    if splitter == "":
+        return []
+
+    splitter = splitter.split(",")
+    return splitter
 
 
 def format_print_ordered(ordered_tasks):
@@ -50,7 +49,7 @@ def format_print_ordered(ordered_tasks):
             raise ValueError("Status is not status object")
 
         click.echo("[" + marker + "] - "
-                   + click.style(task.title, bold=True, bg='yellow', fg='white'))
+                   + click.style(str(task.title), bold=True, bg='yellow', fg='white'))
 
 
 def print_notifications(notifications):

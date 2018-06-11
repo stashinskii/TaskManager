@@ -1,33 +1,38 @@
+from console.user_actions import User
+from task_manager_library import utils
+from task_manager_library.models.task_model import Tag, Priority, Status, Task
+
+from datetime import datetime
+
+
 def dict_to_task(task_dict):
     """Converting dict object to current Task object"""
 
     title = task_dict['title']
-    start = utils.check_date(None, None, task_dict['start'])
-    end = utils.check_date(None, None, task_dict['end'])
+    start = utils.str_to_date(task_dict['start'])
+    end = utils.str_to_date(task_dict['end'])
     desc = task_dict['description']
     tag = Tag(task_dict['tag']['tag_name'], task_dict['tag']['description'])
     observers = task_dict['observers']
-    executor = task_dict['executor']
     priority = Priority[Priority(int(task_dict['priority'])).name]
     author = task_dict['author']
-    reminder = utils.check_time(None, None, task_dict['reminder'])
+    reminder = utils.str_to_time(task_dict['reminder'])
     is_completed = Status[Status(int(task_dict['is_completed'])).name]
     parent = task_dict['parent']
     tid = task_dict['tid']
     subtasks = task_dict['subtasks']
-    planned = task_dict['planned']
     changed = task_dict['changed']
     connection = task_dict['connection']
 
     task = Task(
-                title, desc,
-                start, end,
-                tag, author,
-                observers, executor,
-                reminder, priority,
-                changed, planned,
-                parent, tid, subtasks,
-                is_completed, connection
+                title=title, description=desc,
+                start=start, end=end,
+                tag=tag, author=author,
+                observers=observers,
+                reminder=reminder, priority=priority,
+                changed=changed,
+                parent=parent, tid=tid, subtasks=subtasks,
+                is_completed=is_completed, connection=connection
                 )
     return task
 
@@ -38,18 +43,18 @@ def dict_to_user(data_dict):
     login = data_dict['login']
     uid = data_dict['uid']
     tasks = data_dict['tasks']
-    current = data_dict['current']
-    user = User(name, surname, uid, login, current, tasks)
+
+    user = User(name=name, surname=surname, uid=uid, login=login, tasks=tasks)
     return user
 
 
 def task_to_dict(task):
     if isinstance(task.start, datetime):
-        task.start = serialization_utils.date_to_str(task.start)
+        task.start = date_to_str(task.start)
     if isinstance(task.end, datetime):
-        task.end = serialization_utils.date_to_str(task.end)
+        task.end = date_to_str(task.end)
     if isinstance(task.reminder, datetime):
-        task.reminder = serialization_utils.time_to_str(task.reminder)
+        task.reminder = time_to_str(task.reminder)
     if isinstance(task.priority, Priority):
         task.priority = str(task.priority.value)
     if isinstance(task.is_completed, Status):
@@ -59,4 +64,22 @@ def task_to_dict(task):
 
     return task
 
+def date_to_str(date):
+    """
+    Converting datetime objects (Date) to str to serialize them into json
+    :param date: datetime object
+    :return: str object
+    """
+    str_date = str(date.year) + "-" + str(date.month) + "-" + str(date.day)
+    return str_date
+
+
+def time_to_str(time):
+    """
+    Converting datetime objects (Time) to str to serialize them into json
+    :param time: datetime object
+    :return: str object
+    """
+    str_time = str(time.hour) + ":" + str(time.minute)
+    return str_time
 

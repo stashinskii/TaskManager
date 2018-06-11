@@ -14,9 +14,7 @@ import logging
 import os
 import uuid
 
-from task_manager_library.data_storage import DataStorage
-from task_manager_library.utility import logging_utils, utils, serialization_utils
-from console.user import User
+from task_manager_library.models.user_model import User
 
 
 class UserTools():
