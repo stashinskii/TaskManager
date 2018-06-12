@@ -28,8 +28,8 @@ class Storage:
             self.current_uid = external_user
         else:
             try:
-
-                utils.check_json_files(self.path, '/users.json')
+                utils.check_files(self.path, '/users.json')
+                utils.check_files(self.path, '/current.ini')
                 config = configparser.ConfigParser()
                 config.read(self.path+'current.ini')
                 section = "USER"
@@ -43,7 +43,7 @@ class Storage:
     # region Loading data
 
     def load_users_from_json(self):
-        utils.check_json_files(self.path, '/users.json')
+        utils.check_files(self.path, '/users.json')
         with open(self.path + '/users.json', 'r') as file:
             data = json.load(file)
         users = list()
@@ -59,9 +59,25 @@ class Storage:
             if user.uid == uid:
                 return user
 
+    def chage_user_config(self, login):
+        users = self.load_users_from_json()
+        user_uid = next((user.uid for user in users if user.login == login), None)
+        config = configparser.ConfigParser()
+        section = "USER"
+        config.read(self.path+'/current.ini')
+        exist = config.has_section(section)
+        if not exist:
+            config.add_section(section)
+        config.set(section, 'uid', user_uid)
+
+        with open(self.path+'/current.ini', 'w+') as f:
+            config.write(f)
 
     def load_tasks_from_json(self):
-        utils.check_json_files(self.path, '/tasks.json')
+        utils.check_files(self.path, '/tasks.json')
+
+        if self.tasks:
+            return
 
         with open(self.path + 'tasks.json', 'r') as task_file:
             task_data = json.load(task_file)
@@ -71,7 +87,12 @@ class Storage:
             self.tasks.append(loaded_task)
 
     def load_user_tasks(self):
-        self.load_tasks_from_json()
+        if not self.user_tasks:
+            self.load_tasks_from_json()
+
+        if self.user_tasks:
+            return
+
         current_user = self.load_user(self.current_uid)
         for task in self.tasks:
             if task.tid in current_user.tasks:

@@ -18,7 +18,6 @@ from task_manager_library.models.user_model import User
 
 
 class UserTools():
-    PATH = None
     """
     UserTools class is used to manage users
     """
@@ -34,17 +33,15 @@ class UserTools():
                 return False
         return True
 
-
     @staticmethod
     def add_user(login, name, surname, tasks=None):
         """Adding new user/ Sign Up"""
         if not UserTools.validate_login(login):
             raise ValueError("Current user exist!")
         uid = serialization_utils.tid_gen()
-        new_user = User(name, surname, uid, login, False, tasks)
+        new_user = User(name, surname, uid, login, tasks)
         users = DataStorage.save_users_to_json(new_user.__dict__)
         return users
-
 
     @staticmethod
     def get_current_user():

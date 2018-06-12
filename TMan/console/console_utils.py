@@ -8,19 +8,36 @@ import os
 from task_manager_library.models.task_model import Status, Task, Priority
 
 
-def format_print_tasks(tasks):
+def print_tree(manager, tasks):
+    click.clear()
+    root_tasks = [task for task in tasks if task.parent is None]
+    for task in root_tasks:
+        marker = get_status_marker(task)
+        click.echo(marker + " - " + task.tid + " - " + click.style(task.title, fg='yellow'))
+        subtasks = manager.get_subtasks(task.tid)
+        for subtask in subtasks:
+            marker = get_status_marker(subtask)
+            print(subtask.height*"\t" + marker + " - " + subtask.tid + " - " + click.style(subtask.title, fg='yellow'))
+            print_sub(manager, subtask)
+
+
+def print_sub(manager, _task):
+    subtasks = manager.get_subtasks(_task.tid)
+    for subtask in subtasks:
+        marker = get_status_marker(subtask)
+        print(subtask.height * "\t" + marker + " - " + subtask.tid + " - " + click.style(subtask.title, fg='yellow'))
+        print_sub(manager, subtask)
+
+
+def get_status_marker(task):
     """Printing list of tasks"""
-    click.secho("User tasks:", bg='green', fg='white')
-    for task in tasks:
-        if task.is_completed == Status.done:
-            marker = 'X'
-        elif task.is_completed == Status.undone:
-            marker = ' '
-        elif task.is_completed == Status.process:
-            marker = 'O'
-        else:
-            raise ValueError("Status is not status object")
-        click.echo("[" + marker + "] - " + "TID:" +str(task.tid) + " - "+str(task.title))
+    if task.is_completed == Status.done:
+        marker = click.style('[X]', fg='green')
+    elif task.is_completed == Status.undone:
+        marker = click.style('[ ]', fg='red')
+    else:
+        marker = click.style('[O]', fg='blue')
+    return marker
 
 
 def split_str_to_list(splitter):

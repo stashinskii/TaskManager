@@ -21,7 +21,6 @@ from task_manager_library.models.task_model import Status, Priority, Task, Tag
 @click.group(invoke_without_command=True)
 def cli():
     """Task Manager (tman) application for managing tasks and events"""
-    manager = Actions()
 
 
 # region User actions
@@ -37,7 +36,8 @@ def user():
 def change(login):
     """Set user as current (Sign In)"""
     try:
-        UserTools.set_current_user(login)
+        manager = Actions()
+        manager.change_user(login)
     except Exception as e:
         print(e)
 
@@ -125,7 +125,8 @@ def list():
     """Showing list of user's tasks"""
     manager = Actions()
     tasks_list = manager.get_tasks_list()
-    console_utils.format_print_tasks(tasks_list)
+    console_utils.print_tree(manager, tasks_list)
+
 
 
 @task.command()
@@ -154,13 +155,15 @@ def status(tid, status):
 
 @task.command()
 @click.option('--observers', type=str,
-              help='Users to share with')
+              help='User to share with')
 @click.option('--tid', type=str,
               help='TID of chosen task')
 def share(observers, tid):
     """Share task with other users"""
     try:
-        actions.share_task(observers, tid)
+        actions.share_task(observer, tid)
+        manager = Actions()
+        manager.share()
     except Exception as e:
         click.echo(e)
 
@@ -206,7 +209,7 @@ def show(tid):
     try:
         manager = Actions()
         task = manager.get_task_by_tid(tid)
-        #subtasks = actions.get_subtasks(task.tid)
+        subtasks = manager.get_subtasks(tid)
         if task.is_completed == Status.done:
             status = "Done"
             color = 'green'
@@ -230,15 +233,17 @@ def show(tid):
             for tid in task.connection:
                 connected_task = actions.get_connected_tasks(tid)
                 click.secho(connected_task.title, bold=True, bg='green', fg='white')
+                """
         if subtasks != []:
             click.echo("Subtasks:")
         for subtask in subtasks:
             click.secho(subtask.title + ' - ' + subtask.tid, fg='white', bold=True, bg='red')
-            """
+
     except IndexError as e:
         click.echo(e)
     #except Exception as e:
     #    click.echo("Something went wrong: {}".format(e))
+
 
 
 @task.group()

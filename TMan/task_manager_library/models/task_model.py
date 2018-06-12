@@ -5,7 +5,7 @@ import uuid
 class Task:
     """Description of Task"""
     def __init__(self, title, start, end, tag, author, observers,
-                 reminder, priority, changed=None, description=None, parent=None, tid=None, subtasks=None,
+                 reminder, priority, height, changed=None, description=None, parent=None, tid=None, subtasks=None,
                  is_completed=None, connection=None):
         self.title = title
         if tid is None:
@@ -13,6 +13,7 @@ class Task:
         else:
             self.tid = tid
         self.description = description
+        self.height = height
         self.priority = priority
         self.start = start
         self.end = end

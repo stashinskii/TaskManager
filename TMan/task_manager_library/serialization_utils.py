@@ -23,6 +23,7 @@ def dict_to_task(task_dict):
     subtasks = task_dict['subtasks']
     changed = task_dict['changed']
     connection = task_dict['connection']
+    height = task_dict['height']
 
     task = Task(
                 title=title, description=desc,
@@ -30,7 +31,7 @@ def dict_to_task(task_dict):
                 tag=tag, author=author,
                 observers=observers,
                 reminder=reminder, priority=priority,
-                changed=changed,
+                height=height, changed=changed,
                 parent=parent, tid=tid, subtasks=subtasks,
                 is_completed=is_completed, connection=connection
                 )

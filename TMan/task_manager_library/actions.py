@@ -41,8 +41,8 @@ class Actions:
         user = User(login=login, name=name, surname=surname)
         self.storage.save_new_user_to_json(user)
 
-    def change_user(self, login):
-        pass
+    def change_user(self, uid):
+        self.storage.chage_user_config(uid)
 
     # endregion
 
@@ -50,8 +50,18 @@ class Actions:
 
     def add_task(self, title, start, end, **kwargs):
         """Adding new task"""
+        parent =  kwargs['parent']
+        if parent is None:
+            height = 0
+        else:
+            height = self.get_subtask_height(parent) + 1
 
-        task = Task(title=title, author=self.current_user.uid, start=start, end=end, **kwargs)
+        task = Task(title=title,
+                    author=self.current_user.uid,
+                    start=start,
+                    end=end,
+                    height=height,
+                    **kwargs)
         self.task_controller.add(task)
 
     def edit_task(self,tid, **kwargs):
@@ -67,6 +77,12 @@ class Actions:
 
     def get_task_by_tid(self, tid):
         return self.task_controller.get_task(tid)
+
+    def get_subtasks(self, tid):
+        return self.task_controller.get_subtasks(tid)
+
+    def get_subtask_height(self, tid):
+        return self.task_controller.get_subtask_height(tid)
 
     def get_tasks_list(self):
         return self.task_controller.get_list()

@@ -28,10 +28,25 @@ class TaskController:
 
     def get_task(self, tid):
         self.storage.load_user_tasks()
-        for task in self.storage.user_tasks:
-            if task.tid == tid:
-                return task
+        task = next((task for task in self.storage.user_tasks if task.tid == tid), None)
+        if task is not None:
+            return task
         raise Exception("There is no task with such tid {}".format(tid))
+
+    def get_subtasks(self, tid):
+        self.storage.load_user_tasks()
+
+        return [task for task in self.storage.user_tasks if task.parent==tid]
+
+    def get_subtask_height(self, tid):
+        task = self.get_task(tid)
+        counter=0
+        while task and task.parent is not None:
+            counter += 1
+            task = self.get_task(task.parent)
+            if task.parent is None:
+                return counter
+        return counter
 
     def get_list(self):
         self.storage.load_user_tasks()

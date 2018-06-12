@@ -20,7 +20,7 @@ def get_user_index(uid, users):
     raise IndexError("User was not found")
 
 
-def check_json_files(path, file):
+def check_files(path, file):
     check_dir(path)
     if not os.path.exists(path+file):
         print(path+file)
