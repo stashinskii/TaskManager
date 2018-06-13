@@ -12,11 +12,12 @@ from task_manager_library.data_storage import DataStorage
 
 class SchedulerController():
     """Scheduler for creating planned tasks"""
+    def __init__(self, storage):
+        self.storage = storage
 
-    @staticmethod
-    def add(scheduler):
+    def add(self, scheduler):
         """Adding new scheduler"""
-        DataStorage.save_scheduler_to_json(scheduler)
+        self.storage.add_scheduler(scheduler)
 
     @staticmethod
     def get():

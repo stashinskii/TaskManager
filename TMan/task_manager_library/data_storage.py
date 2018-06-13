@@ -59,9 +59,12 @@ class Storage:
             if user.uid == uid:
                 return user
 
-    def chage_user_config(self, login):
+    def get_uid_by_login(self, login):
         users = self.load_users_from_json()
-        user_uid = next((user.uid for user in users if user.login == login), None)
+        return next((user.uid for user in users if user.login == login), None)
+
+    def change_user_config(self, login):
+        user_uid = self.get_uid_by_login(login)
         config = configparser.ConfigParser()
         section = "USER"
         config.read(self.path+'/current.ini')
@@ -104,8 +107,6 @@ class Storage:
         self.load_tasks_from_json()
         self.tasks.append(task)
         self.write_tid_to_user(task.tid, self.current_uid)
-        if task.observers:
-            self.give_task_permission(task.observers, task.tid)
         self.resave()
 
     def resave(self):
@@ -126,6 +127,7 @@ class Storage:
         self.resave()
 
     def edit(self, tid, **kwargs):
+
         self.load_tasks_from_json()
         index = utils.get_task_index(tid, self)
 
@@ -142,8 +144,8 @@ class Storage:
             self.tasks[index].priority = Priority[priority]
 
         tag = kwargs.get('tag')
-        if priority is not None:
-            self.tasks[index].tag = Tag[tag]
+        if tag is not None:
+            self.tasks[index].tag = Tag(tag)
 
         end = kwargs.get('end')
         if end is not None:
@@ -152,6 +154,7 @@ class Storage:
         self.resave()
 
     def link(self, first_id, second_id):
+        self.load_tasks_from_json()
         first_index = utils.get_task_index(first_id, self)
         second_index = utils.get_task_index(second_id, self)
 
@@ -160,18 +163,16 @@ class Storage:
 
         self.resave()
 
-    def give_task_permission(self, observers, tid):
-        for observer in observers:
-            if observer != self.current_uid:
-                self.write_tid_to_user(tid, observer)
+    def give_task_permission(self, observer, tid):
+        uid = self.get_uid_by_login(observer)
+        self.write_tid_to_user(tid, uid)
 
     def write_tid_to_user(self, tid, uid):
         users = self.load_users_from_json()
-        current_user = self.load_user(self.current_uid)
+        current_user = self.load_user(uid)
 
         index = utils.get_user_index(uid, users)
         del users[index]
-
         current_user.tasks.append(tid)
         users.append(current_user)
 
@@ -192,7 +193,7 @@ class Storage:
     def uncomplete_task(self, tid):
         self.load_tasks_from_json()
         index = utils.get_task_index(tid, self)
-        self.tasks[index].uncomplete()
+        self.tasks[index].undone()
         self.resave()
 
     def begin_task(self, tid):

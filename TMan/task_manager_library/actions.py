@@ -10,7 +10,7 @@ Each call of method add new note to a log file. Each method use decorator to get
 
 from task_manager_library.data_storage import Storage
 from task_manager_library.controllers.task_controller import TaskController
-from task_manager_library.models.task_model import Task, Priority, Tag
+from task_manager_library.models.task_model import Task, Priority, Tag, Status
 from console.user_actions import User
 
 
@@ -42,7 +42,7 @@ class Actions:
         self.storage.save_new_user_to_json(user)
 
     def change_user(self, uid):
-        self.storage.chage_user_config(uid)
+        self.storage.change_user_config(uid)
 
     # endregion
 
@@ -69,6 +69,9 @@ class Actions:
 
         self.task_controller.edit(tid, **kwargs)
 
+    def share_task(self, observer_uid, tid):
+        self.task_controller.share(observer_uid, tid)
+
     def delete_task(self, tid):
         self.task_controller.delete(tid)
 
@@ -91,6 +94,9 @@ class Actions:
         tag_name = Tag(tag_name)
         return self.task_controller.order_by_tag(tag_name)
 
+    def order_by_priority(self, priority):
+        return self.task_controller.order_by_priority(priority)
+
     def make_link(self, first_id, second_id):
         self.task_controller.make_link(first_id, second_id)
 
@@ -102,6 +108,10 @@ class Actions:
 
     def uncomplete_task(self, tid):
         self.task_controller.uncomplete_task(tid)
+
+    def get_archieve(self):
+        all_tasks = self.task_controller.get_list()
+        return [task for task in all_tasks if task.is_completed == Status.done]
 
     # endregion
 

@@ -59,7 +59,8 @@ def add_user(login, name, surname):
 def current():
     """Showing current user"""
     try:
-        current = UserTools.get_current_user()
+        manager = Actions()
+        current = manager.storage.load_user(manager.storage.current_uid)
         click.echo("Login: {}".format(current.login))
         click.echo("Full name: {} {}".format(current.name, current.surname))
         click.echo("UID: {}".format(current.uid))
@@ -154,16 +155,15 @@ def status(tid, status):
 
 
 @task.command()
-@click.option('--observers', type=str,
+@click.option('--observer', type=str,
               help='User to share with')
 @click.option('--tid', type=str,
               help='TID of chosen task')
-def share(observers, tid):
+def share(observer, tid):
     """Share task with other users"""
     try:
-        actions.share_task(observer, tid)
         manager = Actions()
-        manager.share()
+        manager.share_task(observer, tid)
     except Exception as e:
         click.echo(e)
 
@@ -196,8 +196,8 @@ def edit(tid, tag, description, title, priority, end):
 
     except ValueError as e:
         click.echo(e)
-    #except Exception as e:
-    #    click.echo(e)
+    except Exception as e:
+        click.echo(e)
 
 
 @task.command()
@@ -225,15 +225,14 @@ def show(tid):
         click.echo("End date: \t" + click.style(str(task.end.date()), bold=True, fg='yellow'))
         click.echo("Status: \t" + click.style(status, bold=True, fg=color))
         click.echo("tid: \t\t" + click.style(task.tid, bold=True, fg='white'))
-        click.echo(click.style("#" + task.tag.tag_name, bold=True, bg='red'))
+        click.echo(click.style("#" + str(task.tag.tag_name), bold=True, bg='red'))
         if task.connection:
             click.secho("\t\t\t\t\t\t\t\t", bold=True, bg='green', fg='white')
             click.echo("Linked tasks:")
-            """
             for tid in task.connection:
-                connected_task = actions.get_connected_tasks(tid)
+                connected_task = manager.get_task_by_tid(tid)
                 click.secho(connected_task.title, bold=True, bg='green', fg='white')
-                """
+
         if subtasks != []:
             click.echo("Subtasks:")
         for subtask in subtasks:
@@ -241,8 +240,8 @@ def show(tid):
 
     except IndexError as e:
         click.echo(e)
-    #except Exception as e:
-    #    click.echo("Something went wrong: {}".format(e))
+    except Exception as e:
+        click.echo("Something went wrong: {}".format(e))
 
 
 
@@ -264,8 +263,8 @@ def tag(name):
         console_utils.format_print_ordered(ordered_tasks)
     except IndexError as e:
         click.echo(e)
-    #except Exception as e:
-    #    click.echo(e)
+    except Exception as e:
+        click.echo(e)
 
 
 @orderby.command()
@@ -273,8 +272,9 @@ def tag(name):
 def priority(name):
     """Ordering task by priority"""
     try:
+        manager = Actions()
         priority = Priority[name]
-        ordered_tasks = actions.order_by_priority(priority)
+        ordered_tasks = manager.order_by_priority(priority)
         click.echo("Ordered by priority:" + click.style(name, bg='red', fg='white'))
         click.echo()
         console_utils.format_print_ordered(ordered_tasks)
@@ -300,23 +300,19 @@ def delete_task(tid):
               help="Second task's tid")
 def make_link(first, second):
     """Make link between 2 tasks """
-    actions.make_link(first, second)
+    manager = Actions()
+    manager.make_link(first, second)
 
 
 @task.command()
 def archieve():
     """Show list of completed tasks"""
-    tasks = actions.show_archieve()
-    if tasks is None:
+    manager = Actions()
+    archieved_tasks = manager.get_archieve()
+    if archieved_tasks is None:
         click.secho("Archieve is empty", bg='red', fg='white')
-    click.secho("Archieved tasks:", bg='red', fg='white')
 
-    for task in tasks:
-        if task.parent is None:
-            click.secho(task.title, bg='green', fg='white')
-        else:
-            click.echo(click.style(task.title, bg='green', fg='white')
-                       + click.style(" ◑ subtask ◑", bg='blue', fg='white'))
+    console_utils.print_tree(manager, archieved_tasks)
 
 
 # endregion

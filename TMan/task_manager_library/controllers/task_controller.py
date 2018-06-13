@@ -26,6 +26,10 @@ class TaskController:
         for task in tasks:
             self.delete(task.tid)
 
+    def share(self, observer_uid, tid):
+        self.storage.give_task_permission(observer_uid, tid)
+
+
     def get_task(self, tid):
         self.storage.load_user_tasks()
         task = next((task for task in self.storage.user_tasks if task.tid == tid), None)
@@ -57,8 +61,8 @@ class TaskController:
         return [task for task in self.storage.user_tasks if task.tag.tag_name == tag.tag_name]
 
     def order_by_priority(self, priority):
-        tasks = self.storage.load_user_tasks()
-        return [task for task in tasks if task.priority == priority]
+        self.storage.load_user_tasks()
+        return [task for task in self.storage.user_tasks if task.priority == priority]
 
     def make_link(self, first_id, second_id):
         self.storage.link(first_id, second_id)
