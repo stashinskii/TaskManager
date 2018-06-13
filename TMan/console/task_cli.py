@@ -21,6 +21,8 @@ from task_manager_library.models.task_model import Status, Priority, Task, Tag
 @click.group(invoke_without_command=True)
 def cli():
     """Task Manager (tman) application for managing tasks and events"""
+    manager = Actions()
+    manager.get_schedulers()
 
 
 # region User actions
@@ -60,7 +62,7 @@ def current():
     """Showing current user"""
     try:
         manager = Actions()
-        current = manager.storage.load_user(manager.storage.current_uid)
+        current = manager.task_storage.load_user(manager.task_storage.current_uid)
         click.echo("Login: {}".format(current.login))
         click.echo("Full name: {} {}".format(current.name, current.surname))
         click.echo("UID: {}".format(current.uid))
@@ -325,41 +327,41 @@ def util():
 
 
 @util.command()
-@click.option('-in', '--interval', type=int,
-              help='Interval')
-@click.option('-sd', '--startdate', type=str,  default="None",
-              help='Start date')
-@click.option('-ed', '--enddate', type=str, default="None",
-              help='End date')
-@click.option('-tg', '--tag', type=str,
+@click.option('-sd', '--startdate', type=str,  default=None,
+              help='Start date. Format YYYY-MM-DD')
+@click.option('-ed', '--enddate', type=str, default=None,
+              help='End date. Format YYYY-MM-DD')
+@click.option('-tg', '--tag', type=str, default="-",
               help='Tag')
-@click.option('-de', '--description', type=str, default="",
+@click.option('-de', '--description', type=str,default="",
               help='Description')
 @click.option('-ti', '--title', type=str,
               help='Title')
-@click.option('-re', '--reminder', type=str,  default="12:00",
-              help='Reminder')
+@click.option('-re', '--reminder', type=str,  default='12: 00',
+              help='Reminder. Format "HH:MM"')
 @click.option('-ob', '--observers', type=str, default='',
               help='Observers')
-@click.option('-pr', '--priority', type=str,
+@click.option('-pr', '--priority', type=click.Choice(['high', 'low', 'meduim']), default='high',
               help='Priority')
+@click.option('-in', '--interval', type=int, default=1,
+              help='Interval')
 def scheduler(startdate, enddate, tag, description,
               title, reminder, observers, priority, interval):
     """Crating new scheduler for task"""
-    actions.add_scheduler(title, description, startdate, enddate,
-                          tag, observers, reminder, priority, interval)
-
-
-@util.command()
-@click.option('--date', type=str,
-              help='Date')
-@click.option('--tid', type=str,
-              help='TID of task')
-@click.option('--title', type=str,
-              help='Title')
-def notifications(date, tid, title):
-    """Create notification to existing task"""
-    actions.add_notification(date, tid, title)
+    observers = console_utils.split_str_to_list(observers)
+    priority = Priority[priority]
+    tag = Tag(tag)
+    manager = Actions()
+    manager.add_scheduler(title,
+                          datetime.strptime(startdate, "%Y-%m-%d"),
+                          datetime.strptime(enddate, "%Y-%m-%d"),
+                          interval,
+                          tag=tag,
+                          description=description,
+                          observers=observers,
+                          reminder=datetime.strptime(reminder, "%H:%M"),
+                          priority=priority
+    )
 
 
 # endregion

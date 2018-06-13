@@ -9,9 +9,13 @@ Each call of method add new note to a log file. Each method use decorator to get
 """
 
 from task_manager_library.data_storage import Storage
+from task_manager_library.scheduler_storage import SchedulerStorage
 from task_manager_library.controllers.task_controller import TaskController
+from task_manager_library.controllers.scheduler_controller import SchedulerController
 from task_manager_library.models.task_model import Task, Priority, Tag, Status
+from task_manager_library.models.scheduler_model import Scheduler
 from console.user_actions import User
+from datetime import datetime
 
 
 class Actions:
@@ -29,20 +33,21 @@ class Actions:
 
         # endregion
 
-        self.storage = Storage()
-        self.current_user = self.storage.load_user(self.storage.current_uid)
-        self.task_controller = TaskController(self.storage)
-        #self.scheduler_controller = SchedulerController(self.storage)
-        #self.notification_controller = NotificationController(self.storage)
+        self.task_storage = Storage()
+        self.scheduler_storage = SchedulerStorage()
+        self.current_user = self.task_storage.load_user(self.task_storage.current_uid)
+        self.task_controller = TaskController(self.task_storage)
+        self.scheduler_controller = SchedulerController(self.scheduler_storage, self.task_storage)
+
 
     # region Users
     def add_new_user(self, login, name, surname):
         """Sign Up in app"""
         user = User(login=login, name=name, surname=surname)
-        self.storage.save_new_user_to_json(user)
+        self.task_storage.save_new_user_to_json(user)
 
     def change_user(self, uid):
-        self.storage.change_user_config(uid)
+        self.task_storage.change_user_config(uid)
 
     # endregion
 
@@ -117,30 +122,30 @@ class Actions:
 
     # region Schedulers
 
-    def add_scheduler(self, task, last, interval):
+    def add_scheduler(self, title, start, end, interval, **kwargs):
         """Adding new planned task by its interval, start"""
-        scheduler = Scheduler(task=task, last=last, interval=interval)
+        task = Task(title=title,
+                    author=self.current_user.uid,
+                    start=start,
+                    end=end,
+                    height=0,
+                    **kwargs)
+        last = datetime.now()
+        scheduler = Scheduler(task=task,
+                              last=last,
+                              interval=interval,
+                              uid=self.current_user.uid)
         self.scheduler_controller.add(scheduler)
 
-    def delete_scheduler(self, sid):
-        self.scheduler_controller.delete(sid=sid)
+    def get_schedulers(self):
+        schedulers = self.scheduler_controller.get()
+        for scheduler in schedulers:
+            self.scheduler_controller.generate_task(scheduler)
 
-    def get_schedulers_list(self):
-        self.scheduler_controller.get_list()
 
-    # endregion
 
-    # region Notifications
-
-    def add_notification(self, tid, date):
-        notification = Notifications(tid=tid, date=date)
-        self.notification_controller.add(notification)
-
-    def get_notifications_list(self):
-        self.notification_controller.get_list()
 
     # endregion
-
 
 
 

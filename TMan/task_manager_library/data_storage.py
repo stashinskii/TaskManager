@@ -90,7 +90,7 @@ class Storage:
             self.tasks.append(loaded_task)
 
     def load_user_tasks(self):
-        if not self.user_tasks:
+        if not self.tasks:
             self.load_tasks_from_json()
 
         if self.user_tasks:

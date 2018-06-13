@@ -7,32 +7,30 @@ given interval and give full access to schedulers to Command Line Interface
 import copy
 from datetime import datetime, timedelta
 
-from task_manager_library.data_storage import DataStorage
+from task_manager_library.scheduler_storage import SchedulerStorage
 
 
 class SchedulerController():
     """Scheduler for creating planned tasks"""
-    def __init__(self, storage):
-        self.storage = storage
+    def __init__(self, scheduler_storage, task_storage):
+        #TODO передать taskstorage
+        self.storage = scheduler_storage
+        self.task_storage = task_storage
 
     def add(self, scheduler):
         """Adding new scheduler"""
         self.storage.add_scheduler(scheduler)
 
-    @staticmethod
-    def get():
-        """Get list of schedulers"""
-        schedulers = DataStorage.load_schedulers_from_json()
-        for scheduler in schedulers:
-            if datetime.now().date() > scheduler.last.date() + timedelta(days=scheduler.interval):
-                new_task = copy.deepcopy(scheduler.task)
-                DataStorage.add_task_to_json(new_task)
+    def get(self):
+        self.storage.load_user_schedulers()
+        return self.storage.user_schedulers
 
-                DataStorage.delete_scheduler_from_json(scheduler)
-                scheduler.last = datetime.now()
-                DataStorage.save_scheduler_to_json(scheduler)
-        return schedulers
+    def generate_task(self, scheduler):
 
-    @staticmethod
-    def delete_scheduler(scheduler):
-        DataStorage.delete_scheduler_from_json(scheduler)
+        if (scheduler.last + timedelta(scheduler.interval)) < datetime.now():
+            self.task_storage.add_task(scheduler.task)
+            scheduler.last = datetime.now()
+            self.storage.update(scheduler.sid)
+
+
+

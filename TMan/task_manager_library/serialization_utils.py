@@ -1,6 +1,7 @@
 from console.user_actions import User
 from task_manager_library import utils
 from task_manager_library.models.task_model import Tag, Priority, Status, Task
+from task_manager_library.models.scheduler_model import Scheduler
 
 from datetime import datetime
 
@@ -62,8 +63,28 @@ def task_to_dict(task):
         task.is_completed = str(task.is_completed.value)
     if isinstance(task.tag, Tag):
         task.tag = task.tag.__dict__
-
     return task
+
+
+def scheduler_to_dict(scheduler):
+
+    scheduler.task = task_to_dict(scheduler.task)
+    scheduler.task = scheduler.task.__dict__
+
+    if isinstance(scheduler.last, datetime):
+        scheduler.last = date_to_str(scheduler.last)
+    return scheduler
+
+
+def dict_to_scheduler(scheduler):
+    task = dict_to_task(scheduler['task'])
+    last = utils.str_to_date(scheduler['last'])
+    uid = scheduler['uid']
+    sid = scheduler['sid']
+    interval = scheduler['interval']
+
+    return Scheduler(task=task, last=last, uid=uid, sid=sid, interval=interval)
+
 
 def date_to_str(date):
     """
