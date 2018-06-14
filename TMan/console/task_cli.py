@@ -1,28 +1,21 @@
-"""
-This module is entry point of console application.
-
-It collects data and prepare for future usage by using actions module.
-
-This app using click module for developing CLI interface. Whole app divided into categories (groups)
-for better understanding.
-
-For more information of app usage use help: tman [options] [commands] ... [options] --help
-"""
 import click
 import os
 from datetime import datetime
 
 import config
 from console import console_utils
-from task_manager_library.actions import Actions
+from console.actions import Actions
 from task_manager_library.models.task_model import Status, Priority, Task, Tag
 
 
 @click.group(invoke_without_command=True)
 def cli():
     """Task Manager (tman) application for managing tasks and events"""
-    manager = Actions()
-    manager.get_schedulers()
+    try:
+        manager = Actions()
+        manager.get_schedulers()
+    except Exception as e:
+        click.echo(e)
 
 
 # region User actions
@@ -117,10 +110,10 @@ def add(startdate, enddate, tag, description,
                          priority=priority,
                          parent=parent)
     except ValueError as e:
-        click.secho("ValueError:"+str(e), bg='red', fg='white')
+        click.echo("ValueError:"+str(e))
 
     except Exception as e:
-        click.secho("Exception:" + str(e), bg='red', fg='white')
+        click.echo("Exception:" + str(e))
 
 
 @task.command()
@@ -129,7 +122,6 @@ def list():
     manager = Actions()
     tasks_list = manager.get_tasks_list()
     console_utils.print_tree(manager, tasks_list)
-
 
 
 @task.command()
@@ -195,9 +187,6 @@ def edit(tid, tag, description, title, priority, end):
                           priority=priority,
                           description=description,
                           end=end)
-
-    except ValueError as e:
-        click.echo(e)
     except Exception as e:
         click.echo(e)
 
@@ -212,39 +201,12 @@ def show(tid):
         manager = Actions()
         task = manager.get_task_by_tid(tid)
         subtasks = manager.get_subtasks(tid)
-        if task.is_completed == Status.done:
-            status = "Done"
-            color = 'green'
-        elif task.is_completed == Status.undone:
-            status = "Undone"
-            color = 'red'
-        elif task.is_completed == Status.process:
-            status = "Process"
-            color = 'blue'
-        click.echo("Title: \t\t" + click.style(str(task.title), bold=True, fg='yellow'))
-        click.echo("Description: \t" + click.style(str(task.description), bold=True, fg='yellow'))
-        click.echo("Start date: \t" + click.style(str(task.start.date()), bold=True, fg='yellow'))
-        click.echo("End date: \t" + click.style(str(task.end.date()), bold=True, fg='yellow'))
-        click.echo("Status: \t" + click.style(status, bold=True, fg=color))
-        click.echo("tid: \t\t" + click.style(task.tid, bold=True, fg='white'))
-        click.echo(click.style("#" + str(task.tag.tag_name), bold=True, bg='red'))
-        if task.connection:
-            click.secho("\t\t\t\t\t\t\t\t", bold=True, bg='green', fg='white')
-            click.echo("Linked tasks:")
-            for tid in task.connection:
-                connected_task = manager.get_task_by_tid(tid)
-                click.secho(connected_task.title, bold=True, bg='green', fg='white')
-
-        if subtasks != []:
-            click.echo("Subtasks:")
-        for subtask in subtasks:
-            click.secho(subtask.title + ' - ' + subtask.tid, fg='white', bold=True, bg='red')
+        console_utils.format_print_info(task, subtasks, manager)
 
     except IndexError as e:
-        click.echo(e)
+        click.echo("IndexError: "+e)
     except Exception as e:
         click.echo("Something went wrong: {}".format(e))
-
 
 
 @task.group()
@@ -281,7 +243,7 @@ def priority(name):
         click.echo()
         console_utils.format_print_ordered(ordered_tasks)
     except IndexError as e:
-        click.echo(e)
+        click.echo("IndexError: "+e)
     except Exception as e:
         click.echo(e)
 
@@ -313,6 +275,7 @@ def archieve():
     archieved_tasks = manager.get_archieve()
     if archieved_tasks is None:
         click.secho("Archieve is empty", bg='red', fg='white')
+        return
 
     console_utils.print_tree(manager, archieved_tasks)
 
@@ -360,8 +323,7 @@ def scheduler(startdate, enddate, tag, description,
                           description=description,
                           observers=observers,
                           reminder=datetime.strptime(reminder, "%H:%M"),
-                          priority=priority
-    )
+                          priority=priority)
 
 
 # endregion

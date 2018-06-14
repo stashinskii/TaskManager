@@ -3,8 +3,10 @@ import os
 from datetime import datetime
 import uuid
 
-from task_manager_library import serialization_utils, utils
+from task_manager_library.utility import utils
+from task_manager_library.storage import serialization
 import configparser
+
 
 class SchedulerStorage:
     def __init__(self, configuration=None, external_user=None):
@@ -16,8 +18,8 @@ class SchedulerStorage:
             self.current_uid = external_user
         else:
             try:
-                utils.check_files(self.path, '/users.json')
-                utils.check_files(self.path, '/current.ini')
+                utils.check_json_files(self.path, 'users.json')
+                utils.check_cfg_files(self.path, 'current.ini')
                 config = configparser.ConfigParser()
                 config.read(self.path+'current.ini')
                 section = "USER"
@@ -29,7 +31,7 @@ class SchedulerStorage:
         self.user_schedulers = []
 
     def load_schedulers_from_json(self):
-        utils.check_files(self.path, '/schedulers.json')
+        utils.check_json_files(self.path, '/schedulers.json')
 
         if self.schedulers:
             return
@@ -38,7 +40,7 @@ class SchedulerStorage:
             scheduler_data = json.load(scheduler_file)
 
         for task_dict in scheduler_data:
-            loaded_scheduler = serialization_utils.dict_to_scheduler(task_dict)
+            loaded_scheduler = serialization.dict_to_scheduler(task_dict)
             self.schedulers.append(loaded_scheduler)
 
     def load_user_schedulers(self):
@@ -66,7 +68,7 @@ class SchedulerStorage:
     def resave(self):
         data = []
         for scheduler in self.schedulers:
-            scheduler = serialization_utils.scheduler_to_dict(scheduler)
+            scheduler = serialization.scheduler_to_dict(scheduler)
             data.append(scheduler.__dict__)
 
         with open(self.path + '/schedulers.json', 'w') as scheduler_file:

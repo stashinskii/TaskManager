@@ -1,5 +1,5 @@
 from console.user_actions import User
-from task_manager_library import utils
+from task_manager_library.utility import utils
 from task_manager_library.models.task_model import Tag, Priority, Status, Task
 from task_manager_library.models.scheduler_model import Scheduler
 

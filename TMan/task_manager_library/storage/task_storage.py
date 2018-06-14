@@ -13,7 +13,8 @@ import os
 from datetime import datetime
 import configparser
 
-from task_manager_library import utils, serialization_utils
+from task_manager_library.utility import utils
+from task_manager_library.storage import serialization
 from task_manager_library.models.task_model import Tag, Priority
 from task_manager_library.models.user_model import User
 
@@ -28,8 +29,8 @@ class Storage:
             self.current_uid = external_user
         else:
             try:
-                utils.check_files(self.path, '/users.json')
-                utils.check_files(self.path, '/current.ini')
+                utils.check_json_files(self.path, 'users.json')
+                utils.check_cfg_files(self.path, 'current.ini')
                 config = configparser.ConfigParser()
                 config.read(self.path+'current.ini')
                 section = "USER"
@@ -43,13 +44,13 @@ class Storage:
     # region Loading data
 
     def load_users_from_json(self):
-        utils.check_files(self.path, '/users.json')
+        utils.check_json_files(self.path, '/users.json')
         with open(self.path + '/users.json', 'r') as file:
             data = json.load(file)
         users = list()
 
         for data_dict in data:
-            user = serialization_utils.dict_to_user(data_dict)
+            user = serialization.dict_to_user(data_dict)
             users.append(user)
         return users
 
@@ -77,7 +78,7 @@ class Storage:
             config.write(f)
 
     def load_tasks_from_json(self):
-        utils.check_files(self.path, '/tasks.json')
+        utils.check_json_files(self.path, '/tasks.json')
 
         if self.tasks:
             return
@@ -86,7 +87,7 @@ class Storage:
             task_data = json.load(task_file)
 
         for task_dict in task_data:
-            loaded_task = serialization_utils.dict_to_task(task_dict)
+            loaded_task = serialization.dict_to_task(task_dict)
             self.tasks.append(loaded_task)
 
     def load_user_tasks(self):
@@ -112,7 +113,7 @@ class Storage:
     def resave(self):
         data = []
         for task in self.tasks:
-            task = serialization_utils.task_to_dict(task)
+            task = serialization.task_to_dict(task)
             data.append(task.__dict__)
 
         with open(self.path + '/tasks.json', 'w') as taskfile:

@@ -6,7 +6,7 @@ from faker import Faker
 
 import config
 from task_manager_library import DataStorage
-from task_manager_library import actions
+from console import actions
 from task_manager_library.controllers.notification_controller import NotificationController
 from task_manager_library.controllers.scheduler_controller import SchedulerController
 from task_manager_library.controllers.task_controller import TaskController
