@@ -3,7 +3,10 @@ import uuid
 
 
 class Task:
-    """Description of Task"""
+    """
+    Description of Task
+    Contains methods to manage status of current task
+    """
     def __init__(self, title, start, end, tag, author, observers,
                  reminder, priority=None, height=None, changed=None, description=None,
                  parent=None, tid=None, subtasks=None,
@@ -52,26 +55,27 @@ class Task:
     def begin(self):
         self.is_completed = Status.process
 
-    def get_time(self):
-
-        from .data_actions import uuid_to_datetime, str_to_uuid
-        return uuid_to_datetime(str_to_uuid(self.tid))
-
 
 class Priority(enum.Enum):
-
+    """Class represents enum of priority"""
     high = 3
     medium = 2
     low = 1
 
 
 class Tag:
+    """
+    Class represents tag of task.
+    Has optional field description to get more details about tag
+    Used to order tasks by their tag
+    """
     def __init__(self, name, description=None):
         self.tag_name = name
         self.description = description
 
 
 class Status(enum.Enum):
+    """Class represents enum of task's status"""
     done = 3
     process = 2
     undone = 1

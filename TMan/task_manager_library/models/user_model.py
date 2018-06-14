@@ -1,12 +1,11 @@
 """
 This module represents User class which is used for manage division of tasks between users in CLI app
-
-
 """
 import uuid
 
-class User:
 
+class User:
+    """Description of user"""
     def __init__(self, login, name, surname, uid=None, tasks=None):
         self.name = name
         self.surname = surname

@@ -1,10 +1,6 @@
 """
-This module represents DataStorage class which is contains methods to manage tasks, schedulers,
-users and store them in their json files.
-
-To use DataStorage, primarily user need to set up PATH and CURRENT_USER for current work of application.
-
-All methods in DataStorage are static
+This module represents Storage class which is contains methods to manage tasks, schedulers,
+users, serialize them and store in their JSON files.
 
 All methods describes logic of resaving and loading files from JSON
 """
@@ -20,6 +16,10 @@ from task_manager_library.models.user_model import User
 
 
 class Storage:
+    """
+    Represents task's storage manager
+    Used to serialize and store data of application in JSON format
+    """
     def __init__(self, configuration=None, external_user=None):
         if configuration is not None and configuration.get('storage_path') is not None:
             self.path = configuration.get('storage_path')
@@ -44,6 +44,7 @@ class Storage:
     # region Loading data
 
     def load_users_from_json(self):
+        """Load user's information from storage"""
         utils.check_json_files(self.path, '/users.json')
         with open(self.path + '/users.json', 'r') as file:
             data = json.load(file)
@@ -55,16 +56,19 @@ class Storage:
         return users
 
     def load_user(self, uid):
+        """Get user object from its UID"""
         users = self.load_users_from_json()
         for user in users:
             if user.uid == uid:
                 return user
 
     def get_uid_by_login(self, login):
+        """Get user ID from login"""
         users = self.load_users_from_json()
         return next((user.uid for user in users if user.login == login), None)
 
     def change_user_config(self, login):
+        """Change and save configuration .ini file of current user"""
         user_uid = self.get_uid_by_login(login)
         config = configparser.ConfigParser()
         section = "USER"
@@ -78,6 +82,7 @@ class Storage:
             config.write(f)
 
     def load_tasks_from_json(self):
+        """Load all tasks from json file"""
         utils.check_json_files(self.path, '/tasks.json')
 
         if self.tasks:
@@ -91,6 +96,7 @@ class Storage:
             self.tasks.append(loaded_task)
 
     def load_user_tasks(self):
+        """Load only user's files"""
         if not self.tasks:
             self.load_tasks_from_json()
 
@@ -105,12 +111,14 @@ class Storage:
 
     # region Tasks actions
     def add_task(self, task):
+        """Adding new task and save it to json file"""
         self.load_tasks_from_json()
         self.tasks.append(task)
         self.write_tid_to_user(task.tid, self.current_uid)
         self.resave()
 
     def resave(self):
+        """Resave tasks collection"""
         data = []
         for task in self.tasks:
             task = serialization.task_to_dict(task)
@@ -155,6 +163,7 @@ class Storage:
         self.resave()
 
     def link(self, first_id, second_id):
+        """Make link between two tasks by their task ID"""
         self.load_tasks_from_json()
         first_index = utils.get_task_index(first_id, self)
         second_index = utils.get_task_index(second_id, self)
@@ -165,10 +174,12 @@ class Storage:
         self.resave()
 
     def give_task_permission(self, observer, tid):
+        """Give permission to task (tid) to other users/observers"""
         uid = self.get_uid_by_login(observer)
         self.write_tid_to_user(tid, uid)
 
     def write_tid_to_user(self, tid, uid):
+        """Add info of task to user"""
         users = self.load_users_from_json()
         current_user = self.load_user(uid)
 
@@ -218,12 +229,4 @@ class Storage:
             json.dump(users, taskfile, indent=2, ensure_ascii=False)
 
     # enregion
-
-    # region Notifications actions
-    pass
-    # endregion
-
-    # region Scheduler actions
-    pass
-    # endregion
 

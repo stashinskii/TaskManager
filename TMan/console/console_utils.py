@@ -9,6 +9,13 @@ from task_manager_library.models.task_model import Status, Task, Priority
 
 
 def print_tree(manager, tasks):
+    """
+    Printing task tree. Includes subtasks on their level/ heights
+    Use recursive function print_sub
+    :param manager: manager (Actions instance) to get required data from storage
+    :param tasks: list of user's tasks
+    :return:
+    """
     click.clear()
     root_tasks = [task for task in tasks if task.parent is None]
 
@@ -37,6 +44,10 @@ def print_sub(manager, _task):
 
 
 def format_print_info(task, subtasks, manager):
+    """
+    Printing full information about chosen task
+    Use click module to get access to format printing in CLI
+    """
     if task.is_completed == Status.done:
         status = "Done"
         color = 'green'

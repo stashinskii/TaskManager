@@ -6,7 +6,7 @@ import uuid
 
 
 class Scheduler():
-    """Description of scheduler of planned tasks"""
+    """Description of scheduler"""
     def __init__(self, last, task, interval, uid, sid=None):
         self.last = last
         self.task = task

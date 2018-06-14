@@ -1,6 +1,6 @@
 """
-This module represents controller of scheduler which were created for managing planned tasks by
-given interval and give full access to schedulers to Command Line Interface
+This module represents controller of scheduler which is managing planned tasks by
+given interval and give full access of schedulers to View
 
 """
 
@@ -12,21 +12,37 @@ from task_manager_library.controllers.base_controller import BaseController
 
 
 class SchedulerController(BaseController):
-    """Scheduler for creating planned tasks"""
+    """
+    SchedulerController is used to control actions connected to scheduler.
+    It contains methods for adding new scheduler, get list of schedulers,
+    generating new task according to scheduler's pattern of task
+    """
     def __init__(self, scheduler_storage, task_storage):
         super(SchedulerController, self).__init__(task_storage=task_storage)
         self.scheduler_storage = scheduler_storage
 
-
     def add(self, scheduler):
-        """Adding new scheduler"""
+        """
+        Creates new scheduler
+        :param scheduler: Scheduler's object
+        :return:
+        """
         self.scheduler_storage.add_scheduler(scheduler)
 
     def get(self):
+        """
+        Get user's schedulers
+        :return: list of Scheduler's objects
+        """
         self.scheduler_storage.load_user_schedulers()
         return self.scheduler_storage.user_schedulers
 
     def generate_task(self, scheduler):
+        """
+        Generates the task if a specified condition is satisfied
+        :param scheduler: Scheduler's object
+        :return:
+        """
 
         if (scheduler.last + timedelta(scheduler.interval)) < datetime.now():
             self.task_storage.add_task(scheduler.task)

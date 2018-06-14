@@ -1,6 +1,6 @@
-from console.user_actions import User
 from task_manager_library.utility import utils
 from task_manager_library.models.task_model import Tag, Priority, Status, Task
+from task_manager_library.models.user_model import User
 from task_manager_library.models.scheduler_model import Scheduler
 
 from datetime import datetime
@@ -40,6 +40,7 @@ def dict_to_task(task_dict):
 
 
 def dict_to_user(data_dict):
+    """Converting dict to user's object"""
     name = data_dict['name']
     surname = data_dict['surname']
     login = data_dict['login']
@@ -51,6 +52,7 @@ def dict_to_user(data_dict):
 
 
 def task_to_dict(task):
+    """Converting Task object to dict"""
     if isinstance(task.start, datetime):
         task.start = date_to_str(task.start)
     if isinstance(task.end, datetime):
@@ -67,7 +69,7 @@ def task_to_dict(task):
 
 
 def scheduler_to_dict(scheduler):
-
+    """Converting Scheduler object to dict"""
     scheduler.task = task_to_dict(scheduler.task)
     scheduler.task = scheduler.task.__dict__
 
@@ -77,6 +79,7 @@ def scheduler_to_dict(scheduler):
 
 
 def dict_to_scheduler(scheduler):
+    """Converting dict object to Scheduler object"""
     task = dict_to_task(scheduler['task'])
     last = utils.str_to_date(scheduler['last'])
     uid = scheduler['uid']

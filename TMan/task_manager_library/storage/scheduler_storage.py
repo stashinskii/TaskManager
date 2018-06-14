@@ -9,6 +9,10 @@ import configparser
 
 
 class SchedulerStorage:
+    """
+    Represents scheduler's storage manager
+    Used to serialize and store data of application in JSON format
+    """
     def __init__(self, configuration=None, external_user=None):
         if configuration is not None and configuration.get('storage_path') is not None:
             self.path = configuration.get('storage_path')
