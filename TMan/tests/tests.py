@@ -150,7 +150,7 @@ class MyTest(unittest.TestCase):
                         [], None, datetime.strptime("12:00", "%H:%M"), Priority.low, None, None)
         tag_name = new_task.tag.tag_name
         tag = Tag(tag_name)
-        TaskController.add(new_task)
+        TaskController.add(new_t    ask)
         before = len(TaskController.order_by_tag(tag))
         TaskController.add(new_task)
         after = len(TaskController.order_by_tag(tag))

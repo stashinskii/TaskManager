@@ -4,7 +4,7 @@ from task_manager_library.models.task_model import Task, Priority, Status, Tag
 
 
 class TestTask(unittest.TestCase):
-    def set_up(self):
+    def setUp(self):
         self.task = Task()
 
     def test_title(self):
