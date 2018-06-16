@@ -7,9 +7,21 @@ class Task:
     Description of Task
     Contains methods to manage status of current task
     """
-    def __init__(self, title, start, end, tag, author, observers,
-                 reminder, priority=None, height=None, changed=None, description=None,
-                 parent=None, tid=None, subtasks=None,
+    def __init__(self,
+                 title=None,
+                 start=None,
+                 end=None,
+                 tag=None,
+                 author=None,
+                 observers=None,
+                 reminder=None,
+                 priority=None,
+                 height=None,
+                 changed=None,
+                 description=None,
+                 parent=None,
+                 tid=None,
+                 subtasks=None,
                  is_completed=None, connection=None):
         self.title = title
         if tid is None:
@@ -24,17 +36,17 @@ class Task:
         self.start = start
         self.end = end
         self.author = author
-        self.tag = tag
+        if tag is None:
+            self.tag = Tag("deafult")
+        else:
+            self.tag = tag
         self.observers = observers
         if is_completed is None:
             self.is_completed = Status.undone
         else:
             self.is_completed = is_completed
         self.reminder = reminder
-        if parent is None:
-            self.parent = None
-        else:
-            self.parent = parent
+        self.parent = parent
         self.parent = parent
         if subtasks is None:
             self.subtasks = list()

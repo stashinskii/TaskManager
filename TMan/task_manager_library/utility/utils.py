@@ -53,11 +53,12 @@ def check_dir(path):
 def str_to_date(date):
     """Date checking and converting to datetime utility"""
     time_format_one = "%Y-%m-%d"
-
+    if date is None:
+        return None
     try:
         date = datetime.strptime(date, time_format_one)
     except ValueError:
-        date = None
+        date = datetime.now()
     return date
 
 
@@ -72,6 +73,6 @@ def str_to_time(my_time):
     try:
         my_time = datetime.strptime(my_time, time_format)
     except:
-        my_time = None
+        my_time = datetime.now()
 
     return my_time
