@@ -47,6 +47,18 @@ class TestSchedulerController(unittest.TestCase):
         len_after = len(self.task_controller.task_storage.tasks)
         self.assertEqual(len_before+1, len_after)
 
+    def test_delete_scheduler(self):
+        task = Task("Hello, world")
+        scheduler = Scheduler(task=task, uid=self.storage.current_uid)
+        self.scheduler_controller.add(scheduler)
+        len_before = len(self.scheduler_controller.get())
+        self.scheduler_controller.delete_scheduler(scheduler.sid)
+        len_after = len(self.scheduler_controller.get())
+        self.assertEqual(len_before , len_after + 1)
+
+
+
+
     # region Instance Creation
 
     def test_last(self):

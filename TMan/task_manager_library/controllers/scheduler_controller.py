@@ -37,6 +37,12 @@ class SchedulerController(BaseController):
         self.scheduler_storage.load_user_schedulers()
         return self.scheduler_storage.user_schedulers
 
+    def delete_scheduler(self, sid):
+        self.scheduler_storage.delete(sid)
+
+    def edit_scheduler(self, sid, **kwargs):
+        self.scheduler_storage.edit_scheduler(sid, **kwargs)
+
     def generate_task(self, scheduler):
         """
         Generates the task if a specified condition is satisfied

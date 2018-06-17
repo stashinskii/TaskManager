@@ -25,6 +25,7 @@ def dict_to_task(task_dict):
     changed = task_dict['changed']
     connection = task_dict['connection']
     height = task_dict['height']
+    planned = task_dict['planned']
 
     task = Task(
                 title=title, description=desc,
@@ -34,7 +35,7 @@ def dict_to_task(task_dict):
                 reminder=reminder, priority=priority,
                 height=height, changed=changed,
                 parent=parent, tid=tid, subtasks=subtasks,
-                is_completed=is_completed, connection=connection
+                is_completed=is_completed, connection=connection, planned=planned
                 )
     return task
 

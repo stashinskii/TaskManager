@@ -22,8 +22,10 @@ class Task:
                  parent=None,
                  tid=None,
                  subtasks=None,
+                 planned=None,
                  is_completed=None, connection=None):
         self.title = title
+        self.planned = planned
         if tid is None:
             self.tid = str(uuid.uuid1())
         else:

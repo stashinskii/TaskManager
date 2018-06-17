@@ -194,7 +194,9 @@ class Actions:
                               last=last,
                               interval=interval,
                               uid=self.current_user.uid)
+        scheduler.task.planned = scheduler.sid
         self.scheduler_controller.add(scheduler)
+
 
     @logger.log_func(__name__)
     def get_schedulers(self):
@@ -205,6 +207,18 @@ class Actions:
         schedulers = self.scheduler_controller.get()
         for scheduler in schedulers:
             self.scheduler_controller.generate_task(scheduler)
+
+        return schedulers
+
+    @logger.log_func(__name__)
+    def get_planned_list(self, sid):
+        tasks = self.task_controller.get_list()
+        return [task for task in tasks if task.planned == sid]
+
+    @logger.log_func(__name__)
+    def edit_scheduler(self, sid, **kwargs):
+        self.scheduler_controller.edit_scheduler(sid, **kwargs)
+
 
     # endregion
 

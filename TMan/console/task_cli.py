@@ -269,6 +269,22 @@ def make_link(first, second):
 
 
 @task.command()
+@click.option('--sid', type=str,
+              help='Scheduler ID')
+def planned(sid):
+    """Show list of completed tasks"""
+    manager = Actions()
+    tasks = manager.get_planned_list(sid)
+    if not tasks:
+        click.echo("No tasks with such sid")
+        return
+    click.secho("Scheduler ID: " + sid, fg='yellow')
+    for task in tasks:
+        click.echo(task.tid + " - "  + task.title)
+
+
+
+@task.command()
 def archieve():
     """Show list of completed tasks"""
     manager = Actions()
@@ -324,6 +340,28 @@ def scheduler(startdate, enddate, tag, description,
                           observers=observers,
                           reminder=datetime.strptime(reminder, "%H:%M"),
                           priority=priority)
+
+
+@util.command()
+def plans():
+    manager = Actions()
+    schedulers = manager.get_schedulers()
+    for scheduler in schedulers:
+        click.echo("Scheduler ID(sid): "+
+                   scheduler.sid +
+                   click.style("\nTask title: " + scheduler.task.title +"\n\n", fg='white', bold=True))
+
+
+@util.command()
+@click.option('--sid', type=str,
+              help='Scheduler ID')
+@click.option('--title', type=str,
+              help='New task title')
+@click.option('--interval', type=str,
+              help='New interval of plan scheduler')
+def edit(sid, title, interval):
+    manager = Actions()
+    manager.edit_scheduler(sid, title=title, interval=interval)
 
 
 # endregion

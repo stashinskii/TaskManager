@@ -55,10 +55,26 @@ class SchedulerStorage:
         self.user_schedulers = [scheduler for scheduler in self.schedulers
                                 if scheduler.uid == self.current_uid]
 
+    def delete(self, sid):
+        self.load_schedulers_from_json()
+        index = utils.get_scheduler_index(sid, self)
+        del self.schedulers[index]
+        self.resave()
 
     def add_scheduler(self, scheduler):
         self.load_schedulers_from_json()
         self.schedulers.append(scheduler)
+        self.resave()
+
+    def edit_scheduler(self, sid, **kwargs):
+        self.load_schedulers_from_json()
+
+        index = utils.get_scheduler_index(sid, self)
+        if kwargs.get('title') is not None:
+            self.schedulers[index].task.title = kwargs.get('title')
+        if kwargs.get('interval') is not None:
+            self.schedulers[index].interval = kwargs.get('interval')
+
         self.resave()
 
     def update(self, sid):
