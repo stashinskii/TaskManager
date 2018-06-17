@@ -48,11 +48,9 @@ class SchedulerStorage:
             self.schedulers.append(loaded_scheduler)
 
     def load_user_schedulers(self):
-        if not self.schedulers:
-            self.load_schedulers_from_json()
-
-        if self.user_schedulers:
-            return
+        self.schedulers = []
+        self.load_schedulers_from_json()
+        self.user_schedulers = []
 
         self.user_schedulers = [scheduler for scheduler in self.schedulers
                                 if scheduler.uid == self.current_uid]

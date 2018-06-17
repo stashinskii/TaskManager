@@ -45,7 +45,9 @@ class SchedulerController(BaseController):
         """
 
         if (scheduler.last + timedelta(scheduler.interval)) < datetime.now():
+
             self.task_storage.add_task(scheduler.task)
+
             scheduler.last = datetime.now()
             self.scheduler_storage.update(scheduler.sid)
 

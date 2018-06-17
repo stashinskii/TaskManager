@@ -18,7 +18,7 @@ def dict_to_task(task_dict):
     priority = Priority[Priority(int(task_dict['priority'])).name]
     author = task_dict['author']
     reminder = utils.str_to_time(task_dict['reminder'])
-    is_completed = Status[Status(int(task_dict['is_completed'])).name]
+    is_completed = Status(int(task_dict['is_completed']))
     parent = task_dict['parent']
     tid = task_dict['tid']
     subtasks = task_dict['subtasks']

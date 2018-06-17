@@ -1,7 +1,11 @@
 import logging
 
 # unique logger name
-LIBRARY_LOGGER_NAME = 'task_manager_library'
+LOGGER_NAME = 'task_manager_library'
+
+
+def get_logger():
+    return logging.getLogger(LOGGER_NAME)
 
 
 def log_func(logger_name):

@@ -6,7 +6,7 @@ import uuid
 
 class User:
     """Description of user"""
-    def __init__(self, login, name, surname, uid=None, tasks=None):
+    def __init__(self, login=None, name=None, surname=None, uid=None, tasks=None):
         self.name = name
         self.surname = surname
         if uid is None:

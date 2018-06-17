@@ -138,6 +138,7 @@ class Storage:
     def edit(self, tid, **kwargs):
 
         self.load_tasks_from_json()
+
         index = utils.get_task_index(tid, self)
 
         title = kwargs.get('title')

@@ -2,6 +2,7 @@ import os
 import json
 from datetime import datetime
 
+
 def get_task_index(tid, storage):
     counter = 0
     for task in storage.tasks:
@@ -10,6 +11,7 @@ def get_task_index(tid, storage):
         counter+=1
     raise IndexError("Task was not found")
 
+
 def get_scheduler_index(sid, storage):
     counter = 0
     for scheduler in storage.schedulers:
@@ -17,7 +19,6 @@ def get_scheduler_index(sid, storage):
             return counter
         counter += 1
     raise IndexError("Scheduler was not found")
-
 
 
 def get_user_index(uid, users):

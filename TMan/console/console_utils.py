@@ -22,7 +22,7 @@ def print_tree(manager, tasks):
     for task in root_tasks:
         marker = get_status_marker(task)
         click.echo(marker + " - " + task.tid + " - " +
-                   click.style(task.title, fg='yellow'))
+                   click.style(str(task.title), fg='yellow'))
 
         subtasks = manager.get_subtasks(task.tid)
 

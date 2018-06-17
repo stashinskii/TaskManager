@@ -31,6 +31,7 @@ class TaskController(BaseController):
         :param kwargs: parameters to be changed (title, end date, tag, priority, etc.)
         :return:
         """
+
         self.task_storage.edit(tid, **kwargs)
 
     def delete(self, tid):

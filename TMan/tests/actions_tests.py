@@ -74,4 +74,28 @@ class TestTaskController(unittest.TestCase):
 
         self.assertEqual(first.tid, second.parent)
 
+    def test_edit(self):
+        task = Task(title="Test")
+        self.task_controller.add(task)
+        tid = self.task_controller.get_list()[-1].tid
+        self.task_controller.edit(tid, title="EditedName")
+        edited_task_title = self.task_controller.get_list()[-1].title
+        self.assertEqual(edited_task_title, "EditedName")
+
+    def test_get_list(self):
+
+        task = Task()
+        self.task_controller.task_storage.load_tasks_from_json()
+        len_before = len(self.task_controller.task_storage.tasks)
+
+        self.task_controller.add(task)
+
+        self.task_controller.task_storage.load_tasks_from_json()
+        len_after = len(self.task_controller.task_storage.tasks)
+        self.assertEqual(len_before + 1, len_after)
+    
+
+
+
+
 
