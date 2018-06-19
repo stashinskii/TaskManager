@@ -12,7 +12,7 @@ class TestUtils(unittest.TestCase):
     def test_serialization(self):
         task = Task(start=datetime.now(),
                     end=datetime.now(),
-                    priority=Priority.high,
+                    priority=Priority.HIGH,
                     tag=Tag("Name"))
         dict_task = serialization.task_to_dict(task).__dict__
 

@@ -44,7 +44,7 @@ class Task:
             self.tag = tag
         self.observers = observers
         if is_completed is None:
-            self.is_completed = Status.undone
+            self.is_completed = Status.UNDONE
         else:
             self.is_completed = is_completed
         self.reminder = reminder
@@ -61,20 +61,20 @@ class Task:
             self.connection = []
 
     def undone(self):
-        self.is_completed = Status.undone
+        self.is_completed = Status.UNDONE
 
     def complete(self):
-        self.is_completed = Status.done
+        self.is_completed = Status.DONE
 
     def begin(self):
-        self.is_completed = Status.process
+        self.is_completed = Status.PROCESS
 
 
 class Priority(enum.Enum):
     """Class represents enum of priority"""
-    high = 3
-    medium = 2
-    low = 1
+    HIGH = 3
+    MEDIUM = 2
+    LOW = 1
 
 
 class Tag:
@@ -90,6 +90,6 @@ class Tag:
 
 class Status(enum.Enum):
     """Class represents enum of task's status"""
-    done = 3
-    process = 2
-    undone = 1
+    DONE = 3
+    PROCESS = 2
+    UNDONE = 1

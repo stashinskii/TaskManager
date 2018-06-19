@@ -84,11 +84,11 @@ def task():
               help='Description')
 @click.option('-ti', '--title', type=str,
               help='Title')
-@click.option('-re', '--reminder', type=str,  default='12: 00',
+@click.option('-re', '--reminder', type=str,  default='12:00',
               help='Reminder. Format "HH:MM"')
 @click.option('-ob', '--observers', type=str, default='',
               help='Observers')
-@click.option('-pr', '--priority', type=click.Choice(['high', 'low', 'meduim']), default='high',
+@click.option('-pr', '--priority', type=click.Choice(['HIGH', 'LOW', 'MEDIUM']), default='HIGH',
               help='Priority')
 @click.option('-pa', '--parent', type=str, default=None,
               help='Parent tid for creating subtask')
@@ -109,11 +109,13 @@ def add(startdate, enddate, tag, description,
                          reminder=datetime.strptime(reminder, "%H:%M"),
                          priority=priority,
                          parent=parent)
+
     except ValueError as e:
         click.echo("ValueError:"+str(e))
-
-    except Exception as e:
-        click.echo("Exception:" + str(e))
+    except TypeError:
+        click.echo("Check your data!")
+    #except Exception as e:
+    #    click.echo("Exception:" + str(type(e)))
 
 
 @task.command()
@@ -232,7 +234,7 @@ def tag(name):
 
 
 @orderby.command()
-@click.argument('name', default="high")
+@click.argument('name', default="HIGH")
 def priority(name):
     """Ordering task by priority"""
     try:
@@ -253,8 +255,11 @@ def priority(name):
               help='Task ID of chosen task')
 def delete_task(tid):
     """Deleting task"""
-    manager = Actions()
-    manager.delete_task(tid)
+    try:
+        manager = Actions()
+        manager.delete_task(tid)
+    except IndexError as e:
+        click.echo("Can't find task")
 
 
 @task.command()
