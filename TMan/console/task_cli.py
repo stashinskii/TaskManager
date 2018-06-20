@@ -129,7 +129,7 @@ def list():
 @task.command()
 @click.option('--tid', type=str,
               help='TID (task ID) of task to be changed')
-@click.option('--status', type=click.Choice(['done', 'undone', 'process']),
+@click.option('--status', type=click.Choice(['DONE', 'UNDONE', 'PROCESS']),
               help='Status of task to be changed')
 def status(tid, status):
     """Change status of task: done, undone, process. Required data: TID, status name"""
@@ -137,11 +137,11 @@ def status(tid, status):
         manager = Actions()
         status = Status[status]
 
-        if status == Status.done:
+        if status == Status.DONE:
             manager.complete_task(tid)
-        elif status == Status.process:
+        elif status == Status.PROCESS:
             manager.begin_task(tid)
-        elif status == Status.undone:
+        elif status == Status.UNDONE:
             manager.uncomplete_task(tid)
 
     except ValueError as e:

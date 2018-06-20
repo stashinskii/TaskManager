@@ -44,7 +44,7 @@ class TestTaskController(unittest.TestCase):
         self.task_controller.complete_task(tid)
 
         loaded_task = self.task_controller.get_task(tid)
-        self.assertEqual(str(Status.done.value), loaded_task.is_completed)
+        self.assertEqual(str(Status.DONE.value), loaded_task.is_completed)
 
     def test_begin(self):
         task = Task()
@@ -55,7 +55,7 @@ class TestTaskController(unittest.TestCase):
         self.task_controller.begin_task(tid)
 
         loaded_task = self.task_controller.get_task(tid)
-        self.assertEqual(str(Status.process.value), loaded_task.is_completed)
+        self.assertEqual(str(Status.PROCESS.value), loaded_task.is_completed)
 
     def test_uncomplete(self):
         task = Task()
@@ -66,7 +66,7 @@ class TestTaskController(unittest.TestCase):
         self.task_controller.uncomplete_task(tid)
 
         loaded_task = self.task_controller.get_task(tid)
-        self.assertEqual(str(Status.undone.value), loaded_task.is_completed)
+        self.assertEqual(str(Status.UNDONE.value), loaded_task.is_completed)
 
     def test_add_subtask(self):
         first = Task()

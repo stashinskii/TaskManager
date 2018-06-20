@@ -78,9 +78,9 @@ def format_print_info(task, subtasks, manager):
 
 def get_status_marker(task):
     """Get marker of task's status"""
-    if task.is_completed == Status.done:
+    if task.is_completed == Status.DONE:
         marker = click.style('[X]', fg='green')
-    elif task.is_completed == Status.undone:
+    elif task.is_completed == Status.UNDONE:
         marker = click.style('[ ]', fg='red')
     else:
         marker = click.style('[O]', fg='blue')

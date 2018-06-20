@@ -14,20 +14,20 @@ class TestTask(unittest.TestCase):
         self.assertIsInstance(self.task.tid, str)
 
     def test_priority(self):
-        self.assertEqual(self.task.priority, Priority.low)
+        self.assertEqual(self.task.priority, Priority.LOW)
 
     def test_connection_list(self):
         self.assertIsInstance(self.task.connection, list)
 
     def test_status(self):
-        self.assertEqual(self.task.is_completed, Status.undone)
+        self.assertEqual(self.task.is_completed, Status.UNDONE)
 
     def test_complete(self):
         self.task.complete()
-        self.assertEqual(self.task.is_completed, Status.done)
+        self.assertEqual(self.task.is_completed, Status.DONE)
 
     def test_begin(self):
         self.task.begin()
-        self.assertEqual(self.task.is_completed, Status.process)
+        self.assertEqual(self.task.is_completed, Status.PROCESS)
 
 

@@ -34,7 +34,7 @@ class Task:
         self.height = height
         if priority is not None:
             self.priority = priority
-        else: self.priority = Priority.low
+        else: self.priority = Priority.LOW
         self.start = start
         self.end = end
         self.author = author
