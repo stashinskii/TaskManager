@@ -1,0 +1,20 @@
+{% extends 'trackthat/home.html' %}
+
+{% block category %}
+    <a href="{% url 'list_new' %}" class="top-menu"><span class="glyphicon glyphicon-plus"></span></a>
+    <ul class="list-group">
+    {% for list in lists %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div class="line">
+                <a href='{% url 'list' id=list.id %}' class="list-group-item">{{list.name}}</a>
+                <div class="button_group">
+                    <a href="{% url 'list_edit' id=list.id %}" class="btn btn-default">
+                        <span class="glyphicon glyphicon-pencil"></span></a>
+                    <a href="{% url 'list_delete' id=list.id %}" class="btn btn-default">
+                        <span class="glyphicon glyphicon-trash"></span></a>
+                </div>
+            </div>
+        </li>
+    {% endfor %}
+    </ul>
+{% endblock %}
