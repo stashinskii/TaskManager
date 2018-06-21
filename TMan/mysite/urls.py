@@ -15,10 +15,12 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from mysite.views import login_redirect
 
 admin.autodiscover()
 
 urlpatterns = [
+    url(r'^$', login_redirect, name='login_redirect'),
     url(r'^admin/', admin.site.urls),
-    url(r'', include('task.urls'))
+    url(r'^task/', include('task.urls'))
 ]
