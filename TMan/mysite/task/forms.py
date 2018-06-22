@@ -3,10 +3,11 @@ from .models import *
 from django.forms import ModelForm, HiddenInput, ModelChoiceField, DateInput
 
 class TaskForm(forms.ModelForm):
+    """Class describing form of Task's adding"""
 
     class Meta:
         model = Task
-        exclude=[""]
+        exclude = [""]
 
     def save(self, user):
         """Overriding save-form method to set current id"""
@@ -14,6 +15,8 @@ class TaskForm(forms.ModelForm):
         m.author = user
         m.save()
         return m
+
+    # region Form fields settings
 
     status = forms.ChoiceField(
         choices=Task.STATUS,
@@ -42,7 +45,10 @@ class TaskForm(forms.ModelForm):
         label='End'
     )
 
+    # endregion
+
 class TaskEditForm(forms.ModelForm):
+    """Class describing form of editing tasks"""
 
     class Meta:
         model = Task
@@ -54,8 +60,8 @@ class TaskEditForm(forms.ModelForm):
             'end_date',
 
         }
-    def update(self, id):
-        Task.objects.filter(id=id).update(title='some value')
+
+
 
 
 
