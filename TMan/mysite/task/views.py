@@ -3,7 +3,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from .forms import TaskForm, TaskEditForm
 from .models import Task
-from .storage import get_user_tasks
+from .storage import get_user_tasks, order_by_status
+from task_manager_library.models.task_model import Status
 
 
 def register(request):
@@ -40,6 +41,26 @@ def delete(request, id):
     return redirect('/task/home')
 
 
+def done(request, id):
+    person = Task.objects.get(id=id)
+    person.status=3
+    person.save()
+    return redirect('/task/home')
+
+
+def undone(request, id):
+    person = Task.objects.get(id=id)
+    person.status = 0
+    person.save()
+    return redirect('/task/home')
+
+
+def begin(request, id):
+    person = Task.objects.get(id=id)
+    person.status = 2
+    person.save()
+    return redirect('/task/home')
+
 
 @login_required(redirect_field_name='', login_url='/task/login')
 def home(request):
@@ -57,6 +78,44 @@ def home(request):
         new_form = form.save(request.user)
 
     return render(request, 'task/home.html', locals())
+
+
+def home_done(request):
+    current_user = request.user
+    form = TaskForm(request.POST or None, initial={"status": 0})
+    tasks = order_by_status(request.user, 3)
+    if request.method == "POST" and form.is_valid():
+        data = form.cleaned_data
+        new_form = form.save(request.user)
+
+    return render(request, 'task/home.html', locals())
+
+
+def home_undone(request):
+    current_user = request.user
+    form = TaskForm(request.POST or None, initial={"status": 0})
+    tasks = order_by_status(request.user, 0)
+    if request.method == "POST" and form.is_valid():
+        data = form.cleaned_data
+        new_form = form.save(request.user)
+
+    return render(request, 'task/home.html', locals())
+
+
+def home_process(request):
+    current_user = request.user
+    form = TaskForm(request.POST or None, initial={"status": 0})
+    tasks = order_by_status(request.user, 2)
+    if request.method == "POST" and form.is_valid():
+        data = form.cleaned_data
+        new_form = form.save(request.user)
+
+    return render(request, 'task/home.html', locals())
+
+
+
+
+
 
 
 

@@ -10,8 +10,10 @@
     <div class="container">
 
         <div class="actions_buttons">
-            <span><button class="btn btn-success">Show done</button></span>
-            <span><button class="btn btn-danger">Show undone</button></span>
+            <span><a href="/task/home/"><button class="btn btn-info">Show all</button></a></span>
+            <span><a href="/task/home/done"><button class="btn btn-success">Show done</button></a></span>
+            <span><a href="/task/home/undone"><button class="btn btn-danger">Show undone</button></a></span>
+            <span><a href="/task/home/process"><button class="btn btn-warning">Show process</button></a></span>
         </div>
         <div class="row">
 
@@ -30,11 +32,19 @@
                 <h6><b>Description:</b> {{ task.description }}
                 </h6>
                 <h6><b>Expiration date:</b> {{ task.end_date }}</h6>
-                <h6><b>Status: </b> {{ task.status }} </h6>
+
+
+                <span><h6><b>Status: </b> {{ task.status }} </h6></span>
+
+
                 <div class="actions_links">
                     <span><a href="/task/delete/{{ task.id }}">Delete</a></span>
                     <span>|</span>
                     <span><a href="/task/edit">Edit</a></span>
+                     <span>|</span>
+                    <span><a href="/task/status/done/{{ task.id }}">Done</a></span>
+                    <span>|</span>
+                    <span><a href="/task/status/begin/{{ task.id }}">Begin</a></span>
                 </div>
                 {% endfor %}
             </div>
