@@ -38,6 +38,55 @@ class TaskController(BaseController):
         """Deletes task by its tid (task ID)"""
         self.task_storage.delete(tid)
 
+    def search(self, **kwargs):
+        """
+        Searching for elements in user collection according to searching rule pattern
+        Work like SELECT-WHERE construction
+        :param kwargs: receive dict of variables, describing searching rules
+        :return: collection/list of tasks according to rules
+        """
+        return self.task_storage.search(kwargs)
+
+    def return_tree(self, tid):
+        """
+        Return subtree of chosen node
+        :param tid: task id of chosen tree's node
+        :return:
+        """
+
+
+    def return_tree(self, tid):
+        """
+        Printing task tree. Includes subtasks on their level/ heights
+        Use recursive function return_sub
+        :param manager: manager (Actions instance) to get required data from storage
+        :param tasks: list of user's tasks
+        :return:
+        """
+        self.task_storage.load_user_tasks()
+        result_list = list()
+        task = self.get_task(tid)
+
+        # recursive traversal on subtree
+        self.return_sub(self, task, result_list)
+        return result_list
+
+
+    def return_sub(self,_task, result_list):
+        """Recursive function for getting tasks"""
+        # getting positing at result list of chosen node
+        index = result_list.index(_task)
+
+        subtasks = self.get_subtasks(_task.tid)
+        for subtask in subtasks:
+            result_list[index].append(subtask)
+            return_sub(self, subtask, result_list)
+
+
+
+
+
+
     def share(self, observer_uid, tid):
         """
         Share task with other user

@@ -55,6 +55,32 @@ class Storage:
             users.append(user)
         return users
 
+    def search(self, **kwargs):
+        """
+        Searching for elements in user collection according to searching rule pattern
+        Work like WHERE construction id DB
+        :param kwargs: receive dict of variables, describing searching rules
+        :return: collection/list of tasks according to rules
+        """
+        self.load_user_tasks()
+
+        result_list = self.user_tasks
+
+        if kwargs.get('title'):
+            result_list = [task for task in result_list if task.title == kwargs.get('title')]
+        if kwargs.get('description'):
+            result_list = [task for task in result_list if task.start == kwargs.get('description')]
+        if kwargs.get('start'):
+            result_list = [task for task in result_list if task.start == kwargs.get('start')]
+        if kwargs.get('end'):
+            result_list = [task for task in result_list if task.start == kwargs.get('end')]
+        if kwargs.get('tag'):
+            result_list = [task for task in result_list if task.start == kwargs.get('tag')]
+        if kwargs.get('priority'):
+            result_list = [task for task in result_list if task.start == kwargs.get('priority')]
+
+        return result_list
+
     def load_user(self, uid):
         """Get user object from its UID"""
         users = self.load_users_from_json()
