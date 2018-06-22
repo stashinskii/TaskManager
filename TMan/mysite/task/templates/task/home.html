@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="section_top" align="right">
+    <h5><b>Welcome, {{ current_user.username }}!</b></h5>
+</div>
+<div class="section">
+    <div class="container">
+        <div class="row">
+
+
+            <div class="col-xs-4">
+                <h3><b>Current Tasks:</b></h3>
+                {% for task in tasks %}
+                <h5>
+                    <li>
+                        <a href="/home">
+                            {{ task.title }}
+                        </a>
+                        <span class="badge">{{ task.tag }}</span>
+                    </li>
+                </h5>
+                <h6><b>Description:</b> {{ task.description }}
+                </h6>
+                <h6><b>Expiration date:</b> {{ task.end_date }}</h6>
+                <h6><b>Status: </b> {{ task.status }} </h6>
+                {% endfor %}
+            </div>
+
+            <div class="col-xs-8">
+                <h3><b>Add new task:</b></h3>
+                <div>
+                    <form action="" method="post" maxlength="180">{% csrf_token %}
+                        {{ form.as_p }}
+                        <div>
+                            <button type="submit" class="btn btn-primary">Add</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+</div>
+{% endblock content %}
