@@ -9,5 +9,6 @@ urlpatterns = [
     url(r'^login/$', login, {'template_name': 'registration/login.html'}),
     url(r'^logout/$',logout,{'template_name': 'registration/logout.html'}),
     url(r'^register/$', views.register, name='register'),
+    url(r'^delete/(?P<id>\d+)/$', views.delete),
 
 ]

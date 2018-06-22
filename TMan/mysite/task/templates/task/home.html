@@ -5,8 +5,14 @@
 <div class="section_top" align="right">
     <h5><b>Welcome, {{ current_user.username }}!</b></h5>
 </div>
+
 <div class="section">
     <div class="container">
+
+        <div class="actions_buttons">
+            <span><button class="btn btn-success">Show done</button></span>
+            <span><button class="btn btn-danger">Show undone</button></span>
+        </div>
         <div class="row">
 
 
@@ -25,6 +31,11 @@
                 </h6>
                 <h6><b>Expiration date:</b> {{ task.end_date }}</h6>
                 <h6><b>Status: </b> {{ task.status }} </h6>
+                <div class="actions_links">
+                    <span><a href="/task/delete/{{ task.id }}">Delete</a></span>
+                    <span>|</span>
+                    <span><a href="/task/edit">Edit</a></span>
+                </div>
                 {% endfor %}
             </div>
 

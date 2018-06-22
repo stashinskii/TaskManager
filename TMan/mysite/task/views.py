@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
-from .forms import TaskForm
+from .forms import TaskForm, TaskEditForm
 from .models import Task
 from .storage import get_user_tasks
 
@@ -22,6 +22,23 @@ def register(request):
         args = {'form': creation_form}
 
         return render(request, 'registration/register.html', args)
+
+
+@login_required(redirect_field_name='', login_url='/task/login')
+def edit_task(request):
+    #TODO GET ID
+    form = TaskEditForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        new_form = form.update(50)
+
+    return render(request, 'task/home.html', locals())
+
+
+def delete(request, id):
+    person = Task.objects.get(id=id)
+    person.delete()
+    return redirect('/task/home')
+
 
 
 @login_required(redirect_field_name='', login_url='/task/login')

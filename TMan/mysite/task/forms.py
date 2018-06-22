@@ -42,4 +42,20 @@ class TaskForm(forms.ModelForm):
         label='End'
     )
 
+class TaskEditForm(forms.ModelForm):
+
+    class Meta:
+        model = Task
+        fields = {
+            'title',
+            'description',
+            'tag',
+            'priority',
+            'end_date',
+
+        }
+    def update(self, id):
+        Task.objects.filter(id=id).update(title='some value')
+
+
 
