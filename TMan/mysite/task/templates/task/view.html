@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="section_top" align="right">
+    <h5><b>Welcome, {{ current_user.username }}! </b></h5>
+</div>
+
+<div class="section">
+
+    <div class="container">
+        <div>
+            <div>
+                <h3>{{ task.title }}
+                    <span class="label label-default">#{{ task.tag }}</span>
+
+                    {% if task.status == 0 %}
+                    <span class="label label-default">Undone</span>
+                    {% endif %}
+
+                    {% if task.status == 1 %}
+                    <span class="label label-default">Process</span>
+                    {% endif %}
+
+                    {% if task.status == 2 %}
+                    <span class="label label-default">Done</span>
+                    {% endif %}
+
+                    <a class="btn btn-default" href="{% url 'post_edit' id=task.id %}"><span class="glyphicon glyphicon-pencil"></span></a>
+                    <a class="btn btn-default" href="{% url 'delete' id=task.id %}"><span class="glyphicon glyphicon-trash"></span></a>
+
+
+                    {% if task.status == 0 %}
+                        <a class="btn btn-default" href="{% url 'begin' id=task.id %}">Begin</a>
+                    {% endif %}
+                    {% if task.status == 1 %}
+                        <a class="btn btn-default" href="{% url 'done' id=task.id %}">Done</a>
+                    {% endif %}
+
+
+                </h3>
+            </div>
+            <div>
+                <span>{{ task.start_date }}</span>
+                <span> - </span>
+                <span>{{ task.end_date }}</span>
+            </div>
+            <br>
+            <h4><b>Information</b></h4>
+            <h4> {{ task.description }} </h4>
+            <br>
+            <h5><b>Author:</b> {{task.author.username}} </h5>
+
+            <br>
+            {% if subtasks %}
+            <h5><b>Subtasks:</b></h5>
+            <ul class="list-group">
+               {% for subtask in subtasks %}
+
+                <li class="list-group-item">
+                    <h6><b><a href="/task/view/{{ subtask.id }}">{{subtask.title}}</a></b></h6>
+                    <h6>{{subtask.description}}</h6>
+
+                </li>
+                {% endfor %}
+            </ul>
+
+
+
+            {% endif %}
+
+        </div>
+    </div>
+
+</div>
+{% endblock content %}

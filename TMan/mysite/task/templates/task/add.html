@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="section_top" align="right">
+    <h5><b>Welcome, {{ current_user.username }}!</b></h5>
+</div>
+
+<div class="section">
+    <div class="container">
+
+        <div class="actions_buttons">
+            <span><a href="/task/home/"><button class="btn btn-info">Show all</button></a></span>
+            <span><a href="/task/home/done"><button class="btn btn-success">Show done</button></a></span>
+            <span><a href="/task/home/undone"><button class="btn btn-danger">Show undone</button></a></span>
+            <span><a href="/task/home/process"><button class="btn btn-warning">Show process</button></a></span>
+        </div>
+
+                <h3><b>Add new task:</b></h3>
+                <div>
+                    <form action="" method="post" maxlength="180">{% csrf_token %}
+                        {{ form.as_p }}
+                        <div>
+                            <button type="submit" class="btn btn-primary">Add</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
+        </div>
+
+
+{% endblock content %}

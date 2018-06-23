@@ -35,6 +35,7 @@ class Task(models.Model):
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     status = models.IntegerField(choices=STATUS, default=0)
     priority = models.IntegerField(choices=PRIORITY)
+    parent = models.ForeignKey('self', null=True, blank=True)
 
     def __str__(self):
         return "%s %s " % (self.title, self.id)

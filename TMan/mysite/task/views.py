@@ -1,9 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from .forms import TaskForm, TaskEditForm
 from .models import Task
-from .storage import get_user_tasks, order_by_status
+from .storage import get_user_tasks, order_by_status, get_subtasks
 from task_manager_library.models.task_model import Status
 
 
@@ -26,40 +26,43 @@ def register(request):
 
 
 @login_required(redirect_field_name='', login_url='/task/login')
-def edit_task(request):
-    #TODO GET ID
-    form = TaskEditForm(request.POST or None)
+def view(request, id):
+    task = Task.objects.get(id=id)
+    subtasks = get_subtasks(request.user, task)
+    current_user = request.user
+    return render(request, 'task/view.html', locals())
+
+
+@login_required(redirect_field_name='', login_url='/task/login')
+def post_edit(request, id):
+    task = get_object_or_404(Task, pk=id)
+    if request.method == "POST":
+
+        # TODO ADD EditForm
+
+        form = TaskForm(request.POST, instance=task)
+        if form.is_valid():
+            task = form.save(request.user)
+            # TODO OVERRIDE AS IN SAVE METHOD
+            #post.author = request.user
+
+            task.save()
+            return redirect('view', id=task.id)
+    else:
+        form = TaskForm(instance=task)
+    return render(request, 'task/edit.html', {'form': form})
+
+
+@login_required(redirect_field_name='', login_url='/task/login')
+def add(request):
+    current_user = request.user
+    form = TaskForm(request.POST or None, initial={"status": 0})
     if request.method == "POST" and form.is_valid():
-        new_form = form.update(50)
+        data = form.cleaned_data
+        new_form = form.save(request.user)
 
-    return render(request, 'task/home.html', locals())
+    return render(request, 'task/add.html', locals())
 
-
-def delete(request, id):
-    person = Task.objects.get(id=id)
-    person.delete()
-    return redirect('/task/home')
-
-
-def done(request, id):
-    person = Task.objects.get(id=id)
-    person.status=3
-    person.save()
-    return redirect('/task/home')
-
-
-def undone(request, id):
-    person = Task.objects.get(id=id)
-    person.status = 0
-    person.save()
-    return redirect('/task/home')
-
-
-def begin(request, id):
-    person = Task.objects.get(id=id)
-    person.status = 2
-    person.save()
-    return redirect('/task/home')
 
 
 @login_required(redirect_field_name='', login_url='/task/login')
@@ -70,47 +73,38 @@ def home(request):
     After login you will be automatically redirect to this page
     """
     current_user = request.user
-    form = TaskForm(request.POST or None, initial={"status": 0})
+
     tasks = get_user_tasks(request.user)
-    if request.method == "POST" and form.is_valid():
-
-        data = form.cleaned_data
-        new_form = form.save(request.user)
 
     return render(request, 'task/home.html', locals())
 
 
-def home_done(request):
+def tag_search(request, tag):
     current_user = request.user
-    form = TaskForm(request.POST or None, initial={"status": 0})
-    tasks = order_by_status(request.user, 3)
-    if request.method == "POST" and form.is_valid():
-        data = form.cleaned_data
-        new_form = form.save(request.user)
-
-    return render(request, 'task/home.html', locals())
+    tasks = Task.objects.filter(tag=tag)
+    return render(request, 'task/search.html', locals())
 
 
-def home_undone(request):
-    current_user = request.user
-    form = TaskForm(request.POST or None, initial={"status": 0})
-    tasks = order_by_status(request.user, 0)
-    if request.method == "POST" and form.is_valid():
-        data = form.cleaned_data
-        new_form = form.save(request.user)
-
-    return render(request, 'task/home.html', locals())
+def delete(request, id):
+    person = Task.objects.get(id=id)
+    person.delete()
+    return redirect('/task/home')
 
 
-def home_process(request):
-    current_user = request.user
-    form = TaskForm(request.POST or None, initial={"status": 0})
-    tasks = order_by_status(request.user, 2)
-    if request.method == "POST" and form.is_valid():
-        data = form.cleaned_data
-        new_form = form.save(request.user)
+def done(request, id):
+    person = Task.objects.get(id=id)
+    person.status=2
+    person.save()
+    return redirect('view', id=id)
 
-    return render(request, 'task/home.html', locals())
+
+
+def begin(request, id):
+    person = Task.objects.get(id=id)
+    person.status = 1
+    person.save()
+    return redirect('view', id=id)
+
 
 
 

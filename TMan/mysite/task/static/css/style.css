@@ -38,6 +38,8 @@ label {
     text-align: right;
 }
 
+.container
+
 .welcome  {
     width: 20%;
     /* large margin-right to force the next element to the new-line
