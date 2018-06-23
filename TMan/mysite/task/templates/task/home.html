@@ -11,12 +11,10 @@
 
         <div class="actions_buttons">
             <span><a href="/task/add/"><button class="btn btn-default"> Add task</button></a></span>
-            <span><a href="/task/add_subtask/"><button class="btn btn-default">Add subtask</button></a></span>
             <span><a href="/task/add_subtask/"><button class="btn btn-default">Settings</button></a></span>
-            <span><a href="/task/add_subtask/"><button class="btn btn-default"><span
-                    class="glyphicon glyphicon-share"></span> Share task</button></a></span>
-
-
+            <span><a href="/task/add_subtask/"><button class="btn btn-default"><span class="glyphicon glyphicon-share"></span> Share task</button></a></span>
+            <span><a href="{% url 'add_scheduler' %}"><button class="btn btn-default">Add scheduler</button></a></span>
+            <span><a href="{% url 'schedulers' %}"><button class="btn btn-default">Schedulers list</button></a></span>
         </div>
 
 

@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
-from .forms import TaskForm, TaskEditForm
+from .forms import TaskForm, TaskEditForm, SchedulerForm
 from .models import Task
-from .storage import get_user_tasks, order_by_status, get_subtasks
+from .storage import get_user_tasks, order_by_status, get_subtasks, get_schedulers
 from task_manager_library.models.task_model import Status
+from django.utils import timezone
 
 
 def register(request):
@@ -31,6 +32,23 @@ def view(request, id):
     subtasks = get_subtasks(request.user, task)
     current_user = request.user
     return render(request, 'task/view.html', locals())
+
+
+def add_scheduler(request):
+    current_user = request.user
+    form = SchedulerForm(request.POST or None, initial={"status": 0, "last_added": timezone.now() })
+    if request.method == "POST" and form.is_valid():
+        data = form.cleaned_data
+        new_form = form.save(request.user)
+        #return redirect('') to list
+
+    return render(request, 'task/add_scheduler.html', locals())
+
+
+def get_scheduler_list(request):
+    current_user = request.user
+    schedulers = get_schedulers(current_user)
+    return render(request, 'task/schedulers.html', locals())
 
 
 @login_required(redirect_field_name='', login_url='/task/login')
@@ -60,6 +78,7 @@ def add(request):
     if request.method == "POST" and form.is_valid():
         data = form.cleaned_data
         new_form = form.save(request.user)
+        return redirect('/task/home')
 
     return render(request, 'task/add.html', locals())
 

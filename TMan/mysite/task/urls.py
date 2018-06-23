@@ -15,6 +15,8 @@ urlpatterns = [
     url(r'^edit/(?P<id>\d+)/$', views.post_edit, name='post_edit'),
     url(r'^search/(?P<tag>[\w\-]+)/$', views.tag_search, name='tag_search'),
     url(r'^add/$', views.add, name='add'),
+    url(r'^schedulers/$', views.get_scheduler_list, name='schedulers'),
+    url(r'^add_scheduler/$', views.add_scheduler, name='add_scheduler'),
 
     # TODO change smth
     url(r'^status/done/(?P<id>\d+)/$', views.done, name='done'),

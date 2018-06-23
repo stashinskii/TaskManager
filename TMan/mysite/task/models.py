@@ -14,6 +14,27 @@ def create_profile(sender, **kwargs):
 post_save.connect(create_profile, sender=User)
 
 
+
+class SchedulerModel(models.Model):
+    interval = models.FloatField()
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    last_added = models.DateTimeField()
+
+
+    STATUS = ((0, "UNDONE"), (1, "PROCESS"), (2, "DONE"))
+
+    PRIORITY = ((0, "LOW"), (1, "MEDIUM"), (2, "HIGH"))
+    title = models.CharField(max_length=50, default="Empty title")
+    description = models.CharField(max_length=250, default=None)
+    start_date = models.DateTimeField(blank=True, null=True)
+    end_date = models.DateTimeField(blank=True, null=True)
+    tag = models.CharField(max_length=10, default="None")
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    status = models.IntegerField(choices=STATUS, default=0)
+    priority = models.IntegerField(choices=PRIORITY, default=2)
+    parent = models.ForeignKey('self', null=True, blank=True)
+
+
 class Task(models.Model):
     STATUS = (
         (0, "UNDONE"),
@@ -34,7 +55,7 @@ class Task(models.Model):
     tag = models.CharField(max_length=10)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     status = models.IntegerField(choices=STATUS, default=0)
-    priority = models.IntegerField(choices=PRIORITY)
+    priority = models.IntegerField(choices=PRIORITY, default=2)
     parent = models.ForeignKey('self', null=True, blank=True)
 
     def __str__(self):
@@ -46,3 +67,5 @@ class Task(models.Model):
 
     def save(self, *args, **kwargs):
         super(Task, self).save(*args, **kwargs)
+
+
