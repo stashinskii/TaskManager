@@ -35,6 +35,7 @@ class SchedulerModel(models.Model):
     parent = models.ForeignKey('self', null=True, blank=True)
 
 
+
 class Task(models.Model):
     STATUS = (
         (0, "UNDONE"),
@@ -49,6 +50,7 @@ class Task(models.Model):
     )
 
     title = models.CharField(max_length=50)
+    subscribers = models.ManyToManyField(User, related_name='can_edit', default=None)
     description = models.CharField(max_length=250)
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)

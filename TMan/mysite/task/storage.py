@@ -16,7 +16,10 @@ def scheduler(func):
                     author=scheduler.author,
                     tag=scheduler.tag,
                     priority=scheduler.priority,
-                    parent=None,status=0)
+                    parent=None,status=0,
+                )
+                new.subscribers.add(user)
+                new.save()
                 scheduler = SchedulerModel.objects.get(id=scheduler.id)
                 scheduler.last_added = timezone.now()
                 scheduler.save()
@@ -28,7 +31,7 @@ def get_schedulers(user):
 
 @scheduler
 def get_user_tasks(user):
-    tasks = [upr for upr in Task.objects.filter(author=user, parent=None)]
+    tasks = [upr for upr in Task.objects.filter(subscribers=user, parent=None)]
     return tasks
 
 @scheduler

@@ -24,6 +24,10 @@ class SchedulerForm(forms.ModelForm):
         required=False
     )
 
+    subscribers = forms.MultipleChoiceField(
+        widget=HiddenInput(),
+        required=False)
+
     author = forms.ModelChoiceField(
         queryset=User.objects.all(),
         widget=HiddenInput(),
@@ -56,9 +60,16 @@ class TaskForm(forms.ModelForm):
         m = super(TaskForm, self).save()
         m.author = user
         m.save()
+        m.subscribers.add(user)
+        m.save()
         return m
 
     # region Form fields settings
+
+    #subscribers = forms.MultipleChoiceField(
+    #    widget=HiddenInput(),
+    #    required=False
+    #)
 
     status = forms.ChoiceField(
         choices=Task.STATUS,
@@ -107,7 +118,10 @@ class TaskEditForm(forms.ModelForm):
         widget=DateInput(attrs={'class': 'datetime-input'}),
         label='Start',
         required=False)
+
     end_date = forms.DateField(widget=DateInput(attrs={'class': 'datetime-input'}), label='End')
+
+
 
 
 

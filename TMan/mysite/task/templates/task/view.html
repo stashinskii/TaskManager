@@ -26,15 +26,17 @@
                     <span class="label label-default">Done</span>
                     {% endif %}
 
-                    <a class="btn btn-default" href="{% url 'post_edit' id=task.id %}"><span class="glyphicon glyphicon-pencil"></span></a>
-                    <a class="btn btn-default" href="{% url 'delete' id=task.id %}"><span class="glyphicon glyphicon-trash"></span></a>
+                    <a class="btn btn-default" href="{% url 'post_edit' id=task.id %}"><span
+                            class="glyphicon glyphicon-pencil"></span></a>
+                    <a class="btn btn-default" href="{% url 'delete' id=task.id %}"><span
+                            class="glyphicon glyphicon-trash"></span></a>
 
 
                     {% if task.status == 0 %}
-                        <a class="btn btn-default" href="{% url 'begin' id=task.id %}">Begin</a>
+                    <a class="btn btn-default" href="{% url 'begin' id=task.id %}">Begin</a>
                     {% endif %}
                     {% if task.status == 1 %}
-                        <a class="btn btn-default" href="{% url 'done' id=task.id %}">Done</a>
+                    <a class="btn btn-default" href="{% url 'done' id=task.id %}">Done</a>
                     {% endif %}
 
 
@@ -51,11 +53,22 @@
             <br>
             <h5><b>Author:</b> {{task.author.username}} </h5>
 
+            <div>
+                {% if task.subscribers.all != None %}
+                <span><b>Subscribers: </b></span>
+                {% for user in task.subscribers.all %}
+                <span>{{ user.username }}, </span>
+
+                {% endfor %}
+                {% endif %}
+            </div>
+
             <br>
+
             {% if subtasks %}
             <h5><b>Subtasks:</b></h5>
             <ul class="list-group">
-               {% for subtask in subtasks %}
+                {% for subtask in subtasks %}
 
                 <li class="list-group-item">
                     <h6><b><a href="/task/view/{{ subtask.id }}">{{subtask.title}}</a></b></h6>
@@ -64,7 +77,6 @@
                 </li>
                 {% endfor %}
             </ul>
-
 
 
             {% endif %}
