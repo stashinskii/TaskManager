@@ -38,6 +38,8 @@
                     {% if task.status == 1 %}
                     <a class="btn btn-default" href="{% url 'done' id=task.id %}">Done</a>
                     {% endif %}
+                    <span><a href="{% url 'share_task' id=task.id %}"><button class="btn btn-default"><span class="glyphicon glyphicon-share"></span> Share task</button></a></span>
+                    <span><a href="{% url 'add_subtask' id=task.id %}"><button class="btn btn-default">Add subtask</button></a></span>
 
 
                 </h3>

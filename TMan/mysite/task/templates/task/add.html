@@ -1,28 +1,49 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load widget_tweaks %}
 
 {% block content %}
 <div class="section_top" align="right">
     <h5><b>Welcome, {{ current_user.username }}!</b></h5>
 </div>
 
-<div class="section">
-    <div class="container">
 
 
-                <h3><b>Add new task:</b></h3>
-                <div>
-                    <form action="" method="post" maxlength="180">{% csrf_token %}
-                        {{ form.as_p }}
-                        <div>
-                            <button type="submit" class="btn btn-primary">Add</button>
-                        </div>
-                    </form>
+<div class="section_add">
+    <div class="container" style="margin-left: 25%; width:40%">
+
+
+        <h3><b>Add new task:</b></h3>
+
+            <form method="post" >{% csrf_token %}
+
+                {% for hidden_field in form.hidden_fields %}
+                {{ hidden_field }}
+                {% endfor %}
+
+                {% for field in form.visible_fields %}
+
+                <div class="form-group">
+
+                    {{ field.label_tag }}
+                    {% render_field field class="form-control" %}
+                    {% if field.help_text %}
+                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                    {% endif %}
                 </div>
-            </div>
+
+                {% endfor %}
 
 
-        </div>
+                    <button type="submit" class="btn btn-primary">Add</button>
+
+
+            </form>
+
+    </div>
+
+
+</div>
 
 
 {% endblock content %}

@@ -1,28 +1,45 @@
 <nav class="navbar navbar-default navbar-static-top">
-      <div class="container">
+    <div class="container">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-           <a class="navbar-brand" href="#" width="100px">Task Manager </a>
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#" width="100px">Task Manager </a>
 
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li><a href="/task/home">Home</a></li>
-            {% if current_user == None %}
-            <li><a href="/task/register">Register</a></li>
-            <li><a href="/task/login">Login</a></li>
-            {% endif %}
-          </ul>
-          <ul class="nav navbar-nav navbar-right">
-            {% if current_user != None %}
-            <li><a href="/task/logout">Logout</a></li>
-            {% endif %}
-          </ul>
+            <ul class="nav navbar-nav">
+                <li><a href="/task/home">Home</a></li>
+                {% if current_user == None %}
+                <li><a href="/task/register">Register</a></li>
+                <li><a href="/task/login">Login</a></li>
+                {% endif %}
+                <li>
+                <form method="GET" class="navbar-form" role="search">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Search" name="q">
+                            <div class="input-group-btn">
+                                <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i>
+
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </li>
+
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+
+
+                {% if current_user != None %}
+                <li><a href="/task/logout">Logout</a></li>
+                {% endif %}
+
+            </ul>
         </div><!--/.nav-collapse -->
-      </div>
-    </nav>
+    </div>
+</nav>

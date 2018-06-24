@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
-from .forms import TaskForm, TaskEditForm, SchedulerForm
+from .forms import TaskForm, TaskEditForm, SchedulerForm, TaskShareForm, SubtaskAddForm
 from .models import Task
 from .storage import get_user_tasks, order_by_status, get_subtasks, get_schedulers
 from task_manager_library.models.task_model import Status
@@ -33,6 +33,15 @@ def view(request, id):
     current_user = request.user
     return render(request, 'task/view.html', locals())
 
+def global_search(request, string):
+    current_user = request.user
+    tasks = get_user_tasks(request.user)
+
+
+
+    return render(request, 'task/global_search.html', locals())
+
+
 
 def add_scheduler(request):
     current_user = request.user
@@ -55,10 +64,7 @@ def get_scheduler_list(request):
 def post_edit(request, id):
     task = get_object_or_404(Task, pk=id)
     if request.method == "POST":
-
-        # TODO ADD EditForm
-
-        form = TaskForm(request.POST, instance=task)
+        form = TaskEditForm(request.POST, instance=task)
         if form.is_valid():
             task = form.save(request.user)
             # TODO OVERRIDE AS IN SAVE METHOD
@@ -67,8 +73,34 @@ def post_edit(request, id):
             task.save()
             return redirect('view', id=task.id)
     else:
-        form = TaskForm(instance=task)
+        form = TaskEditForm(instance=task)
     return render(request, 'task/edit.html', {'form': form})
+
+
+def share_task(request, id):
+    task = get_object_or_404(Task, pk=id)
+    if request.method == "POST":
+        form = TaskShareForm(request.POST, instance=task)
+        if form.is_valid():
+            task = form.save(request.user)
+            task.save()
+            return redirect('view', id=task.id)
+    else:
+        form = TaskShareForm(instance=task)
+    return render(request, 'task/share.html', {'form': form})
+
+
+def add_subtask(request, id):
+    current_user = request.user
+    parent_task = Task.objects.get(id=id)
+    form = SubtaskAddForm(request.POST or None, initial={"status": 0})
+    if request.method == "POST" and form.is_valid():
+        data = form.cleaned_data
+        new_form = form.save(request.user, parent_task)
+        return redirect('view', id=id)
+
+    return render(request, 'task/add.html', locals())
+
 
 
 @login_required(redirect_field_name='', login_url='/task/login')
@@ -92,8 +124,13 @@ def home(request):
     After login you will be automatically redirect to this page
     """
     current_user = request.user
+    # TODO Декоратор
+    tasks = Task.objects.filter(subscribers=current_user, parent=None)
 
-    tasks = get_user_tasks(request.user)
+    query = request.GET.get("q")
+    if query:
+        tasks = tasks.filter(title__icontains=query)
+
 
     return render(request, 'task/home.html', locals())
 

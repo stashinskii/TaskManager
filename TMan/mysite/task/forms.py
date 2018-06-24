@@ -65,11 +65,11 @@ class TaskForm(forms.ModelForm):
         return m
 
     # region Form fields settings
-
-    #subscribers = forms.MultipleChoiceField(
-    #    widget=HiddenInput(),
-    #    required=False
-    #)
+    title = forms.CharField(widget=forms.TextInput(attrs={'size':20, 'maxlength':20}))
+    subscribers = forms.MultipleChoiceField(
+    widget=HiddenInput(),
+        required=False
+    )
 
     status = forms.ChoiceField(
         choices=Task.STATUS,
@@ -100,26 +100,117 @@ class TaskForm(forms.ModelForm):
 
     # endregion
 
+
+class TaskShareForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        exclude = ["author",
+                   "title",
+                   "description",
+                   "start_date",
+                   "end_date",
+                   "tag",
+                   "priority",
+                   "parent",
+                   "status"
+                   ]
+
+    def save(self, user):
+        """Overriding save-form method to set current id"""
+        m = super(TaskShareForm, self).save()
+        m.author = user
+        m.save()
+        m.subscribers.add(user)
+        m.save()
+        return m
+
+
+
+class SubtaskAddForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        exclude = ["parent"]
+
+    def save(self, user, parent):
+        """Overriding save-form method to set current id"""
+        m = super(SubtaskAddForm, self).save()
+        m.author = user
+        m.save()
+        m.subscribers.add(user)
+        m.parent = parent
+        m.save()
+        return m
+
+    # region Form fields settings
+
+    subscribers = forms.MultipleChoiceField(
+    widget=HiddenInput(),
+        required=False
+    )
+
+    status = forms.ChoiceField(
+        choices=Task.STATUS,
+        widget=HiddenInput(),
+        required=False
+    )
+
+    author = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        widget=HiddenInput(),
+        required=False
+    )
+
+    description = forms.CharField(
+        label='Info',
+        required=False
+    )
+
+    start_date = forms.DateField(
+        widget=DateInput(attrs={'class': 'datetime-input'}),
+        label='Start',
+        required=False
+    )
+    end_date = forms.DateField(
+        widget=DateInput(attrs={'class': 'datetime-input'}),
+        label='End'
+    )
+
+    # endregion
+
+
 class TaskEditForm(forms.ModelForm):
     """Class describing form of editing tasks"""
 
     class Meta:
         model = Task
-        fields = {
-            'title',
-            'description',
-            'tag',
-            'priority',
-            'end_date',
+        exclude = ["subscribers"]
 
-        }
+    def save(self, user):
+        """Overriding save-form method to set current id"""
+        m = super(TaskEditForm, self).save()
+        m.author = user
+        m.save()
+        m.subscribers.add(user)
+        m.save()
+        return m
 
-    start_date = forms.DateField(
-        widget=DateInput(attrs={'class': 'datetime-input'}),
-        label='Start',
-        required=False)
+    # region Form fields settings
 
+    status = forms.ChoiceField(choices=Task.STATUS, widget=HiddenInput(), required=False)
+
+    author = forms.ModelChoiceField(queryset=User.objects.all(), widget=HiddenInput(), required=False)
+
+    description = forms.CharField(label='Info', required=False)
+
+    start_date = forms.DateField(widget=DateInput(attrs={'class': 'datetime-input'}), label='Start', required=False)
     end_date = forms.DateField(widget=DateInput(attrs={'class': 'datetime-input'}), label='End')
+
+    # endregion
+
+
+
+
+
 
 
 

@@ -13,12 +13,13 @@ urlpatterns = [
     url(r'^delete/(?P<id>\d+)/$', views.delete, name='delete'),
     url(r'^view/(?P<id>\d+)/$', views.view, name='view'),
     url(r'^edit/(?P<id>\d+)/$', views.post_edit, name='post_edit'),
+    url(r'^share/(?P<id>\d+)/$', views.share_task, name='share_task'),
     url(r'^search/(?P<tag>[\w\-]+)/$', views.tag_search, name='tag_search'),
     url(r'^add/$', views.add, name='add'),
+    url(r'^global_search/(?P<string>[\w\-]+)/$', views.global_search, name='global_search'),
+    url(r'^add_subtask/(?P<id>\d+)/$', views.add_subtask, name='add_subtask'),
     url(r'^schedulers/$', views.get_scheduler_list, name='schedulers'),
     url(r'^add_scheduler/$', views.add_scheduler, name='add_scheduler'),
-
-    # TODO change smth
     url(r'^status/done/(?P<id>\d+)/$', views.done, name='done'),
     url(r'^status/begin/(?P<id>\d+)/$', views.begin, name='begin')
 

@@ -10,14 +10,21 @@
     <div class="container">
 
         <div class="actions_buttons">
-            <span><a href="/task/add/"><button class="btn btn-default"> Add task</button></a></span>
-            <span><a href="/task/#/"><button class="btn btn-default">Archieved tasks</button></a></span>
-            <span><a href="{% url 'add_scheduler' %}"><button class="btn btn-default">Add scheduler</button></a></span>
-            <span><a href="{% url 'schedulers' %}"><button class="btn btn-default">Schedulers list</button></a></span>
+            <div class="container">
+                <p>Choose searching riles, please:</p>
+                <form>
+                    <label class="radio-inline">
+                        <input type="radio" name="optradio">TAG
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="optradio">TITLE
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="optradio">DESCRIPTION
+                    </label>
+                </form>
+            </div>
         </div>
-
-
-
 
         <div class="row">
 

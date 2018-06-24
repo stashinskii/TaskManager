@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'task',
     'django_tables2',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
