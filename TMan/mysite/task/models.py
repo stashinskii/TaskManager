@@ -60,6 +60,7 @@ class Task(models.Model):
     priority = models.IntegerField(choices=PRIORITY, default=2)
     parent = models.ForeignKey('self', null=True, blank=True)
 
+
     def __str__(self):
         return "%s %s " % (self.title, self.id)
 
