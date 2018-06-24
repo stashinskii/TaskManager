@@ -62,6 +62,7 @@ def get_scheduler_list(request):
 
 @login_required(redirect_field_name='', login_url='/task/login')
 def post_edit(request, id):
+    current_user = request.user
     task = get_object_or_404(Task, pk=id)
     if request.method == "POST":
         form = TaskEditForm(request.POST, instance=task)
@@ -74,7 +75,7 @@ def post_edit(request, id):
             return redirect('view', id=task.id)
     else:
         form = TaskEditForm(instance=task)
-    return render(request, 'task/edit.html', {'form': form})
+    return render(request, 'task/edit.html', locals())
 
 
 def share_task(request, id):

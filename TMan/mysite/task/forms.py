@@ -1,15 +1,17 @@
 from django import forms
 from .models import *
 
+
 from django.forms import ModelForm, HiddenInput, ModelChoiceField, DateInput
 
 
 class SchedulerForm(forms.ModelForm):
 
+
     class Meta:
         model = SchedulerModel
         exclude = [""]
-
+        widgets = {'start_date': DateInput(attrs={'type': 'date'}), 'end_date': DateInput(attrs={'type': 'date'}), }
 
     def save(self, user):
         """Overriding save-form method to set current id"""
@@ -17,6 +19,10 @@ class SchedulerForm(forms.ModelForm):
         m.author = user
         m.save()
         return m
+
+    title = forms.CharField(widget=forms.TextInput(attrs={'size':20, 'maxlength':30, 'placeholder':'Input title'} ))
+    description = forms.CharField(label='Info', widget=forms.TextInput(attrs={'size': 20, 'maxlength': 200, 'placeholder': 'Input description'}))
+    tag = forms.CharField(label='Info', widget=forms.TextInput(attrs={'size': 20, 'maxlength': 200, 'placeholder': 'Input tag'}))
 
 
     last_added = forms.DateTimeField(
@@ -38,14 +44,6 @@ class SchedulerForm(forms.ModelForm):
         widget=HiddenInput(),
         required=False)
 
-    start_date = forms.DateField(
-        widget=DateInput(attrs={'class': 'datetime-input'}),
-        label='Start',
-        required=False)
-
-    end_date = forms.DateField(
-        widget=DateInput(attrs={'class': 'datetime-input'}),
-        label='End')
 
 
 class TaskForm(forms.ModelForm):
@@ -54,6 +52,11 @@ class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
         exclude = [""]
+        widgets = {'start_date': DateInput(attrs={'type': 'date'}),
+                   'end_date': DateInput(attrs={'type': 'date'}),
+                }
+
+
 
     def save(self, user):
         """Overriding save-form method to set current id"""
@@ -65,7 +68,9 @@ class TaskForm(forms.ModelForm):
         return m
 
     # region Form fields settings
-    title = forms.CharField(widget=forms.TextInput(attrs={'size':20, 'maxlength':20}))
+    title = forms.CharField(widget=forms.TextInput(attrs={'size':20, 'maxlength':30, 'placeholder':'Input title'} ))
+    description = forms.CharField(label='Info', widget=forms.TextInput(attrs={'size': 20, 'maxlength': 200, 'placeholder': 'Input description'}))
+    tag = forms.CharField(label='Info', widget=forms.TextInput(attrs={'size': 20, 'maxlength': 200, 'placeholder': 'Input tag'}))
     subscribers = forms.MultipleChoiceField(
     widget=HiddenInput(),
         required=False
@@ -83,20 +88,6 @@ class TaskForm(forms.ModelForm):
         required=False
     )
 
-    description = forms.CharField(
-        label='Info',
-        required=False
-    )
-
-    start_date = forms.DateField(
-        widget=DateInput(attrs={'class': 'datetime-input'}),
-        label='Start',
-        required=False
-    )
-    end_date = forms.DateField(
-        widget=DateInput(attrs={'class': 'datetime-input'}),
-        label='End'
-    )
 
     # endregion
 
@@ -114,6 +105,7 @@ class TaskShareForm(forms.ModelForm):
                    "parent",
                    "status"
                    ]
+        widgets = {'start_date': DateInput(attrs={'type': 'date'}), 'end_date': DateInput(attrs={'type': 'date'}), }
 
     def save(self, user):
         """Overriding save-form method to set current id"""
@@ -130,6 +122,7 @@ class SubtaskAddForm(forms.ModelForm):
     class Meta:
         model = Task
         exclude = ["parent"]
+        widgets = {'start_date': DateInput(attrs={'type': 'date'}), 'end_date': DateInput(attrs={'type': 'date'}), }
 
     def save(self, user, parent):
         """Overriding save-form method to set current id"""
@@ -142,6 +135,11 @@ class SubtaskAddForm(forms.ModelForm):
         return m
 
     # region Form fields settings
+
+    title = forms.CharField(widget=forms.TextInput(attrs={'size':20, 'maxlength':30, 'placeholder':'Input title'} ))
+    description = forms.CharField(label='Info', widget=forms.TextInput(attrs={'size': 20, 'maxlength': 200, 'placeholder': 'Input description'}))
+    tag = forms.CharField(label='Info', widget=forms.TextInput(attrs={'size': 20, 'maxlength': 200, 'placeholder': 'Input tag'}))
+
 
     subscribers = forms.MultipleChoiceField(
     widget=HiddenInput(),
@@ -160,20 +158,8 @@ class SubtaskAddForm(forms.ModelForm):
         required=False
     )
 
-    description = forms.CharField(
-        label='Info',
-        required=False
-    )
 
-    start_date = forms.DateField(
-        widget=DateInput(attrs={'class': 'datetime-input'}),
-        label='Start',
-        required=False
-    )
-    end_date = forms.DateField(
-        widget=DateInput(attrs={'class': 'datetime-input'}),
-        label='End'
-    )
+
 
     # endregion
 
@@ -184,6 +170,8 @@ class TaskEditForm(forms.ModelForm):
     class Meta:
         model = Task
         exclude = ["subscribers"]
+        widgets = {'start_date': DateInput(attrs={'type': 'date'}), 'end_date': DateInput(attrs={'type': 'date'}), }
+
 
     def save(self, user):
         """Overriding save-form method to set current id"""
@@ -202,8 +190,6 @@ class TaskEditForm(forms.ModelForm):
 
     description = forms.CharField(label='Info', required=False)
 
-    start_date = forms.DateField(widget=DateInput(attrs={'class': 'datetime-input'}), label='Start', required=False)
-    end_date = forms.DateField(widget=DateInput(attrs={'class': 'datetime-input'}), label='End')
 
     # endregion
 

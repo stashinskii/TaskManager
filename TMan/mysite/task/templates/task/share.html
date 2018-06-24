@@ -1,10 +1,41 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h3><b>Share your task with other users</b></h3>
-<h4>Use ctrl to choose more then one user</h4>
-    <form method="POST" class="post-form">{% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="save btn btn-primary">Save</button>
+{% load widget_tweaks %}
+
+<div class="section_top" align="right">
+    <h5><b>Welcome, {{ current_user.username }}!</b></h5>
+</div>
+
+<div class="container" style="margin-left: 25%; width:40%">
+    <h3><b>Please, choose subscribers</b></h3>
+    <h5>Use 'ctr' ('command' on Mac) to choose more than one user</h5>
+    <h5><b>Remember that you can't unsubscribe yourself</b></h5>
+
+    <form method="post">{% csrf_token %}
+
+        {% for hidden_field in form.hidden_fields %}
+        {{ hidden_field }}
+        {% endfor %}
+
+        {% for field in form.visible_fields %}
+
+        <div class="form-group">
+
+            {{ field.label_tag }}
+            {% render_field field class="form-control" %}
+            {% if field.help_text %}
+            <small class="form-text text-muted">{{ field.help_text }}</small>
+            {% endif %}
+        </div>
+
+        {% endfor %}
+
+
+        <button type="submit" class="btn btn-primary">Add</button>
+
+
     </form>
+
+</div>
 {% endblock %}
