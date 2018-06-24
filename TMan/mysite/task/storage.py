@@ -3,6 +3,7 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 
 
+
 def scheduler(func):
     def wrapper(user, *args, **kwargs):
         schedulers = [scheduler for scheduler in SchedulerModel.objects.filter(author=user)]
@@ -31,7 +32,8 @@ def get_schedulers(user):
 
 @scheduler
 def get_user_tasks(user):
-    tasks = [upr for upr in Task.objects.filter(subscribers=user, parent=None)]
+    tasks = [upr for upr in Task.objects.filter(subscribers=user, parent=None, status=1)
+             | Task.objects.filter(subscribers=user, parent=None, status=0)]
     return tasks
 
 @scheduler

@@ -11,12 +11,10 @@
 
         <div class="actions_buttons">
             <span><a href="/task/add/"><button class="btn btn-default"> Add task</button></a></span>
-            <span><a href="/task/#/"><button class="btn btn-default">Archieved tasks</button></a></span>
+            <span><a href="{% url 'archieve' status=2 %}" class="btn btn-default">Archieved tasks</a></span>
             <span><a href="{% url 'add_scheduler' %}"><button class="btn btn-default">Add scheduler</button></a></span>
             <span><a href="{% url 'schedulers' %}"><button class="btn btn-default">Schedulers list</button></a></span>
         </div>
-
-
 
 
         <div class="row">
@@ -39,18 +37,19 @@
                     </h6>
                     <h6><b>Expiration date:</b> {{ task.end_date }}</h6>
 
-
-                    <span><h6><b>Status: </b> {{ task.status }} </h6></span>
+                    {% if task.status == 0 %}
+                    <span><h6><b>Status: </b> Undone </h6></span>
+                    {% elif task.status == 1 %}
+                    <span><h6><b>Status: </b> Process </h6></span>
+                    {% else %}
+                    <span><h6><b>Status: </b> Done </h6></span>
+                    {% endif %}
 
 
                     <div class="actions_links">
                         <span><a href="{% url 'delete' id=task.id %}">Delete</a></span>
                         <span>|</span>
                         <span><a href="{% url 'post_edit' id=task.id %}">Edit</a></span>
-                        <span>|</span>
-                        <span><a href="/task/status/done/{{ task.id }}">Done</a></span>
-                        <span>|</span>
-                        <span><a href="/task/status/begin/{{ task.id }}">Begin</a></span>
                     </div>
 
                 </li>
@@ -58,6 +57,22 @@
 
                 {% endfor %}
             </ul>
+
+            <div class="pagination">
+                <span class="step-links">
+                    {% if tasks.has_previous %}
+                          <a href="?page={{ tasks.previous_page_number }}">previous</a>
+                    {% endif %}
+
+                <span class="current">
+                    <b> Page {{ tasks.number }} of {{ tasks.paginator.num_pages }}. </b>
+                </span>
+
+                {% if tasks.has_next %}
+                     <a href="?page={{ tasks.next_page_number }}">next</a>
+                 {% endif %}
+                </span>
+            </div>
 
 
         </div>

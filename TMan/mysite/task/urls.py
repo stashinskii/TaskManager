@@ -6,7 +6,7 @@ from task import views
 
 urlpatterns = [
     url(r'^home/$', views.home, name='home'),
-
+    url(r'^home/(?P<status>\d+)/$', views.home, name='archieve'),
     url(r'^login/$', login, {'template_name': 'registration/login.html'}),
     url(r'^logout/$',logout,{'template_name': 'registration/logout.html'}),
     url(r'^register/$', views.register, name='register'),

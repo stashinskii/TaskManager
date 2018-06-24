@@ -6,6 +6,8 @@ from .models import Task
 from .storage import get_user_tasks, order_by_status, get_subtasks, get_schedulers
 from task_manager_library.models.task_model import Status
 from django.utils import timezone
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 
 
 def register(request):
@@ -118,20 +120,37 @@ def add(request):
 
 
 @login_required(redirect_field_name='', login_url='/task/login')
-def home(request):
+def home(request, status=None):
     """
     Home page of Task manager
     If you are not logged in - you will be redirect to login page
     After login you will be automatically redirect to this page
     """
     current_user = request.user
-    # TODO Декоратор
-    tasks = Task.objects.filter(subscribers=current_user, parent=None)
+
+    tasks = get_user_tasks(request.user)
 
     query = request.GET.get("q")
     if query:
-        tasks = tasks.filter(title__icontains=query)
+        tasks = Task.objects.filter(subscribers=current_user, parent=None, title__icontains=query)
 
+    if status is not None:
+        tasks = Task.objects.filter(subscribers=current_user, parent=None, status=2)
+
+    paginator = Paginator(tasks, 3)
+
+    page = request.GET.get('page')
+
+
+
+    try:
+        tasks = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        tasks = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        tasks = paginator.page(paginator.num_pages)
 
     return render(request, 'task/home.html', locals())
 
