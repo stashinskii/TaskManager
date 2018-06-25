@@ -48,13 +48,13 @@ def format_print_info(task, subtasks, manager):
     Printing full information about chosen task
     Use click module to get access to format printing in CLI
     """
-    if task.is_completed == Status.done:
+    if task.is_completed == Status.DONE:
         status = "Done"
         color = 'green'
-    elif task.is_completed == Status.undone:
+    elif task.is_completed == Status.UNDONE:
         status = "Undone"
         color = 'red'
-    elif task.is_completed == Status.process:
+    elif task.is_completed == Status.PROCESS:
         status = "Process"
         color = 'blue'
     click.echo("Title: \t\t" + click.style(str(task.title), bold=True, fg='yellow'))
@@ -100,11 +100,11 @@ def format_print_ordered(ordered_tasks):
     """Showing full info of ordered tasks"""
 
     for task in ordered_tasks:
-        if task.is_completed == Status.done:
+        if task.is_completed == Status.DONE:
             marker = 'X'
-        elif task.is_completed == Status.undone:
+        elif task.is_completed == Status.UNDONE:
             marker = ' '
-        elif task.is_completed == Status.process:
+        elif task.is_completed == Status.PROCESS:
             marker = 'O'
         else:
             raise ValueError("Status is not status object")

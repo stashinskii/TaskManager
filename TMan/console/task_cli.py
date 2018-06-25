@@ -11,11 +11,11 @@ from task_manager_library.models.task_model import Status, Priority, Task, Tag
 @click.group(invoke_without_command=True)
 def cli():
     """Task Manager (tman) application for managing tasks and events"""
-    try:
-        manager = Actions()
-        manager.get_schedulers()
-    except Exception as e:
-        click.echo(e)
+    #try:
+    manager = Actions()
+    manager.get_schedulers()
+    #except Exception as e:
+    #    click.echo(e)
 
 
 # region User actions
@@ -114,8 +114,8 @@ def add(startdate, enddate, tag, description,
         click.echo("ValueError:"+str(e))
     except TypeError:
         click.echo("Check your data!")
-    #except Exception as e:
-    #    click.echo("Exception:" + str(type(e)))
+    except Exception as e:
+        click.echo("Exception:" + str(type(e)))
 
 
 @task.command()

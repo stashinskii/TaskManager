@@ -24,6 +24,7 @@ class TaskController(BaseController):
         """
         self.task_storage.add_task(task)
 
+
     def edit(self, tid, **kwargs):
         """
         Editing task by its tid (task ID)

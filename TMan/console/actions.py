@@ -64,6 +64,7 @@ class Actions:
         :param kwargs: other parameters describing task
         :return:
         """
+
         parent =  kwargs['parent']
         if parent is None:
             height = 0
@@ -76,6 +77,7 @@ class Actions:
                     end=end,
                     height=height,
                     **kwargs)
+
         self.task_controller.add(task)
 
     @logger.log_func(__name__)
@@ -166,7 +168,7 @@ class Actions:
     def get_archieve(self):
         """Get tasks with "done" status"""
         all_tasks = self.task_controller.get_list()
-        return [task for task in all_tasks if task.is_completed == Status.done]
+        return [task for task in all_tasks if task.is_completed == Status.DONE]
 
     # endregion
 
