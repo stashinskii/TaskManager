@@ -5,6 +5,7 @@ from django.contrib.auth.views import login, logout
 from task import views
 
 urlpatterns = [
+    url(r'^$', views.home, name='homepage'),
     url(r'^home/$', views.home, name='home'),
     url(r'^home/(?P<status>\d+)/$', views.home, name='archieve'),
     url(r'^login/$', login, {'template_name': 'registration/login.html'}),

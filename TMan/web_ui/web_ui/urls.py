@@ -1,4 +1,4 @@
-"""mysite URL Configuration
+"""web_ui URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/1.11/topics/http/urls/
@@ -15,12 +15,12 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
-from mysite.views import login_redirect
+from web_ui.views import login_redirect, home
 
 admin.autodiscover()
 
 urlpatterns = [
-    url(r'^$', login_redirect, name='login_redirect'),
+    url(r'^$', home, name='redirect'),
     url(r'^admin/', admin.site.urls),
     url(r'^task/', include('task.urls'))
 ]

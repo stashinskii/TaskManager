@@ -81,6 +81,7 @@ def post_edit(request, id):
 
 @logger.log_func(__name__)
 def share_task(request, id):
+    current_user = request.user
     task = get_object_or_404(Task, pk=id)
     if request.method == "POST":
         form = TaskShareForm(request.POST, instance=task)
@@ -90,7 +91,7 @@ def share_task(request, id):
             return redirect('view', id=task.id)
     else:
         form = TaskShareForm(instance=task)
-    return render(request, 'task/share.html', {'form': form})
+    return render(request, 'task/share.html', locals())
 
 @logger.log_func(__name__)
 def add_subtask(request, id):
