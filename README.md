@@ -1,4 +1,4 @@
-#Task Manager (tman) for Command Line Interface (CLI)
+# Task Manager (tman) for Command Line Interface (CLI)
 ## This application is designed to plan your daily activity throw bash terminal
 **Some features:**
 
